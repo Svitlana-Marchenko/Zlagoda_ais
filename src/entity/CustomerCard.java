@@ -22,4 +22,55 @@ public class CustomerCard {
         this.zipCode = zipCode;
         this.percent = percent;
     }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPatronymic() {
+        return patronymic;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public int getPercent() {
+        return percent;
+    }
+
+    @Override
+    public String toString() {
+        return "CustomerCard{" +
+                "number='" + number + '\'' +
+                ", surname='" + surname + '\'' +
+                ", name='" + name + '\'' +
+                ", patronymic='" + patronymic + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", city='" + city + '\'' +
+                ", street='" + street + '\'' +
+                ", zipCode='" + zipCode + '\'' +
+                ", percent=" + percent +
+                '}';
+    }
 }

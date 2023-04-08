@@ -14,4 +14,35 @@ public class Product {
         this.producer = producer;
         this.characteristics = characteristics;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public String getProducer() {
+        return producer;
+    }
+
+    public String getCharacteristics() {
+        return characteristics;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", category=" + category +
+                ", producer='" + producer + '\'' +
+                ", characteristics='" + characteristics + '\'' +
+                '}';
+    }
 }

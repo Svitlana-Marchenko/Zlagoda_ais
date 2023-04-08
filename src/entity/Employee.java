@@ -38,4 +38,75 @@ public class Employee {
         this.street = street;
         this.zipCode = zipCode;
     }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getPatronymic() {
+        return patronymic;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public BigDecimal getSalary() {
+        return salary;
+    }
+
+    public Date getBirthdate() {
+        return birthdate;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id='" + id + '\'' +
+                ", surname='" + surname + '\'' +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                ", patronymic='" + patronymic + '\'' +
+                ", role=" + role +
+                ", salary=" + salary +
+                ", birthdate=" + birthdate +
+                ", startDate=" + startDate +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", city='" + city + '\'' +
+                ", street='" + street + '\'' +
+                ", zipCode='" + zipCode + '\'' +
+                '}';
+    }
 }

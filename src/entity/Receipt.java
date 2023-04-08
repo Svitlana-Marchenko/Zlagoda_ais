@@ -22,4 +22,45 @@ public class Receipt {
         this.VAT = VAT;
         this.products = products;
     }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public CustomerCard getCard() {
+        return card;
+    }
+
+    public Timestamp getPrintDate() {
+        return printDate;
+    }
+
+    public BigDecimal getTotalSum() {
+        return totalSum;
+    }
+
+    public BigDecimal getVAT() {
+        return VAT;
+    }
+
+    public List<SoldProduct> getProducts() {
+        return products;
+    }
+
+    @Override
+    public String toString() {
+        return "Receipt{" +
+                "number='" + number + '\'' +
+                ", employee=" + employee +
+                ", card=" + card +
+                ", printDate=" + printDate +
+                ", totalSum=" + totalSum +
+                ", VAT=" + VAT +
+                ", products=" + products +
+                '}';
+    }
 }

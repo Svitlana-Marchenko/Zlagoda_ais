@@ -18,4 +18,40 @@ public class ProductInStore {
         this.amount = amount;
         this.promotional = promotional;
     }
+
+    public String getUPC() {
+        return UPC;
+    }
+
+    public String getPromotionalUPC() {
+        return promotionalUPC;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public boolean isPromotional() {
+        return promotional;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductInStore{" +
+                "UPC='" + UPC + '\'' +
+                ", promotionalUPC='" + promotionalUPC + '\'' +
+                ", product=" + product +
+                ", price=" + price +
+                ", amount=" + amount +
+                ", promotional=" + promotional +
+                '}';
+    }
 }
