@@ -19,6 +19,7 @@ public class Store_Product {
 
 
     //14 За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару, назву та характеристики товару;+
+    //14. За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару.
     public static ProductInStore getAllAboutProductsOnUPC(String upc) throws SQLException {
 
         String sql = "SELECT * FROM Store_Product s LEFT JOIN Product p ON s.id_product=p.id_product WHERE s.UPC="+ upc;
@@ -48,6 +49,8 @@ public class Store_Product {
 
     //15, Отримати інформацію про усі акційні товари, відсортовані за кількістю одиниць товару/ за назвою;+
     // 16 Отримати інформацію про усі не акційні товари, відсортовані за кількістю одиниць товару/ за назвою;+
+    //12. Отримати інформацію про усі акційні товари, відсортовані за кількістю одиниць товару/ за назвою;
+    //13. Отримати інформацію про усі не акційні товарів, відсортовані за кількістю одиниць товару/ за назвою;
     public static List<ProductInStore> getAllProductsInStoreSaleSorted(boolean acs, String sortM, boolean onSale) throws SQLException {
         List<ProductInStore> products = new ArrayList<>();
         String sql = "SELECT *\n" +

@@ -18,6 +18,7 @@ public class Product {
 
 
     //13 Здійснити пошук усіх товарів, що належать певній категорії, відсортованих за назвою;+
+    //5. Здійснити пошук товарів, що належать певній категорії, відсортованих за назвою;
     public static List<entity.Product> getAllProductsInCategorySorted(boolean acs, Category cat) throws SQLException {
         List<entity.Product> products = new ArrayList<>();
         String sql = "SELECT * FROM Product WHERE category_number="+ cat.getId()+" ORDER BY product_name";
@@ -50,14 +51,29 @@ public class Product {
                 String name = resultSet.getString("product_name");
                 int categoryN = resultSet.getInt("category_number");
                 String characteristic = resultSet.getString("characteristics");
-
-                        entity.Product product = new entity.Product(id, name, getCategory(categoryN), "", characteristic);
-                        products.add(product);
-                    }
+                entity.Product product = new entity.Product(id, name, getCategory(categoryN), "", characteristic);
+                products.add(product);
             }
+        }
 
         return products;
     }
 
+    //4. Здійснити пошук товарів за назвою;
+    public static List<entity.Product> getAllProductsByName(String name) throws SQLException {
+        List<entity.Product> products = new ArrayList<>();
+        String sql = "SELECT * FROM Product WHERE product_name="+ name;
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id_product");
+                int categoryN = resultSet.getInt("category_number");
+                String characteristic = resultSet.getString("characteristics");
+                entity.Product product = new entity.Product(id, name, getCategory(categoryN),"", characteristic);
+                products.add(product);
+            }
+        }
+        return products;
+    }
 
 }
