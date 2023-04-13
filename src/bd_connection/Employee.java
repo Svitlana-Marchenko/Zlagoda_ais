@@ -11,7 +11,7 @@ public class Employee {
 
     //additional method for getting employee having id_employee
     //15. Можливість отримати усю інформацію про себе.
-   static entity.Employee getEmployee(String num) throws SQLException {
+   public static entity.Employee getEmployee(String num) throws SQLException {
 
         String sqlCast = "SELECT * FROM Employee WHERE id_employee = " + num;
         try (Statement statement = connection.createStatement();
