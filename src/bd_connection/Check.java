@@ -142,8 +142,7 @@ public class Check {
 
         return null;
     }
-||||||| 3a759eb
-=======
+
     //7. Здійснювати продаж товарів (додавання чеків);
     public static void AddNewReceipt(Receipt receipt) throws SQLException{
         String sql = "INSERT INTO Check (check_number, id_employee, card_number, print_date, sum_total, vat)" +
@@ -181,5 +180,5 @@ public class Check {
         }
         return null;
     }
->>>>>>> bc2c9c5d528af14d50a20b19f8c6045476b02fd7
+
 }
