@@ -1,13 +1,17 @@
 package bd_connection;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import entity.Employee;
+
+import java.awt.*;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Category {
 
     private static Connection connection;
+
+
 
 
     //additional method for getting category having category_number
@@ -21,5 +25,20 @@ public class Category {
         } else {
             return null;
         }
+    }
+
+
+    //additional method for getting category having category_number
+   public static List<entity.Category> getAllCategories() throws SQLException {
+
+       List<entity.Category> answ = new ArrayList<>();
+        Statement statement = connection.createStatement();
+        String sqlCat = "SELECT * FROM Category";
+        ResultSet resultCat = statement.executeQuery(sqlCat);
+
+        while (resultCat.next()) {
+            answ.add( new entity.Category(resultCat.getInt("category_number"), resultCat.getString("category_name")));
+        }
+        return answ;
     }
 }

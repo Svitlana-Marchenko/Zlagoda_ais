@@ -4,10 +4,7 @@ import entity.Product;
 import entity.ProductInStore;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +12,9 @@ import static bd_connection.Category.getCategory;
 
 public class Store_Product {
 
+
     private static Connection connection;
+
 
 
     //14 За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару, назву та характеристики товару;+
@@ -88,10 +87,10 @@ public class Store_Product {
     //2 Отримати інформацію про усі товари у магазині, відсортовані за назвою; +
     public static List<ProductInStore> getAllProductsInStoreSorted(boolean acs) throws SQLException {
         List<ProductInStore> products = new ArrayList<>();
-        String sql = "SELECT *\n" +
-                "FROM Store_Product sp\n" +
-                "LEFT JOIN Product p ON p.id_product = sp.id_product\n" +
-                "ORDER BY p.product_name;";
+        String sql = "SELECT * " +
+                "FROM Store_Product sp " +
+                "LEFT JOIN Product p ON p.id_product = sp.id_product " +
+                "ORDER BY p.product_name";
         if(!acs)
             sql+=" DESC";
         try (Statement statement = connection.createStatement();

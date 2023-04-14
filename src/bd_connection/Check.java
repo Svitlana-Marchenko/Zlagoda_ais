@@ -22,12 +22,12 @@ public class Check {
         List<Receipt> receipts = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String sql = "SELECT * " +
-                "FROM Check " +
-                "WHERE id_employee = "+cashier.getId() +
-                " AND print_date BETWEEN '"+sdf.format(from) +"' AND '"+sdf.format(to)+"'"+
+                "FROM `Check` " +
+                "WHERE id_employee = " + cashier.getId() +
+                " AND print_date BETWEEN '" + sdf.format(from) + "' AND '" + sdf.format(to) + "'" +
                 " ORDER BY print_date ";
-        if(!acs)
-            sql+=" DESC";
+        if (!acs)
+            sql += " DESC";
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             while (resultSet.next()) {
@@ -45,7 +45,6 @@ public class Check {
     }
 
 
-
     //18. Отримати інформацію про усі чеки, створені усіма касирами за певний період часу (з можливістю перегляду куплених товарів у цьому чеку, їх назва, к-сті та ціни);+
     public static List<Receipt> getAllReceipt(boolean acs, Date from, Date to) throws SQLException {
         List<Receipt> receipts = new ArrayList<>();
@@ -54,10 +53,10 @@ public class Check {
 
         String sql = "SELECT * " +
                 "FROM `Check` " +
-                "WHERE print_date BETWEEN '"+sdf.format(from) +"' AND '"+sdf.format(to)+"'"+
+                "WHERE print_date BETWEEN '" + sdf.format(from) + "' AND '" + sdf.format(to) + "'" +
                 " ORDER BY print_date ";
-        if(!acs)
-            sql+=" DESC";
+        if (!acs)
+            sql += " DESC";
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             while (resultSet.next()) {
@@ -69,7 +68,7 @@ public class Check {
 
                 String cashier_num = resultSet.getString("id_employee");
 
-                Receipt receipt = new Receipt(num, getEmployee(cashier_num),getCustomerCard(cardnum), timestamp, sum_total, vat, getSoldProductsFromReceipt(num));
+                Receipt receipt = new Receipt(num, getEmployee(cashier_num), getCustomerCard(cardnum), timestamp, sum_total, vat, getSoldProductsFromReceipt(num));
                 receipts.add(receipt);
             }
         }
@@ -82,13 +81,14 @@ public class Check {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String sql = "SELECT SUM(sum_total) AS sumT\n" +
                 "FROM `Check` " +
-                "WHERE id_employee = "+cashier.getId() +
-                " AND print_date BETWEEN '"+sdf.format(from) +"' AND '"+sdf.format(to)+"'";
+                "WHERE id_employee = " + cashier.getId() +
+                " AND print_date BETWEEN '" + sdf.format(from) + "' AND '" + sdf.format(to) + "'";
 
-        BigDecimal answ = BigDecimal.valueOf(0);;
+        BigDecimal answ = BigDecimal.valueOf(0);
+        ;
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
-            if(resultSet.next())
+            if (resultSet.next())
                 answ = resultSet.getBigDecimal("sumT");
         }
 
@@ -101,16 +101,40 @@ public class Check {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String sql = "SELECT SUM(sum_total) AS sumT\n" +
                 "FROM `Check` " +
-                "WHERE print_date BETWEEN '"+sdf.format(from) +"' AND '"+sdf.format(to)+"'";
+                "WHERE print_date BETWEEN '" + sdf.format(from) + "' AND '" + sdf.format(to) + "'";
 
         BigDecimal answ = BigDecimal.valueOf(0);
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
-            if(resultSet.next())
+            if (resultSet.next())
                 answ = resultSet.getBigDecimal("sumT");
         }
 
         return answ;
     }
 
+    //additional method for
+    public static Receipt getReceipt(String id) throws SQLException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String sql = "SELECT * " +
+                "FROM `Check` WHERE check_number = " + "'"+id+"'";
+
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+            if (resultSet.next()) {
+                String num = resultSet.getString("check_number");
+                String cardnum = resultSet.getString("card_number");
+                Timestamp timestamp = resultSet.getTimestamp("print_date");
+                BigDecimal sum_total = resultSet.getBigDecimal("sum_total");
+                BigDecimal vat = resultSet.getBigDecimal("vat");
+
+                String cashier_num = resultSet.getString("id_employee");
+
+                return new Receipt(num, getEmployee(cashier_num), getCustomerCard(cardnum), timestamp, sum_total, vat, getSoldProductsFromReceipt(num));
+            }
+
+        }
+
+        return null;
+    }
 }
