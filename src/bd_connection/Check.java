@@ -19,6 +19,48 @@ import static bd_connection.Sale.getSoldProductsFromReceipt;
 public class Check {
 
     private static Connection connection;
+    public static void setConnection(Connection con){
+        connection=con;
+    }
+    private static final String CHECK_NUMBER = "check_number";
+    private static final String ID_EMPLOYEE = "id_employee";
+    private static final String CARD_NUMBER = "card_number";
+    private static final String PRINT_DATE = "print_date";
+    private static final String SUM_TOTAL = "sum_total";
+    private static final String VAT = "vat";
+    private static final String UPC = "UPC";
+    private static final String PRODUCT_NUMBER = "product_number";
+    private static final String SELLING_PRICE = "selling_price";
+
+    //3. Видаляти дані про чеки;
+    public static boolean deleteReceiptById(String check_number){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "DELETE FROM `zlagoda`.`check` WHERE (`"+CHECK_NUMBER+"` = '"+check_number+"');";
+            statement.execute(request);
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    //4. Видруковувати звіти з інформацією про усі чеки;
+    public static ArrayList<Receipt> findAll(){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "SELECT * FROM `zlagoda`.`check`;";
+            ResultSet resultSet = statement.executeQuery(request);
+            ArrayList<Receipt> receipts = new ArrayList<>();
+            while(resultSet.next()) {
+                receipts.add(new Receipt(resultSet.getString(CHECK_NUMBER), bd_connection.Employee.findEmployeeById(resultSet.getString(ID_EMPLOYEE)),Customer_Card.findCustomerCardById(resultSet.getString(CARD_NUMBER)),Timestamp.valueOf(resultSet.getString(PRINT_DATE)),new BigDecimal(resultSet.getString(SUM_TOTAL)),new BigDecimal(resultSet.getString(VAT)), getSoldProductsFromReceipt(resultSet.getString(CHECK_NUMBER))));
+            }
+            return receipts;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return new ArrayList<>();
+        }
+    }
 
     //17 Отримати інформацію про усі чеки, створені певним касиром за певний період часу (з можливістю перегляду куплених товарів у цьому чеку, їх назви, к-сті та ціни);+
     //10. Переглянути список усіх чеків, що створив касир за певний період часу;

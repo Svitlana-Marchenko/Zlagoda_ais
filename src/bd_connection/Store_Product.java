@@ -14,7 +14,122 @@ public class Store_Product {
 
 
     private static Connection connection;
+    public static void setConnection(Connection con){
+        connection=con;
+    }
 
+    private static final String UPC = "UPC";
+    private static final String UPC_PROM = "UPC_prom";
+    private static final String SELLING_PRICE = "selling_price";
+    private static final String PRODUCTS_NUMBER = "products_number";
+    private static final String PROMOTIONAL_PRODUCT = "promotional_product";
+    private static final String ID_PRODUCT = "id_product";
+    private static final String PRODUCT_NAME = "product_name";
+    private static final String CHARACTERISTICS = "characteristics";
+    private static final String CATEGORY_ID = "category_number";
+    private static final String CATEGORY_NAME = "category_name";
+
+    //1. Додавати нові дані про товари у магазині;
+    public static boolean addProductInStore(ProductInStore product){
+        try{
+            Statement statement = connection.createStatement();
+            String request = "INSERT INTO `zlagoda`.`store_product` (`UPC`, `UPC_prom`, `id_product`, `selling_price`, `products_number`, `promotional_product`) VALUES ('"+product.getUPC()+"', '"+product.getPromotionalUPC()+"', '"+product.getProduct().getId()+"', '"+product.getPrice()+"', '"+product.getAmount()+"', '"+Boolean.compare(product.isPromotional(),false)+"');";
+            statement.execute(request);
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    //2. Редагувати дані про товари у магазині;
+    public static boolean updateProductInStoreById(ProductInStore product){
+        try {
+            Statement statement = connection.createStatement();
+            //Запитати за айді
+            String request = "UPDATE `zlagoda`.`store_product` SET `UPC_prom` = '"+product.getPromotionalUPC()+"', `id_product` = '"+product.getProduct().getId()+"', `selling_price` = '"+product.getPrice()+"', `products_number` = '"+product.getAmount()+"', `promotional_product` = '"+Boolean.compare(product.isPromotional(),false)+"' WHERE (`UPC` = '"+product.getUPC()+"');\n";
+            statement.execute(request);
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    //3. Видаляти дані про товари у магазині;
+    public static boolean deleteProductInStoreByUPC(String productUPC){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "DELETE FROM `zlagoda`.`store_product` WHERE (`"+UPC+"` = '"+productUPC+"');";
+            statement.execute(request);
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    //4. Видруковувати звіти з інформацією про усі товари у магазині
+
+    public static ArrayList<ProductInStore> findAll(){
+        try {
+            Statement statement = connection.createStatement();
+            //Чи треба іннер джоін ProductCommands.findProductById
+            String request = "SELECT "+UPC+", "+UPC_PROM+",`zlagoda`.`product`."+ID_PRODUCT+", "+SELLING_PRICE+", "+PRODUCTS_NUMBER+", "+PROMOTIONAL_PRODUCT+", "+CHARACTERISTICS+", "+PRODUCT_NAME+", `zlagoda`.`category`."+CATEGORY_ID+", "+CATEGORY_NAME+" FROM `zlagoda`.`store_product` INNER JOIN `zlagoda`.`product` ON `zlagoda`.`product`."+ID_PRODUCT+" = `zlagoda`.`store_product`."+ID_PRODUCT+"" +
+                    " INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`."+CATEGORY_ID+" = `zlagoda`.`category`."+CATEGORY_ID+";";
+            ResultSet resultSet = statement.executeQuery(request);
+            ArrayList<ProductInStore> products = new ArrayList<>();
+            while(resultSet.next()) {
+                products.add(new ProductInStore(resultSet.getString(UPC), resultSet.getString(UPC_PROM),
+                        bd_connection.Product.findProductById(Integer.valueOf(resultSet.getString(ID_PRODUCT))), new BigDecimal(resultSet.getString(SELLING_PRICE)), Integer.valueOf(resultSet.getString(PRODUCTS_NUMBER)), (Integer.valueOf(resultSet.getString(PROMOTIONAL_PRODUCT)) == 1 ? true : false)));
+            }
+            //System.out.println(products);
+            return products;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public static ProductInStore findProductInStoreById(String productUPC){
+        try {
+            Statement statement = connection.createStatement();
+            //Чи треба іннер джоін ProductCommands.findProductById
+            String request = "SELECT "+UPC+", "+UPC_PROM+",`zlagoda`.`product`."+ID_PRODUCT+", "+SELLING_PRICE+", "+PRODUCTS_NUMBER+", "+PROMOTIONAL_PRODUCT+", "+CHARACTERISTICS+", "+PRODUCT_NAME+", `zlagoda`.`category`."+CATEGORY_ID+", "+CATEGORY_NAME+" FROM `zlagoda`.`store_product` INNER JOIN `zlagoda`.`product` ON `zlagoda`.`product`."+ID_PRODUCT+" = `zlagoda`.`store_product`."+ID_PRODUCT+"" +
+                    " INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`."+CATEGORY_ID+" = `zlagoda`.`category`."+CATEGORY_ID+" WHERE (`"+UPC+"` = '"+productUPC+"');";
+            ResultSet resultSet = statement.executeQuery(request);
+            ProductInStore product = null;
+            while(resultSet.next()) {
+                product = new ProductInStore(resultSet.getString(UPC), resultSet.getString(UPC_PROM),
+                        bd_connection.Product.findProductById(Integer.valueOf(resultSet.getString(ID_PRODUCT))), new BigDecimal(resultSet.getString(SELLING_PRICE)), Integer.valueOf(resultSet.getString(PRODUCTS_NUMBER)), (Integer.valueOf(resultSet.getString(PROMOTIONAL_PRODUCT)) == 1 ? true : false));
+            }
+            return product;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return null;
+        }
+    }
+
+    //10. Отримати інформацію про усі товари у магазині, відсортовані за кількістю;
+    public static ArrayList<ProductInStore> findAllSortedByAmount(){
+        try {
+            Statement statement = connection.createStatement();
+            //Чи треба іннер джоін ProductCommands.findProductById
+            String request = "SELECT "+UPC+", "+UPC_PROM+",`zlagoda`.`product`."+ID_PRODUCT+", "+SELLING_PRICE+", "+PRODUCTS_NUMBER+", "+PROMOTIONAL_PRODUCT+", "+CHARACTERISTICS+", "+PRODUCT_NAME+", `zlagoda`.`category`."+CATEGORY_ID+", "+CATEGORY_NAME+" FROM `zlagoda`.`store_product` INNER JOIN `zlagoda`.`product` ON `zlagoda`.`product`."+ID_PRODUCT+" = `zlagoda`.`store_product`."+ID_PRODUCT+"" +
+                    " INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`."+CATEGORY_ID+" = `zlagoda`.`category`."+CATEGORY_ID+" ORDER BY "+PRODUCTS_NUMBER+";";
+            ResultSet resultSet = statement.executeQuery(request);
+            ArrayList<ProductInStore> products = new ArrayList<>();
+            while(resultSet.next()) {
+                products.add(new ProductInStore(resultSet.getString(UPC), resultSet.getString(UPC_PROM),
+                        bd_connection.Product.findProductById(Integer.valueOf(resultSet.getString(ID_PRODUCT))), new BigDecimal(resultSet.getString(SELLING_PRICE)), Integer.valueOf(resultSet.getString(PRODUCTS_NUMBER)), (Integer.valueOf(resultSet.getString(PROMOTIONAL_PRODUCT)) == 1 ? true : false)));
+            }
+            //System.out.println(products);
+            return products;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return new ArrayList<>();
+        }
+    }
 
 
     //14 За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару, назву та характеристики товару;+
