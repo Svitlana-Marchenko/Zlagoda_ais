@@ -62,4 +62,58 @@ public class Customer_Card {
 
     }
 
+
+    //6. Здійснити пошук постійних клієнтів за прізвищем;
+    public  static List<CustomerCard> getCustomersBySurname(String surname) throws SQLException {
+        List<CustomerCard> customers = new ArrayList<>();
+        String sql = "SELECT * FROM Customer_Card WHERE cust_surname="+ surname;
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+            while (resultSet.next()) {
+                String id = resultSet.getString("card_number");
+                String name = resultSet.getString("cust_name");
+                String patronymic = resultSet.getString("cust_patronymic");
+                if(patronymic==null)
+                    patronymic ="";
+                String phone = resultSet.getString("phone_number");
+                String city = resultSet.getString("city");
+                if(city==null)
+                    city ="";
+                String street = resultSet.getString("street");
+                if(street==null)
+                    street ="";
+                String code = resultSet.getString("zip_code");
+                if(code==null)
+                    code ="";
+                int percent = resultSet.getInt("percent");
+                CustomerCard cust = new CustomerCard(id, surname, name, patronymic, phone, city, street, code, percent);
+                customers.add(cust);
+            }
+        }
+        return customers;
+    }
+
+    //8.1. Додавати інформацію про постійних клієнтів;
+    public static void AddCustomer(CustomerCard customer) throws SQLException{
+        String sql = "INSERT INTO Customer_Card (card_number, cust_surname, cust_name, cust_patronymic, phone_number, city, street, zip_code, percent)" +
+                "VALUES ("+customer.getNumber()+", "+customer.getSurname()+", "+customer.getName()+", "+customer.getPatronymic()+", "+customer.getPhoneNumber()+", "+customer.getCity()+", "+customer.getStreet()+", "+customer.getZipCode()+", "+customer.getPercent()+")";
+        Statement statement = connection.createStatement();
+        statement.executeQuery(sql);
+    }
+
+    //8.2. редагувати інформацію про постійних клієнтів;
+    public static void UpdateCustomer(CustomerCard customer) throws SQLException{
+        String sql = "UPDATE Customer_Card" +
+                "SET  (cust_surname = " +customer.getSurname()+
+                ", cust_name = "+customer.getName()+
+                ", cust_patronymic = "+customer.getPatronymic()+
+                ", phone_number = "+customer.getPhoneNumber()+
+                ", city = "+customer.getCity()+
+                ", street = "+customer.getStreet()+
+                ", zip_code = "+customer.getZipCode()+
+                ", percent = "+customer.getPercent()+" " +
+                "WHERE card_number = "+customer.getNumber()+")";
+        Statement statement = connection.createStatement();
+        statement.executeQuery(sql);
+    }
 }

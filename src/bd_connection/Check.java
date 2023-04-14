@@ -2,10 +2,13 @@ package bd_connection;
 
 import entity.Employee;
 import entity.Receipt;
+import entity.SoldProduct;
 
 import java.math.BigDecimal;
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +21,7 @@ public class Check {
     private static Connection connection;
 
     //17 Отримати інформацію про усі чеки, створені певним касиром за певний період часу (з можливістю перегляду куплених товарів у цьому чеку, їх назви, к-сті та ціни);+
+    //10. Переглянути список усіх чеків, що створив касир за певний період часу;
     public static List<Receipt> getAllReceiptFromGivenCashier(boolean acs, Employee cashier, Date from, Date to) throws SQLException {
         List<Receipt> receipts = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -113,6 +117,7 @@ public class Check {
         return answ;
     }
 
+<<<<<<< HEAD
     //additional method for
     public static Receipt getReceipt(String id) throws SQLException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -137,4 +142,44 @@ public class Check {
 
         return null;
     }
+||||||| 3a759eb
+=======
+    //7. Здійснювати продаж товарів (додавання чеків);
+    public static void AddNewReceipt(Receipt receipt) throws SQLException{
+        String sql = "INSERT INTO Check (check_number, id_employee, card_number, print_date, sum_total, vat)" +
+                "VALUES ("+receipt.getNumber()+", "+receipt.getEmployee().getId()+", "+receipt.getCard().getNumber()+", "+receipt.getPrintDate()+", "+receipt.getVAT()+")";
+        Statement statement = connection.createStatement();
+        statement.executeQuery(sql);
+        for (SoldProduct product:receipt.getProducts()) {
+            AddSaleToReceipt(receipt.getNumber(),product);
+        }
+    }
+
+    //additional method for 7
+    public static void AddSaleToReceipt(String check_number,SoldProduct product) throws SQLException{
+        String sql = "INSERT INTO Sale (UPC, check_number, product_number, selling_price)" +
+                "VALUES ("+product.getUPC()+", "+check_number+", "+product.getAmount()+", "+product.getPrice()+")";
+        Statement statement = connection.createStatement();
+        statement.executeQuery(sql);
+    }
+
+    //9. Переглянути список усіх чеків, що створив касир за цей день;
+    public static List<Receipt> getAllReceiptFromGivenCashierToday(boolean acs, Employee cashier) throws SQLException {
+        return getAllReceiptFromGivenCashier(acs,cashier, (java.sql.Date)Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),(java.sql.Date)Date.from(LocalDate.now().atTime(23,59,59).atZone(ZoneId.systemDefault()).toInstant()));
+    }
+
+    //11. За номером чеку вивести усю інформацію про даний чек, в тому числі інформацію про назву, к-сть та ціну товарів, придбаних в даному чеку.
+    public static Receipt getReceiptByNumber(String number) throws SQLException {
+        String sqlCast = "SELECT * FROM Check WHERE check_numbe = " + number;
+        try (Statement statement = connection.createStatement();
+             ResultSet resultCheck = statement.executeQuery(sqlCast)
+        ) {
+            if(resultCheck.next()){
+                List<SoldProduct> products = getSoldProductsFromReceipt(number);
+                return new Receipt(number, getEmployee(resultCheck.getString("id_employee")),getCustomerCard(resultCheck.getString("card_number")),resultCheck.getTimestamp("print_date"),resultCheck.getBigDecimal("sum_total"),resultCheck.getBigDecimal("vat"),products);
+            }
+        }
+        return null;
+    }
+>>>>>>> bc2c9c5d528af14d50a20b19f8c6045476b02fd7
 }
