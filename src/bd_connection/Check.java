@@ -117,7 +117,6 @@ public class Check {
         return answ;
     }
 
-<<<<<<< HEAD
     //additional method for
     public static Receipt getReceipt(String id) throws SQLException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
