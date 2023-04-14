@@ -11,16 +11,9 @@ public class Employee {
 
     private static Connection connection;
 
-    //additional method for getting employee having id_employee
-<<<<<<< HEAD
-   public static entity.Employee getEmployee(String num) throws SQLException {
-||||||| 3a759eb
-   static entity.Employee getEmployee(String num) throws SQLException {
-=======
+
     //15. Можливість отримати усю інформацію про себе.
    public static entity.Employee getEmployee(String num) throws SQLException {
->>>>>>> bc2c9c5d528af14d50a20b19f8c6045476b02fd7
-
         String sqlCast = "SELECT * FROM Employee WHERE id_employee = " + num;
         try (Statement statement = connection.createStatement();
              ResultSet resultEmp = statement.executeQuery(sqlCast)
