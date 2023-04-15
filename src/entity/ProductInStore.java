@@ -26,6 +26,9 @@ public class ProductInStore {
     public String getPromotionalUPC() {
         return promotionalUPC;
     }
+    public void setPromotionalUPC(String UPC) {
+        promotionalUPC=UPC;
+    }
 
     public Product getProduct() {
         return product;

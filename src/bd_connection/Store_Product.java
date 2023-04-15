@@ -33,7 +33,11 @@ public class Store_Product {
     public static boolean addProductInStore(ProductInStore product){
         try{
             Statement statement = connection.createStatement();
-            String request = "INSERT INTO `zlagoda`.`store_product` (`UPC`, `UPC_prom`, `id_product`, `selling_price`, `products_number`, `promotional_product`) VALUES ('"+product.getUPC()+"', '"+product.getPromotionalUPC()+"', '"+product.getProduct().getId()+"', '"+product.getPrice()+"', '"+product.getAmount()+"', '"+Boolean.compare(product.isPromotional(),false)+"');";
+            String request="";
+            if(product.getPromotionalUPC()!=null)
+                request= "INSERT INTO `zlagoda`.`store_product` (`UPC`, `UPC_prom`, `id_product`, `selling_price`, `products_number`, `promotional_product`) VALUES ('"+product.getUPC()+"', '"+product.getPromotionalUPC()+"', '"+product.getProduct().getId()+"', '"+product.getPrice()+"', '"+product.getAmount()+"', '"+Boolean.compare(product.isPromotional(),false)+"');";
+            else
+                request= "INSERT INTO `zlagoda`.`store_product` (`UPC`, `id_product`, `selling_price`, `products_number`, `promotional_product`) VALUES ('"+product.getUPC()+"', '"+product.getProduct().getId()+"', '"+product.getPrice()+"', '"+product.getAmount()+"', '"+Boolean.compare(product.isPromotional(),false)+"');";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
