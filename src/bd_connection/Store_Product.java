@@ -91,6 +91,25 @@ public class Store_Product {
         }
     }
 
+    public static ArrayList<ProductInStore> findStoreProductsByProductId(int id){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "SELECT "+UPC+", "+UPC_PROM+",`zlagoda`.`product`."+ID_PRODUCT+", "+SELLING_PRICE+", "+PRODUCTS_NUMBER+", "+PROMOTIONAL_PRODUCT+", "+CHARACTERISTICS+", "+PRODUCT_NAME+", `zlagoda`.`category`."+CATEGORY_ID+", "+CATEGORY_NAME+" FROM `zlagoda`.`store_product` INNER JOIN `zlagoda`.`product` ON `zlagoda`.`product`."+ID_PRODUCT+" = `zlagoda`.`store_product`."+ID_PRODUCT+"" +
+                    " INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`."+CATEGORY_ID+" = `zlagoda`.`category`."+CATEGORY_ID+" WHERE (`zlagoda`.`product`."+ID_PRODUCT+" = '"+id+"');";
+            ResultSet resultSet = statement.executeQuery(request);
+            ArrayList<ProductInStore> products = new ArrayList<>();
+            while(resultSet.next()) {
+                products.add(new ProductInStore(resultSet.getString(UPC), resultSet.getString(UPC_PROM),
+                        bd_connection.Product.findProductById(Integer.valueOf(resultSet.getString(ID_PRODUCT))), new BigDecimal(resultSet.getString(SELLING_PRICE)), Integer.valueOf(resultSet.getString(PRODUCTS_NUMBER)), (Integer.valueOf(resultSet.getString(PROMOTIONAL_PRODUCT)) == 1 ? true : false)));
+            }
+            //System.out.println(products);
+            return products;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
     public static ProductInStore findProductInStoreById(String productUPC){
         try {
             Statement statement = connection.createStatement();

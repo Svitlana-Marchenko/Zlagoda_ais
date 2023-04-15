@@ -18,6 +18,7 @@ public class Category {
     private static final String CATEGORY_NUMBER = "category_number";
     private static final String CATEGORY_NAME = "category_name";
 
+
     //1. Додавати нові дані про категорії товарів
     public static boolean addCategory(entity.Category category){
         try{

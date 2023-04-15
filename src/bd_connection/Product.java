@@ -82,6 +82,23 @@ public class Product {
         }
     }
 
+    public static entity.Category findCategoryByProductId(int id){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "SELECT id_product, product_name,characteristics, producer, `zlagoda`.`category`.category_number,category_name FROM `zlagoda`.`product` INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`.category_number = `zlagoda`.`category`.category_number WHERE (`id_product` = '"+id+"');";
+            ResultSet resultSet = statement.executeQuery(request);
+            entity.Category category = null;
+            while(resultSet.next()) {
+                category = new Category(Integer.valueOf(resultSet.getString(CATEGORY_ID)),resultSet.getString(CATEGORY_NAME));
+            }
+            //System.out.println(product);
+            return category;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return null;
+        }
+    }
+
     public static entity.Product findProductByName(String name){
         try {
             Statement statement = connection.createStatement();
@@ -136,6 +153,8 @@ public class Product {
     }
 
 
+
+
     //13 Здійснити пошук усіх товарів, що належать певній категорії, відсортованих за назвою;+
     //5. Здійснити пошук товарів, що належать певній категорії, відсортованих за назвою;
     public static List<entity.Product> getAllProductsInCategorySorted(boolean acs, Category cat) throws SQLException {
@@ -149,7 +168,8 @@ public class Product {
                 int id = resultSet.getInt("id_product");
                 String name = resultSet.getString("product_name");
                 String characteristic = resultSet.getString("characteristics");
-                entity.Product product = new entity.Product(id, name, cat,"", characteristic);
+                String producer = resultSet.getString("producer");
+                entity.Product product = new entity.Product(id, name, cat,producer, characteristic);
                 products.add(product);
             }
         }
