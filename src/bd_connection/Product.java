@@ -157,7 +157,7 @@ public class Product {
 
     //13 Здійснити пошук усіх товарів, що належать певній категорії, відсортованих за назвою;+
     //5. Здійснити пошук товарів, що належать певній категорії, відсортованих за назвою;
-    public static List<entity.Product> getAllProductsInCategorySorted(boolean acs, Category cat) throws SQLException {
+    public static List<entity.Product> getAllProductsInCategorySorted(boolean acs, Category cat) {
         List<entity.Product> products = new ArrayList<>();
         String sql = "SELECT * FROM Product WHERE category_number="+ cat.getId()+" ORDER BY product_name";
         if(!acs)
@@ -172,8 +172,12 @@ public class Product {
                 entity.Product product = new entity.Product(id, name, cat,producer, characteristic);
                 products.add(product);
             }
+            return products;
+        }catch(SQLException ex){
+            System.out.println(ex.getMessage());
+            return new ArrayList<>();
         }
-        return products;
+
     }
 
 
