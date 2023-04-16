@@ -201,7 +201,24 @@ public class Product {
     //4. Здійснити пошук товарів за назвою;
     public static List<entity.Product> getAllProductsByName(String name) throws SQLException {
         List<entity.Product> products = new ArrayList<>();
-        String sql = "SELECT * FROM Product WHERE product_name="+ name;
+        String sql = "SELECT * FROM Product WHERE product_name = '"+name+"'";
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id_product");
+                int categoryN = resultSet.getInt("category_number");
+                String characteristic = resultSet.getString("characteristics");
+                entity.Product product = new entity.Product(id, name, getCategory(categoryN),"", characteristic);
+                products.add(product);
+            }
+        }
+        return products;
+    }
+
+    //additional mehtod. get all product by name and category
+    public static List<entity.Product> getAllProductsByNameAndCategory(String name, Category cat) throws SQLException {
+        List<entity.Product> products = new ArrayList<>();
+        String sql = "SELECT * FROM Product WHERE product_name = '"+ name+"'"+" AND category_number = "+cat.getId();
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             while (resultSet.next()) {
