@@ -1,18 +1,38 @@
-package menu;
+package info_menu_cashier;
 
 import entity.CustomerCard;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class CustomerTableCashier {
+import static bd_connection.Customer_Card.getAllCustomersSorted;
+import static bd_connection.Customer_Card.getCustomersBySurname;
 
-    public static void display(List<CustomerCard> customerList) {
+public class CustomerTableCashier {
+    static List<CustomerCard> customerList;
+
+    static {
+        try {
+            customerList = getAllCustomersSorted(true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public CustomerTableCashier() throws SQLException {
+    }
+
+    public static void display() throws SQLException {
+
+        String tetxForJText = "Enter customer surname (optional)";
 
         JFrame frame = new JFrame("CustomerCard Table");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -22,11 +42,31 @@ public class CustomerTableCashier {
         JButton homeButton = new JButton("Home");
         buttonPanel.add(homeButton);
 
+
+
+        JTextField nameField = new JTextField(tetxForJText);
+        nameField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (nameField.getText().equals(tetxForJText)) {
+                    nameField.setText("");
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (nameField.getText().isEmpty()) {
+                    nameField.setText(tetxForJText);
+                }
+            }
+        });
+buttonPanel.add(nameField);
+
+        JButton searchButton = new JButton("Search");
+        buttonPanel.add(searchButton);
+
         JButton sortButton = new JButton("Sort");
         buttonPanel.add(sortButton);
-
-        JLabel categoriesLabel = new JLabel("Customers");
-        buttonPanel.add(categoriesLabel);
 
         JPanel tablePanel = new JPanel(new BorderLayout());
 
@@ -77,15 +117,52 @@ public class CustomerTableCashier {
                 model.addRow(new Object[]{customer.getNumber(), customer.getSurname(), customer.getName(), (customer.getPatronymic()==null?"":customer.getPatronymic()), customer.getPhoneNumber()});
             }
         });
+
+        searchButton.addActionListener(e -> {
+
+            //no name
+            if(nameField.getText().equals(tetxForJText)){
+                try {
+                   customerList = getAllCustomersSorted(sortAlph.get());
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            //with name
+            else{
+                try {
+                    customerList = getCustomersBySurname(nameField.getText());
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+
+
+
+
+            if (sortAlph.get()) {
+                Collections.sort(customerList, (c1, c2) -> (c1.getSurname()+c1.getName()).compareToIgnoreCase(c2.getSurname()+c2.getName()));
+
+            } else {
+                Collections.sort(customerList, (c1, c2) -> (c2.getSurname()+c2.getName()).compareToIgnoreCase(c1.getSurname()+c1.getName()));
+            }
+
+            model.setRowCount(0);
+
+            for (CustomerCard customer : customerList) {
+                model.addRow(new Object[]{customer.getNumber(), customer.getSurname(), customer.getName(), (customer.getPatronymic()==null?"":customer.getPatronymic()), customer.getPhoneNumber()});
+            }
+        });
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         List<CustomerCard> list = new ArrayList<>();
         list.add(new CustomerCard("", "aa", "cds", "", "", "", "", "", 20));
         list.add(new CustomerCard("", "aa", "cxz", "", "", "", "", "", 20));
         list.add(new CustomerCard("", "qa", "dc", "", "", "", "", "", 20));
         list.add(new CustomerCard("", "wa", "", "", "", "", "", "", 20));
-        CustomerTableCashier.display(list);
+        CustomerTableCashier.display();
     }
 
 }

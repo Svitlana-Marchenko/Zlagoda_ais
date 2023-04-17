@@ -1,4 +1,4 @@
-package menu;
+package info_menu_manager;
 
 import com.toedter.calendar.JDateChooser;
 import entity.*;

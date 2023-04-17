@@ -1,4 +1,4 @@
-package menu;
+package info_menu_manager;
 
 
 import entity.Category;
@@ -28,9 +28,6 @@ public class CategoryTable {
 
         JButton sortButton = new JButton("Sort");
         buttonPanel.add(sortButton);
-
-        JLabel categoriesLabel = new JLabel("Categories");
-        buttonPanel.add(categoriesLabel);
 
         JPanel tablePanel = new JPanel(new BorderLayout());
 

@@ -1,4 +1,4 @@
-package menu;
+package info_menu_common;
 
 import entity.Category;
 import entity.Product;
@@ -43,9 +43,6 @@ public class StoreProductTable {
 
         JButton sortButton = new JButton("Sort");
         buttonPanel.add(sortButton);
-
-        JLabel categoriesLabel = new JLabel("Categories");
-        buttonPanel.add(categoriesLabel);
 
         JPanel tablePanel = new JPanel(new BorderLayout());
 
