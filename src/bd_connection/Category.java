@@ -159,4 +159,22 @@ public class Category {
         }
         return answ;
     }
+
+    //additional method to get category by id
+    public static entity.Category getCategoryById(int id){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "SELECT * FROM Category WHERE (`category_number` = "+id+");";
+            ResultSet resultSet = statement.executeQuery(request);
+            entity.Category category =null;
+            while(resultSet.next()) {
+                category = new entity.Category(Integer.valueOf(resultSet.getString(CATEGORY_NUMBER)),resultSet.getString(CATEGORY_NAME));
+            }
+            //System.out.println(categories);
+            return category;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return null;
+        }
+    }
 }

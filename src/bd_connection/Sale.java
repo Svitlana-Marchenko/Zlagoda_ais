@@ -1,5 +1,6 @@
 package bd_connection;
 
+import entity.Product;
 import entity.SoldProduct;
 
 import java.math.BigDecimal;
@@ -7,6 +8,8 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import static bd_connection.Store_Product.getAllAboutProductsOnUPC;
 
 public class Sale {
 
@@ -35,8 +38,29 @@ public class Sale {
         return answ;
     }
 
-
+    //нз що це, хто це (може і я, але може і не я, тому поки не видаляю), але тута були помилки, воно не знайде. знизу оригінальний метод у коментарі
     //additional method for getting list of sold product having check_number from receipt
+   static List<SoldProduct> getSoldProductsFromReceipt(String rec_num) throws SQLException {
+        List<SoldProduct> products = new ArrayList<>();
+        String sql = "SELECT * FROM Sale WHERE check_number = '" + rec_num + "'";
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+            while (resultSet.next()) {
+
+                String upc = resultSet.getString("UPC");
+                Product pr = getAllAboutProductsOnUPC(upc).getProduct();
+                BigDecimal price = resultSet.getBigDecimal("selling_price");
+                int amount = resultSet.getInt("quantity");
+
+                SoldProduct product = new SoldProduct(upc, pr.getName(), amount, price);
+                products.add(product);
+            }
+        }
+        return products;
+    }
+
+    /*
+     //additional method for getting list of sold product having check_number from receipt
    static List<SoldProduct> getSoldProductsFromReceipt(String rec_num) throws SQLException {
         List<SoldProduct> products = new ArrayList<>();
         String sql = "SELECT * FROM Sale WHERE check_number = '" + rec_num + "'";
@@ -57,5 +81,6 @@ public class Sale {
         }
         return products;
     }
+     */
 
 }

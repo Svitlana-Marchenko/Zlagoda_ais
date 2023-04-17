@@ -195,4 +195,54 @@ List<entity.Employee> answ = new ArrayList<>();
         return answ;
     }
 
+    //find all employee
+    public static ArrayList<entity.Employee> findAllEmployee() {
+        try {
+            Statement statement = connection.createStatement();
+            String request = "SELECT * FROM `Employee`;";
+            ResultSet resultSet = statement.executeQuery(request);
+            ArrayList<entity.Employee> employees = new ArrayList<>();
+            while (resultSet.next()) {
+                employees.add(new entity.Employee(resultSet.getString(ID_EMPLOYEE), resultSet.getString(SURNAME), resultSet.getString(NAME), resultSet.getString(PASSWORD), resultSet.getString(PATRONYMIC), entity.Employee.Role.valueOf(resultSet.getString(ROLE)), new BigDecimal(resultSet.getString(SALARY)), Date.valueOf(resultSet.getString(BIRTH_DATE)), Date.valueOf(resultSet.getString(START_DATE)), resultSet.getString(PHONE), resultSet.getString(CITY), resultSet.getString(STREET), resultSet.getString(ZIP_CODE)));
+            }
+            return employees;
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            return new ArrayList<>();
+        }
+    }
+        //find all employee with given surname
+        public static ArrayList<entity.Employee> findAllEmployeeBySurname(String surname){
+            try {
+                Statement statement = connection.createStatement();
+                String request = "SELECT * FROM `Employee` WHERE "+SURNAME+" = '"+surname+"'";
+                ResultSet resultSet = statement.executeQuery(request);
+                ArrayList<entity.Employee> employees = new ArrayList<>();
+                while(resultSet.next()) {
+                    employees.add(new entity.Employee(resultSet.getString(ID_EMPLOYEE),resultSet.getString(SURNAME),resultSet.getString(NAME),resultSet.getString(PASSWORD),resultSet.getString(PATRONYMIC), entity.Employee.Role.valueOf(resultSet.getString(ROLE)),new BigDecimal(resultSet.getString(SALARY)),Date.valueOf(resultSet.getString(BIRTH_DATE)),Date.valueOf(resultSet.getString(START_DATE)),resultSet.getString(PHONE),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE)));
+                }
+                return employees;
+            }catch (SQLException ex){
+                System.out.println(ex.getMessage());
+                return new ArrayList<>();
+            }
+    }
+
+    //find all employee with given surname and role
+    public static ArrayList<entity.Employee> findAllEmployeeBySurnameAndRole(String surname,String role){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "SELECT * FROM `Employee` WHERE "+SURNAME+" = '"+surname+"' AND "+ROLE+" = '"+role+"'";
+            ResultSet resultSet = statement.executeQuery(request);
+            ArrayList<entity.Employee> employees = new ArrayList<>();
+            while(resultSet.next()) {
+                employees.add(new entity.Employee(resultSet.getString(ID_EMPLOYEE),resultSet.getString(SURNAME),resultSet.getString(NAME),resultSet.getString(PASSWORD),resultSet.getString(PATRONYMIC), entity.Employee.Role.valueOf(resultSet.getString(ROLE)),new BigDecimal(resultSet.getString(SALARY)),Date.valueOf(resultSet.getString(BIRTH_DATE)),Date.valueOf(resultSet.getString(START_DATE)),resultSet.getString(PHONE),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE)));
+            }
+            return employees;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
 }

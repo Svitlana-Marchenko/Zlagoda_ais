@@ -22,6 +22,7 @@ public class Check {
     public static void setConnection(Connection con){
         connection=con;
     }
+
     private static final String CHECK_NUMBER = "check_number";
     private static final String ID_EMPLOYEE = "id_employee";
     private static final String CARD_NUMBER = "card_number";
@@ -210,7 +211,7 @@ public class Check {
 
     //11. За номером чеку вивести усю інформацію про даний чек, в тому числі інформацію про назву, к-сть та ціну товарів, придбаних в даному чеку.
     public static Receipt getReceiptByNumber(String number) throws SQLException {
-        String sqlCast = "SELECT * FROM Check WHERE check_numbe = " + number;
+        String sqlCast = "SELECT * FROM `Check` WHERE check_number = '" + number+"'";
         try (Statement statement = connection.createStatement();
              ResultSet resultCheck = statement.executeQuery(sqlCast)
         ) {

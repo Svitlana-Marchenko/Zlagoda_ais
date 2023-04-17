@@ -2,10 +2,7 @@ package bd_connection;
 
 import entity.Category;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -236,4 +233,21 @@ public class Product {
         return products;
     }
 
+
+    public static entity.Product getProductById(int id){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "SELECT id_product, product_name, characteristics, producer, Category.category_number, category_name FROM `zlagoda`.`product` INNER JOIN Category ON Product.category_number = Category.category_number WHERE (`id_product` = '"+id+"');";
+            ResultSet resultSet = statement.executeQuery(request);
+            entity.Product product = null;
+            while(resultSet.next()) {
+                product = new entity.Product(Integer.valueOf(resultSet.getString(ID_PRODUCT)),resultSet.getString(PRODUCT_NAME), new Category(Integer.valueOf(resultSet.getString(CATEGORY_ID)),resultSet.getString(CATEGORY_NAME)), resultSet.getString(PRODUCER),resultSet.getString(CHARACTERISTICS));
+            }
+            //System.out.println(product);
+            return product;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return null;
+        }
+    }
 }

@@ -186,7 +186,7 @@ public class Customer_Card {
     //6. Здійснити пошук постійних клієнтів за прізвищем;
     public  static List<CustomerCard> getCustomersBySurname(String surname) throws SQLException {
         List<CustomerCard> customers = new ArrayList<>();
-        String sql = "SELECT * FROM Customer_Card WHERE cust_surname="+ surname;
+        String sql = "SELECT * FROM Customer_Card WHERE cust_surname = '"+ surname+"'";
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             while (resultSet.next()) {
@@ -235,5 +235,22 @@ public class Customer_Card {
                 "WHERE card_number = "+customer.getNumber()+")";
         Statement statement = connection.createStatement();
         statement.executeQuery(sql);
+    }
+
+    //12. Отримати інформацію про усіх постійних клієнтів, що мають карту клієнта із певним відсотком, посортованих за прізвищем;
+    public static ArrayList<CustomerCard> findAllCustomersSortedBySurnameWithPercent(int percent){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "SELECT * FROM Customer_card WHERE (`"+PERCENT+"` = "+percent+") ORDER BY "+CUSTOMER_SURNAME+";";
+            ResultSet resultSet = statement.executeQuery(request);
+            ArrayList<CustomerCard> customerCards = new ArrayList<>();
+            while(resultSet.next()) {
+                customerCards.add(new CustomerCard(resultSet.getString(CARD_NUMBER),resultSet.getString(CUSTOMER_SURNAME),resultSet.getString(CUSTOMER_NAME),resultSet.getString(CUSTOMER_PATRONYMIC),resultSet.getString(PHONE_NUMBER),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE),Integer.valueOf(resultSet.getString(PERCENT))));
+            }
+            return customerCards;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return new ArrayList<>();
+        }
     }
 }

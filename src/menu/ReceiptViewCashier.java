@@ -2,6 +2,7 @@ package menu;
 
 import com.toedter.calendar.JDateChooser;
 import entity.*;
+import info_menu_manager.ReceiptViewer;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

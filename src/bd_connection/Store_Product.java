@@ -12,7 +12,6 @@ import static bd_connection.Category.getCategory;
 
 public class Store_Product {
 
-
     private static Connection connection;
     public static void setConnection(Connection con){
         connection=con;
@@ -159,7 +158,7 @@ public class Store_Product {
     //14. За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару.
     public static ProductInStore getAllAboutProductsOnUPC(String upc) throws SQLException {
 
-        String sql = "SELECT * FROM Store_Product s LEFT JOIN Product p ON s.id_product=p.id_product WHERE s.UPC="+ upc;
+        String sql = "SELECT * FROM Store_Product s LEFT JOIN Product p ON s.id_product=p.id_product WHERE s.UPC = '"+ upc+"'";
 
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
@@ -174,7 +173,7 @@ public class Store_Product {
                 int categoryN = resultSet.getInt("category_number");
                 String characteristic = resultSet.getString("characteristics");
 
-                String sqlCat = "SELECT * FROM Сategory WHERE category_number = "+categoryN;
+                String sqlCat = "SELECT * FROM Category WHERE category_number = '"+categoryN+"'";
                 ResultSet resultCat = statement.executeQuery(sqlCat);
                 return new ProductInStore(upc, upc_prom, new Product(id, name, getCategory(categoryN), "", characteristic), price, products_number, prom_products);
 
