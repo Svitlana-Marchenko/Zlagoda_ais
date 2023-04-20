@@ -188,7 +188,7 @@ List<entity.Employee> answ = new ArrayList<>();
                 if (p == null)
                     p = "";
 
-                answ.add( new entity.Employee(resultEmp.getString("id_employee"), resultEmp.getString("empl_surname"), resultEmp.getString("empl_name"), resultEmp.getString("password"), p, entity.Employee.Role.CASHIER, resultEmp.getBigDecimal("salary"), resultEmp.getDate("date_of_birth"), resultEmp.getDate("date_of_start"), resultEmp.getString("phone_number"), resultEmp.getString("city"), resultEmp.getString("street"), resultEmp.getString("zip_code")));
+                answ.add( new entity.Employee(resultEmp.getString("id_employee"), resultEmp.getString("empl_surname"), resultEmp.getString("empl_name"), resultEmp.getString("password"), p, entity.Employee.Role.MANAGER, resultEmp.getBigDecimal("salary"), resultEmp.getDate("date_of_birth"), resultEmp.getDate("date_of_start"), resultEmp.getString("phone_number"), resultEmp.getString("city"), resultEmp.getString("street"), resultEmp.getString("zip_code")));
 
             }
         }

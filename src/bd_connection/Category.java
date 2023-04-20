@@ -147,8 +147,8 @@ public class Category {
 
 
     //additional method for getting category having category_number
-   public static List<entity.Category> getAllCategories() throws SQLException {
-
+   public static List<entity.Category> getAllCategories() {
+try{
        List<entity.Category> answ = new ArrayList<>();
         Statement statement = connection.createStatement();
         String sqlCat = "SELECT * FROM Category";
@@ -158,6 +158,10 @@ public class Category {
             answ.add( new entity.Category(resultCat.getInt("category_number"), resultCat.getString("category_name")));
         }
         return answ;
+}catch (SQLException ex){
+    System.out.println(ex.getMessage());
+    return new ArrayList<>();
+}
     }
 
     //additional method to get category by id

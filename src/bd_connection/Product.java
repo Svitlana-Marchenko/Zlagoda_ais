@@ -179,24 +179,30 @@ public class Product {
 
 
     //1 Отримати інформацію про усі товари, відсортовані за назвою; +
-    public static List<entity.Product> getAllProductsSorted(boolean acs) throws SQLException {
-        List<entity.Product> products = new ArrayList<>();
-        String sql = "SELECT * FROM Product ORDER BY product_name";
-        if(!acs)
-            sql+=" DESC";
-        try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id_product");
-                String name = resultSet.getString("product_name");
-                int categoryN = resultSet.getInt("category_number");
-                String characteristic = resultSet.getString("characteristics");
-                entity.Product product = new entity.Product(id, name, getCategory(categoryN), "", characteristic);
-                products.add(product);
+    public static List<entity.Product> getAllProductsSorted(boolean acs)  {
+        try {
+            List<entity.Product> products = new ArrayList<>();
+            String sql = "SELECT * FROM Product ORDER BY product_name";
+            if (!acs)
+                sql += " DESC";
+            try (Statement statement = connection.createStatement();
+                 ResultSet resultSet = statement.executeQuery(sql)) {
+                while (resultSet.next()) {
+                    int id = resultSet.getInt("id_product");
+                    String name = resultSet.getString("product_name");
+                    int categoryN = resultSet.getInt("category_number");
+                    String characteristic = resultSet.getString("characteristics");
+                    entity.Product product = new entity.Product(id, name, getCategory(categoryN), "", characteristic);
+                    products.add(product);
+                }
             }
+
+            return products;
+        }catch(SQLException ex){
+            ex.printStackTrace();
+            return new ArrayList<>();
         }
 
-        return products;
     }
 
     //4. Здійснити пошук товарів за назвою;

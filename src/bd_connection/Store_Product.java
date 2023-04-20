@@ -16,7 +16,7 @@ public class Store_Product {
     public static void setConnection(Connection con){
         connection=con;
     }
-
+    
     private static final String UPC = "UPC";
     private static final String UPC_PROM = "UPC_prom";
     private static final String SELLING_PRICE = "selling_price";
@@ -225,34 +225,39 @@ public class Store_Product {
 
 
     //2 Отримати інформацію про усі товари у магазині, відсортовані за назвою; +
-    public static List<ProductInStore> getAllProductsInStoreSorted(boolean acs) throws SQLException {
-        List<ProductInStore> products = new ArrayList<>();
-        String sql = "SELECT * " +
-                "FROM Store_Product sp " +
-                "LEFT JOIN Product p ON p.id_product = sp.id_product " +
-                "ORDER BY p.product_name";
-        if(!acs)
-            sql+=" DESC";
-        try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
-            while (resultSet.next()) {
+    public static List<ProductInStore> getAllProductsInStoreSorted(boolean acs){
+        try {
+            List<ProductInStore> products = new ArrayList<>();
+            String sql = "SELECT * " +
+                    "FROM Store_Product sp " +
+                    "LEFT JOIN Product p ON p.id_product = sp.id_product " +
+                    "ORDER BY p.product_name";
+            if (!acs)
+                sql += " DESC";
+            try (Statement statement = connection.createStatement();
+                 ResultSet resultSet = statement.executeQuery(sql)) {
+                while (resultSet.next()) {
 
-                int id = resultSet.getInt("id_product");
-                String upc = resultSet.getString("upc");
-                String upc_prom = resultSet.getString("upc_prom");
-                BigDecimal price = resultSet.getBigDecimal("selling_price");
-                int products_number = resultSet.getInt("products_number");
-                boolean prom_products = resultSet.getBoolean("promotional_product");
+                    int id = resultSet.getInt("id_product");
+                    String upc = resultSet.getString("upc");
+                    String upc_prom = resultSet.getString("upc_prom");
+                    BigDecimal price = resultSet.getBigDecimal("selling_price");
+                    int products_number = resultSet.getInt("products_number");
+                    boolean prom_products = resultSet.getBoolean("promotional_product");
 
-                String name = resultSet.getString("product_name");
-                int categoryN = resultSet.getInt("category_number");
-                String characteristic = resultSet.getString("characteristics");
+                    String name = resultSet.getString("product_name");
+                    int categoryN = resultSet.getInt("category_number");
+                    String characteristic = resultSet.getString("characteristics");
 
-                ProductInStore product = new ProductInStore(upc, upc_prom, new Product(id, name, getCategory(categoryN), "", characteristic), price, products_number, prom_products);
-                products.add(product);
+                    ProductInStore product = new ProductInStore(upc, upc_prom, new Product(id, name, getCategory(categoryN), "", characteristic), price, products_number, prom_products);
+                    products.add(product);
+                }
             }
+            return products;
+        }catch(SQLException ex){
+            ex.printStackTrace();
+            return new ArrayList<>();
         }
-        return products;
     }
 
 
