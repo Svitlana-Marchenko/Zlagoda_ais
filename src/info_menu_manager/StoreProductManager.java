@@ -1,6 +1,9 @@
 package info_menu_manager;
 
+import entity.Employee;
 import entity.ProductInStore;
+import info_menu_common.StoreProductTable;
+import menu.MainMenuManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,13 +15,10 @@ import static bd_connection.Store_Product.getAllAboutProductsOnUPC;
 
 public class StoreProductManager {
 
-    public static void display() {
+    public static void display(JFrame frame, Employee role) {
 
         String textForUPCField = "Enter UPC";
 
-        // Create a JFrame
-        JFrame frame = new JFrame("StoreProduct Table");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Create a JPanel for the buttons
         JToolBar buttonPanel = new JToolBar();
@@ -27,7 +27,13 @@ public class StoreProductManager {
         JButton homeButton = new JButton("Home");
         buttonPanel.add(homeButton);
 
-
+        homeButton.addActionListener( s ->{
+            frame.getContentPane().removeAll();
+            StoreProductTable.display(frame, role);
+            // Repaint the frame
+            frame.revalidate();
+            frame.repaint();
+        });
 
         JTextField upcField = new JTextField(textForUPCField);
         upcField.addFocusListener(new FocusListener() {
@@ -119,17 +125,16 @@ public class StoreProductManager {
                         JOptionPane.showMessageDialog(null, "Please enter correct upc", "Eror", JOptionPane.ERROR_MESSAGE);
                         productPanel.setVisible(false);
                     }
-
-
-
             } else {
                 productPanel.setVisible(false);
             }
         });
+
+
     }
 
     public static void main(String[] args) {
-        display();
+        //display();
     }
 }
 

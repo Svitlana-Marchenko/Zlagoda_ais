@@ -1,7 +1,10 @@
 package info_menu_common;
 
 import entity.Category;
+import entity.Employee;
 import entity.Product;
+import menu.MainMenuCashier;
+import menu.MainMenuManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -20,16 +23,26 @@ import static bd_connection.Product.*;
 public class ProductTable2 {
     static List<Product> product_List;
 
-    public static void display() throws SQLException {
+    public static void display(JFrame frame, Employee role) {
+
+        product_List = getAllProductsSorted(true);
 
         String tetxForJText = "Enter product name (optional)";
-
-        JFrame frame = new JFrame("Product Table");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JToolBar buttonPanel = new JToolBar();
         JButton homeButton = new JButton("Home");
         buttonPanel.add(homeButton);
+
+        homeButton.addActionListener( s ->{
+            frame.getContentPane().removeAll();
+            if(role.getRole().toString().equals("MANAGER"))
+            MainMenuManager.display(frame, role);
+            else
+                MainMenuCashier.display(frame, role);
+            // Repaint the frame
+            frame.revalidate();
+            frame.repaint();
+        });
 
         JComboBox<String> positionComboBox = new JComboBox<>(getAllCategoryList());
         buttonPanel.add(positionComboBox);
@@ -121,11 +134,9 @@ labelPanel.setVisible(true);
 
                 //no name, no category
                 if(nameField.getText().equals(tetxForJText)){
-                    try {
+
                         product_List = getAllProductsSorted(sortAlph.get());
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
+
                 }
                 //with name, no category
                 else{
@@ -165,9 +176,42 @@ labelPanel.setVisible(true);
                 model.addRow(new Object[]{sp.getId(), sp.getName(), sp.getCategory().getName(), sp.getCharacteristics()});
             }
         });
+
+        JToolBar managerTools = new JToolBar();
+        JButton add = new JButton("Add");
+        JButton print = new JButton("Print");
+
+        managerTools.add(add);
+        managerTools.add(print);
+        if(role.getRole().toString().equals("MANAGER")){
+            frame.add(managerTools, BorderLayout.PAGE_END);
+        }
+
+        add.addActionListener( e -> {
+            //TODO add panel
+                }
+        );
+
+        print.addActionListener( e -> {
+                    //TODO print panel
+                }
+        );
+
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if(role.getRole().toString().equals("MANAGER")) {
+                if (!e.getValueIsAdjusting()) {
+                    int row = table.getSelectedRow();
+                    if (row >= 0) {
+                        int prId = (int) model.getValueAt(row, 0);
+                        System.out.println("You have clicked on " + prId + " product");
+                        // TODO add customer editor
+                    }
+                }
+            }
+        });
     }
 
-    private static String[] getAllCategoryList() throws  SQLException {
+    private static String[] getAllCategoryList(){
         List<Category> categories = getAllCategories();
         String[] labels = new String[categories.size()+1];
         labels[0] = "All";
@@ -202,8 +246,8 @@ labelPanel.setVisible(true);
         list.add(ay);
         list.add(au);
 
-        product_List = list;
-        ProductTable2.display();
+        //product_List = list;
+      //  ProductTable2.display();
     }
 
 

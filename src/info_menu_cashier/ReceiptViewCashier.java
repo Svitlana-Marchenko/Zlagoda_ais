@@ -1,8 +1,12 @@
-package menu;
+package info_menu_cashier;
 
 import com.toedter.calendar.JDateChooser;
 import entity.*;
+import info_menu_cashier.ReceiptInfo;
+import info_menu_cashier.StoreProductCashier;
+import info_menu_common.StoreProductTable;
 import info_menu_manager.ReceiptViewer;
+import menu.MainMenuCashier;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -23,22 +27,20 @@ import static bd_connection.Check.*;
 
 
 public class ReceiptViewCashier {
-    private JFrame frame;
-    private JTable table;
+
+    private static JTable table;
     private DefaultTableModel model;
     private JPanel panel;
     static List<Receipt> receipts;
 
 
-    public ReceiptViewCashier() throws SQLException {
+    public static void display(JFrame frame, Employee CASHIER){
 
-        Employee CASHIER = new Employee("1", null, null, null, null, null, null, null, null, null, null, null, null);
+       // Employee CASHIER = new Employee("1", null, null, null, null, null, null, null, null, null, null, null, null);
 
         AtomicBoolean sortAlph = new AtomicBoolean(true);
-        frame = new JFrame("Receipt Viewer");
 
-
-        DefaultTableModel model = new DefaultTableModel(new Object[]{"Receipt ID", "Cashier", "Customer", "Date", "Total", "VAT"}, 0) {
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"Receipt ID", "Customer", "Date", "Total", "VAT"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // make the cells non-editable
@@ -47,6 +49,20 @@ public class ReceiptViewCashier {
 
         JToolBar toolbar = new JToolBar();
         toolbar.setFloatable(false);
+
+        // Create a "Home" button and add it to the button panel
+        JButton homeButton = new JButton("Home");
+        toolbar.add(homeButton);
+
+        homeButton.addActionListener(s -> {
+            frame.getContentPane().removeAll();
+            MainMenuCashier.display(frame, CASHIER);
+            // Repaint the frame
+            frame.revalidate();
+            frame.repaint();
+        });
+
+
 
 
         toolbar.add(new JLabel("From:"));
@@ -59,9 +75,20 @@ public class ReceiptViewCashier {
         toolbar.add(new JLabel("To:"));
 
         JDateChooser dateTo = new JDateChooser();
-        dateFrom.setDate(new Date());
+        dateTo.setDate(new Date());
         toolbar.add(dateTo);
 
+        try {
+
+            receipts = getAllReceiptFromGivenCashier(sortAlph.get(), CASHIER, new java.sql.Date(dateFrom.getDate().getTime()), new java.sql.Date(dateTo.getDate().getTime()));
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        model.setRowCount(0);
+        for (Receipt receipt : receipts) {
+            model.addRow(new Object[] {receipt.getNumber(), (receipt.getCard()==null?"Non authorisedr":receipt.getCard().getNumber()+" "+receipt.getCard().getSurname()+" "+receipt.getCard().getName()), receipt.getPrintDate(),receipt.getTotalSum(),receipt.getVAT()});
+        }
         JButton searchButton = new JButton("Search");
         searchButton.addActionListener(new ActionListener() {
             @Override
@@ -79,8 +106,7 @@ public class ReceiptViewCashier {
 
                 model.setRowCount(0);
                 for (Receipt receipt : receipts) {
-                    model.addRow(new Object[]{receipt.getNumber(), receipt.getTotalSum(), receipt.getPrintDate()});
-
+                    model.addRow(new Object[] {receipt.getNumber(), (receipt.getCard()==null?"Non authorisedr":receipt.getCard().getNumber()+" "+receipt.getCard().getSurname()+" "+receipt.getCard().getName()), receipt.getPrintDate(),receipt.getTotalSum(),receipt.getVAT()});
                 }
 
             }
@@ -104,7 +130,7 @@ public class ReceiptViewCashier {
                 }
                 model.setRowCount(0);
                 for (Receipt receipt : receipts) {
-                    model.addRow(new Object[] {receipt.getNumber(), receipt.getTotalSum(), receipt.getPrintDate()});
+                    model.addRow(new Object[] {receipt.getNumber(), (receipt.getCard()==null?"Non authorisedr":receipt.getCard().getNumber()+" "+receipt.getCard().getSurname()+" "+receipt.getCard().getName()), receipt.getPrintDate(),receipt.getTotalSum(),receipt.getVAT()});
                 }
 
             }
@@ -119,11 +145,9 @@ public class ReceiptViewCashier {
                 int row = table.getSelectedRow();
                 if (row >= 0) {
                     String receiptId = (String) model.getValueAt(row, 0);
-                    try {
+
                         displayReceiptProducts(receiptId);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+
                 }
             }
         });
@@ -133,19 +157,42 @@ public class ReceiptViewCashier {
         frame.getContentPane().add(toolbar, BorderLayout.PAGE_START);
         frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
+
+
+        JToolBar endMenu = new JToolBar();
+        JButton searchNum= new JButton("Search");
+        endMenu.add(searchNum);
+
+        frame.add(endMenu, BorderLayout.PAGE_END);
+
+        searchNum.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                frame.getContentPane().removeAll();
+                ReceiptInfo.display(frame, CASHIER);
+                // Repaint the frame
+                frame.revalidate();
+                frame.repaint();
+
+            }
+        });
+
+
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
 
-
-        for (Receipt receipt : receipts) {
-            model.addRow(new Object[] {receipt.getNumber(), receipt.getEmployee().getId()+" "+receipt.getEmployee().getSurname()+" "+receipt.getEmployee().getName(), receipt.getCard().getNumber()+" "+receipt.getCard().getSurname(),receipt.getPrintDate(), receipt.getTotalSum(), receipt.getVAT()});
-        }
-
+if(receipts!=null) {
+    for (Receipt receipt : receipts) {
+        model.addRow(new Object[]{receipt.getNumber(), receipt.getEmployee().getId() + " " + receipt.getEmployee().getSurname() + " " + receipt.getEmployee().getName(), receipt.getCard().getNumber() + " " + receipt.getCard().getSurname(), receipt.getPrintDate(), receipt.getTotalSum(), receipt.getVAT()});
+    }
+}
     }
 
 
-    private void displayReceiptProducts(String receiptId) throws Exception {
+    private static void displayReceiptProducts(String receiptId){
 
         Receipt rec = getReceipt(receiptId);
         List<SoldProduct> productL = rec.getProducts();
@@ -161,17 +208,18 @@ public class ReceiptViewCashier {
         };
         table.setModel(model);
         model.addRow(new Object[]{"UPC", "Name", "Amount", "Price"});
-
-        for (SoldProduct pr : productL) {
-            model.addRow(new Object[]{pr.getUPC(), pr.getName(), pr.getAmount(), pr.getPrice()});
-        }
-
+            if(productL!=null) {
+                for (SoldProduct pr : productL) {
+                    model.addRow(new Object[]{pr.getUPC(), pr.getName(), pr.getAmount(), pr.getPrice()});
+                }
+            }
 
         JOptionPane.showMessageDialog(null, table, "Products", JOptionPane.INFORMATION_MESSAGE);
 
     }
 
     public static void main(String[] args) {
+       /*
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -190,6 +238,8 @@ public class ReceiptViewCashier {
                 }
             }
         });
+
+        */
     }
 
 }

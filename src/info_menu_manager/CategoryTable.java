@@ -2,6 +2,8 @@ package info_menu_manager;
 
 
 import entity.Category;
+import entity.Employee;
+import menu.MainMenuManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -14,17 +16,26 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static bd_connection.Category.getAllCategories;
+
 public class CategoryTable {
 
-    public static void display(List<Category> categoryList) {
+    public static void display(JFrame frame, Employee role) {
 
-        JFrame frame = new JFrame("Category Table");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        List<Category> categoryList = getAllCategories();
 
         JToolBar buttonPanel = new JToolBar();
 
         JButton homeButton = new JButton("Home");
         buttonPanel.add(homeButton);
+
+        homeButton.addActionListener( s ->{
+            frame.getContentPane().removeAll();
+            MainMenuManager.display(frame, role);
+            // Repaint the frame
+            frame.revalidate();
+            frame.repaint();
+        });
 
         JButton sortButton = new JButton("Sort");
         buttonPanel.add(sortButton);
@@ -85,6 +96,39 @@ public class CategoryTable {
                 table.revalidate();
             }
         });
+
+        JToolBar managerTools = new JToolBar();
+        JButton add = new JButton("Add");
+        JButton print = new JButton("Print");
+
+        managerTools.add(add);
+        managerTools.add(print);
+        if(role.getRole().toString().equals("MANAGER")){
+            frame.add(managerTools, BorderLayout.PAGE_END);
+        }
+
+        add.addActionListener( e -> {
+                    //TODO add panel
+                }
+        );
+
+        print.addActionListener( e -> {
+                    //TODO print panel
+                }
+        );
+
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if(role.getRole().toString().equals("MANAGER")) {
+                if (!e.getValueIsAdjusting()) {
+                    int row = table.getSelectedRow();
+                    if (row >= 0) {
+                        int catId = (int) model.getValueAt(row, 0);
+                        System.out.println("You have clicked on " + catId + " category");
+                        // TODO add customer editor
+                    }
+                }
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -92,7 +136,7 @@ public class CategoryTable {
         categoryList.add(new Category(1, "Category A"));
         categoryList.add(new Category(2, "Category C"));
         categoryList.add(new Category(3, "Category B"));
-        CategoryTable.display(categoryList);
+       // CategoryTable.display(categoryList);
     }
 
 }

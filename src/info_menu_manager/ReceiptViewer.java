@@ -2,6 +2,7 @@ package info_menu_manager;
 
 import com.toedter.calendar.JDateChooser;
 import entity.*;
+import menu.MainMenuManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -23,19 +24,23 @@ import static bd_connection.Employee.getEmployee;
 
 
 public class ReceiptViewer {
-    private JFrame frame;
-    private JTable table;
-    private DefaultTableModel model;
+
+    private static JTable table;
+    private static DefaultTableModel model;
     static List<Receipt> receipts;
 
 
-    public ReceiptViewer() throws SQLException {
+    public static void display(JFrame frame, Employee empl){
+
 
         AtomicBoolean sortAlph = new AtomicBoolean(true);
-        frame = new JFrame("Receipt Viewer");
+
 
         JToolBar toolbar = new JToolBar();
         toolbar.setFloatable(false);
+
+        JButton home = new JButton("Home");
+        toolbar.add(home);
 
         JComboBox<String> cashierBox = new JComboBox<>(getCahierStringList());
         toolbar.add(cashierBox);
@@ -52,8 +57,13 @@ public class ReceiptViewer {
         toolbar.add(new JLabel("To:"));
 
         JDateChooser dateTo = new JDateChooser();
-        dateFrom.setDate(new Date());
+
+        dateTo.setDate(new Date());
         toolbar.add(dateTo);
+
+       // receipts = getAllReceipt(true, new java.sql.Date(dateFrom.getDate().getTime()), new java.sql.Date(dateTo.getDate().getTime()));
+        receipts = getAllReceipt(true, new java.sql.Date(dateFrom.getDate().getTime()), new java.sql.Date(dateTo.getDate().getTime()));
+
 
         model = new DefaultTableModel(new Object[]{"Receipt ID", "Cashier", "Customer", "Date", "Total", "VAT"}, 0) {
             @Override
@@ -75,11 +85,7 @@ public class ReceiptViewer {
 
 
                 if (cashierBox.getSelectedItem().equals("All")) {
-                    try {
-                        receipts = getAllReceipt(sortAlph.get(), new java.sql.Date(dateFrom.getDate().getTime()), new java.sql.Date(dateTo.getDate().getTime()));
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
+                    receipts = getAllReceipt(sortAlph.get(), new java.sql.Date(dateFrom.getDate().getTime()), new java.sql.Date(dateTo.getDate().getTime()));
                 } else {
                     try {
 
@@ -148,10 +154,18 @@ public class ReceiptViewer {
         for (Receipt receipt : receipts) {
             model.addRow(new Object[] {receipt.getNumber(), (receipt.getEmployee() == null?"Non authorised":receipt.getEmployee().getId()+" "+receipt.getEmployee().getSurname()+" "+receipt.getEmployee().getName()), (receipt.getCard() == null?"Non authorised":receipt.getCard().getNumber()+" "+receipt.getCard().getSurname()),receipt.getPrintDate(), receipt.getTotalSum(), receipt.getVAT()});
         }
+
+        home.addActionListener( s ->{
+            frame.getContentPane().removeAll();
+            MainMenuManager.display(frame, empl);
+            // Repaint the frame
+            frame.revalidate();
+            frame.repaint();
+        });
     }
 
 
-    private void displayReceiptProducts(String receiptId) throws Exception {
+    private static void displayReceiptProducts(String receiptId){
 
         Receipt rec = getReceipt(receiptId);
         List<SoldProduct> productL = rec.getProducts();
@@ -173,6 +187,7 @@ public class ReceiptViewer {
     }
 
     public static void main(String[] args) {
+      /*
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -194,17 +209,23 @@ public class ReceiptViewer {
 
             }
         });
+
+       */
     }
 
 
-    private static String[] getCahierStringList() throws SQLException {
-        List<Employee> cashier = getAllSpecial("CASHIER");
-        String[] labels = new String[cashier.size() + 1];
-        labels[0] = "All";
-        for (int i = 1; i < labels.length; i++) {
-            labels[i] = cashier.get(i - 1).getId() + " " + cashier.get(i - 1).getSurname() + " " + cashier.get(i - 1).getName() + " " + (cashier.get(i - 1).getPatronymic() == null ? " " : cashier.get(i - 1).getPatronymic());
+    private static String[] getCahierStringList() {
+        try {
+            List<Employee> cashier = getAllSpecial("CASHIER");
+            String[] labels = new String[cashier.size() + 1];
+            labels[0] = "All";
+            for (int i = 1; i < labels.length; i++) {
+                labels[i] = cashier.get(i - 1).getId() + " " + cashier.get(i - 1).getSurname() + " " + cashier.get(i - 1).getName() + " " + (cashier.get(i - 1).getPatronymic() == null ? " " : cashier.get(i - 1).getPatronymic());
+            }
+            return labels;
+        }catch(SQLException ex){
+            ex.printStackTrace();
+            return null;
         }
-        return labels;
-
     }
 }

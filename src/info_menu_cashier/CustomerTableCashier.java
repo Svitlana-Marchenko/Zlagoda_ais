@@ -1,6 +1,9 @@
 package info_menu_cashier;
 
 import entity.CustomerCard;
+import entity.Employee;
+import menu.MainMenuCashier;
+import menu.MainMenuManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -30,19 +33,23 @@ public class CustomerTableCashier {
     public CustomerTableCashier() throws SQLException {
     }
 
-    public static void display() throws SQLException {
+    public static void display(JFrame frame, Employee role)  {
 
         String tetxForJText = "Enter customer surname (optional)";
-
-        JFrame frame = new JFrame("CustomerCard Table");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JToolBar buttonPanel = new JToolBar();
 
         JButton homeButton = new JButton("Home");
         buttonPanel.add(homeButton);
 
+        homeButton.addActionListener( s ->{
+            frame.getContentPane().removeAll();
 
+                MainMenuCashier.display(frame, role);
+            // Repaint the frame
+            frame.revalidate();
+            frame.repaint();
+        });
 
         JTextField nameField = new JTextField(tetxForJText);
         nameField.addFocusListener(new FocusListener() {
@@ -137,10 +144,6 @@ buttonPanel.add(nameField);
                 }
             }
 
-
-
-
-
             if (sortAlph.get()) {
                 Collections.sort(customerList, (c1, c2) -> (c1.getSurname()+c1.getName()).compareToIgnoreCase(c2.getSurname()+c2.getName()));
 
@@ -154,6 +157,34 @@ buttonPanel.add(nameField);
                 model.addRow(new Object[]{customer.getNumber(), customer.getSurname(), customer.getName(), (customer.getPatronymic()==null?"":customer.getPatronymic()), customer.getPhoneNumber()});
             }
         });
+
+        JToolBar managerTools = new JToolBar();
+        JButton add = new JButton("Add");
+
+        managerTools.add(add);
+        if(role.getRole().toString().equals("CASHIER")){
+            frame.add(managerTools, BorderLayout.PAGE_END);
+        }
+
+        add.addActionListener( e -> {
+                    //TODO add panel
+                }
+        );
+
+
+
+        table.getSelectionModel().addListSelectionListener(e -> {
+
+                if (!e.getValueIsAdjusting()) {
+                    int row = table.getSelectedRow();
+                    if (row >= 0) {
+                        String custId = (String) model.getValueAt(row, 0);
+                        System.out.println("You have clicked on " + custId + " cust");
+                        // TODO add customer editor
+                    }
+
+            }
+        });
     }
 
     public static void main(String[] args) throws SQLException {
@@ -162,7 +193,7 @@ buttonPanel.add(nameField);
         list.add(new CustomerCard("", "aa", "cxz", "", "", "", "", "", 20));
         list.add(new CustomerCard("", "qa", "dc", "", "", "", "", "", 20));
         list.add(new CustomerCard("", "wa", "", "", "", "", "", "", 20));
-        CustomerTableCashier.display();
+        //CustomerTableCashier.display();
     }
 
 }

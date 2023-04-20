@@ -1,8 +1,14 @@
 package info_menu_common;
 
 import entity.Category;
+import entity.Employee;
 import entity.Product;
 import entity.ProductInStore;
+import info_menu_cashier.StoreProductCashier;
+import info_menu_manager.CustomerTableManager;
+import info_menu_manager.StoreProductManager;
+import menu.MainMenuCashier;
+import menu.MainMenuManager;
 
 
 import javax.swing.*;
@@ -23,17 +29,26 @@ import static bd_connection.Store_Product.getAllProductsInStoreSorted;
 public class StoreProductTable {
 
     static List<ProductInStore> store_productListList;
-    public static void display() {
-        // Create a JFrame
-        JFrame frame = new JFrame("StoreProduct Table");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Create a JPanel for the buttons
+    public static void display(JFrame frame, Employee role) {
+
+        store_productListList = getAllProductsInStoreSorted(true);
+
         JToolBar buttonPanel = new JToolBar();
 
-        // Create a "Home" button and add it to the button panel
         JButton homeButton = new JButton("Home");
         buttonPanel.add(homeButton);
+
+        homeButton.addActionListener(s -> {
+            frame.getContentPane().removeAll();
+            if (role.getRole().toString().equals("MANAGER"))
+                MainMenuManager.display(frame, role);
+            else
+                MainMenuCashier.display(frame, role);
+            // Repaint the frame
+            frame.revalidate();
+            frame.repaint();
+        });
 
         JComboBox<String> saleComboBox = new JComboBox<>(new String[]{"All types", "Only on sale", "Only on regular price"});
         buttonPanel.add(saleComboBox);
@@ -64,17 +79,24 @@ public class StoreProductTable {
 
         tablePanel.add(scrollPane, BorderLayout.CENTER);
 
+
+        JToolBar managerTools = new JToolBar();
+        JButton searchUPC = new JButton("Search");
+        managerTools.add(searchUPC);
+
         frame.add(buttonPanel, BorderLayout.PAGE_START);
 
         frame.add(tablePanel, BorderLayout.CENTER);
 
+
+
         frame.setSize(500, 500);
         frame.setVisible(true);
-AtomicBoolean sortAlph = new AtomicBoolean(true);
+        AtomicBoolean sortAlph = new AtomicBoolean(true);
 
-sortButton.addActionListener(e -> {
-            if(sortComboBox.getSelectedItem().equals("Using name")){
-                if (!sortAlph.get() /*sortOrder.get() == 1*/) {
+        sortButton.addActionListener(e -> {
+            if (sortComboBox.getSelectedItem().equals("Using name")) {
+                if (!sortAlph.get()) {
                     Collections.sort(store_productListList, (c1, c2) -> c1.getProduct().getName().compareToIgnoreCase(c2.getProduct().getName()));
                     sortButton.setText("Sort (Z-A)");
                     // sortOrder.set(0);
@@ -84,14 +106,13 @@ sortButton.addActionListener(e -> {
                     sortButton.setText("Sort (A-Z)");
                     sortAlph.set(false);
                 }
-            }
-            else{
+            } else {
                 if (!sortAlph.get() /*sortOrder.get() == 1*/) {
-                    Collections.sort(store_productListList, (c1, c2) -> Integer.compare(c1.getAmount(),c2.getAmount()));
+                    Collections.sort(store_productListList, (c1, c2) -> Integer.compare(c1.getAmount(), c2.getAmount()));
                     sortButton.setText("Sort (Z-A)");
                     sortAlph.set(true);
                 } else {
-                    Collections.sort(store_productListList, (c1, c2) -> Integer.compare(c2.getAmount(),c1.getAmount()));
+                    Collections.sort(store_productListList, (c1, c2) -> Integer.compare(c2.getAmount(), c1.getAmount()));
                     sortButton.setText("Sort (A-Z)");
                     sortAlph.set(false);
                 }
@@ -105,9 +126,17 @@ sortButton.addActionListener(e -> {
         saleComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String selected = (String) saleComboBox.getSelectedItem();
-                if(selected.equals("All types")){
+                if (selected.equals("All types")) {
+                    store_productListList = getAllProductsInStoreSorted(sortAlph.get());
+
+                    model.setRowCount(0);
+                    for (ProductInStore sp : store_productListList) {
+                        model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional()});
+                    }
+
+                } else if (selected.equals("Only on sale")) {
                     try {
-                        store_productListList = getAllProductsInStoreSorted(sortAlph.get());
+                        store_productListList = getAllProductsInStoreSaleSorted(sortAlph.get(), sortComboBox.getActionCommand().equals("Using name") ? "product_name" : "products_number", true);
                     } catch (SQLException ex) {
                         ex.printStackTrace();
                     }
@@ -117,23 +146,9 @@ sortButton.addActionListener(e -> {
                         model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional()});
                     }
 
-                }
-                else if(selected.equals("Only on sale")){
+                } else {
                     try {
-                        store_productListList = getAllProductsInStoreSaleSorted(sortAlph.get(), sortComboBox.getActionCommand().equals("Using name")? "product_name": "products_number" , true);
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
-
-                    model.setRowCount(0);
-                    for (ProductInStore sp : store_productListList) {
-                        model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional()});
-                    }
-
-                }
-                else{
-                    try {
-                        store_productListList = getAllProductsInStoreSaleSorted(sortAlph.get(), sortComboBox.getActionCommand().equals("Using name")? "product_name": "products_number" , false);
+                        store_productListList = getAllProductsInStoreSaleSorted(sortAlph.get(), sortComboBox.getActionCommand().equals("Using name") ? "product_name" : "products_number", false);
                     } catch (SQLException ex) {
                         ex.printStackTrace();
                     }
@@ -150,7 +165,7 @@ sortButton.addActionListener(e -> {
             public void actionPerformed(ActionEvent e) {
 
                 if (sortComboBox.getSelectedItem().equals("Using name")) {
-                    if (!sortAlph.get() ) {
+                    if (!sortAlph.get()) {
                         Collections.sort(store_productListList, (c2, c1) -> c1.getProduct().getName().compareToIgnoreCase(c2.getProduct().getName()));
 
                     } else {
@@ -173,6 +188,58 @@ sortButton.addActionListener(e -> {
             }
         });
 
+        searchUPC.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (role.toString().equals("MANAGER")) {
+                    frame.getContentPane().removeAll();
+                    StoreProductManager.display(frame, role);
+                    // Repaint the frame
+                    frame.revalidate();
+                    frame.repaint();
+                } else {
+                    frame.getContentPane().removeAll();
+                    StoreProductCashier.display(frame, role);
+                    // Repaint the frame
+                    frame.revalidate();
+                    frame.repaint();
+                }
+            }
+        });
+
+
+
+        JButton add = new JButton("Add");
+        JButton print = new JButton("Print");
+
+
+        if(role.getRole().toString().equals("MANAGER")){
+            managerTools.add(add);
+            managerTools.add(print);
+        }
+        frame.add(managerTools, BorderLayout.PAGE_END);
+        add.addActionListener( e -> {
+                    //TODO add panel
+                }
+        );
+
+        print.addActionListener( e -> {
+                    //TODO print panel
+                }
+        );
+
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (role.getRole().toString().equals("MANAGER")) {
+                if (!e.getValueIsAdjusting()) {
+                    int row = table.getSelectedRow();
+                    if (row >= 0) {
+                        String storeId = (String) model.getValueAt(row, 0);
+                        System.out.println("You have clicked on " + storeId + " store product");
+                        // TODO add customer editor
+                    }
+                }
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -188,8 +255,8 @@ sortButton.addActionListener(e -> {
         list.add(new ProductInStore("123456789", "12345", new Product(1, "Onion", new Category(1, "Fruits"), "Africa", "good fruit"), BigDecimal.valueOf(30), 90, false));
         list.add(new ProductInStore("123456789", "12345", new Product(1, "Strawberry", new Category(1, "Fruits"), "Africa", "good fruit"), BigDecimal.valueOf(30), 23, false));
         list.add(new ProductInStore("123456789", "12345", new Product(1, "Ananas", new Category(1, "Fruits"), "Africa", "good fruit"), BigDecimal.valueOf(30), 34, false));
-store_productListList = list;
-        StoreProductTable.display();
+        store_productListList = list;
+        // StoreProductTable.display();
     }
 
 

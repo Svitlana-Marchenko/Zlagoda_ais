@@ -1,16 +1,14 @@
 package info_menu_manager;
 
 import entity.Employee;
+import menu.MainMenuManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,19 +21,24 @@ import static bd_connection.Employee.*;
 public class EmployeeTableManager {
     static List<Employee> employee_List;
 
+        public static void display(JFrame frame, Employee role) {
 
-
-        public static void display() {
+           employee_List = findAllEmployee();
 
             String textForField = "Enter employee surname (optional)";
 
 
-            JFrame frame = new JFrame("Employee Table");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
             JToolBar buttonPanel = new JToolBar();
             JButton homeButton = new JButton("Home");
             buttonPanel.add(homeButton);
+
+            homeButton.addActionListener( s ->{
+                frame.getContentPane().removeAll();
+                MainMenuManager.display(frame, role);
+                // Repaint the frame
+                frame.revalidate();
+                frame.repaint();
+            });
 
             JComboBox<String> positionComboBox = new JComboBox<>(new String[]{"All types", "Only cashier", "Only manager"});
             buttonPanel.add(positionComboBox);
@@ -156,19 +159,41 @@ public class EmployeeTableManager {
                 }
             });
 
+
+            table.getSelectionModel().addListSelectionListener(e -> {
+                if(role.getRole().toString().equals("MANAGER")) {
+                if (!e.getValueIsAdjusting()) {
+                    int row = table.getSelectedRow();
+                    if (row >= 0) {
+                        String employeeId = (String) model.getValueAt(row, 0);
+                        System.out.println("You have clicked on " + employeeId + " employee");
+                        // TODO add employee editor
+                    }
+                }
+                }
+            });
+
+            JToolBar managerTools = new JToolBar();
+            JButton add = new JButton("Add");
+            JButton print = new JButton("Print");
+
+            managerTools.add(add);
+            managerTools.add(print);
+            if(role.getRole().toString().equals("MANAGER")){
+                frame.add(managerTools, BorderLayout.PAGE_END);
+            }
+
+            add.addActionListener( e -> {
+                        //TODO add panel
+                    }
+            );
+
+            print.addActionListener( e -> {
+                        //TODO print panel
+                    }
+            );
+
         }
-
-    public static void main(String[] args) {
-        List<Employee> list = new ArrayList<>();
-        list.add(new Employee("1", "A", "A", "A", null, Employee.Role.CASHIER, BigDecimal.valueOf(100), Date.valueOf("2000-02-02"), Date.valueOf("2020-02-02"), "", "", "", ""));
-        list.add(new Employee("2", "B", "", "", "B", Employee.Role.MANAGER, BigDecimal.valueOf(100), Date.valueOf("2000-02-02"), Date.valueOf("2020-02-02"), "", "", "", ""));
-        list.add(new Employee("3", "C", "", "", null, Employee.Role.CASHIER, BigDecimal.valueOf(100), Date.valueOf("2000-02-02"), Date.valueOf("2020-02-02"), "", "", "", ""));
-        list.add(new Employee("4", "D", "", "", "D", Employee.Role.MANAGER, BigDecimal.valueOf(100), Date.valueOf("2000-02-02"), Date.valueOf("2020-02-02"), "", "", "", ""));
-        list.add(new Employee("5", "E", "", "", null, Employee.Role.CASHIER, BigDecimal.valueOf(100), Date.valueOf("2000-02-02"), Date.valueOf("2020-02-02"), "", "", "", ""));
-
-        employee_List = list;
-        EmployeeTableManager.display();
-    }
 
 
 }

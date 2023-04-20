@@ -1,6 +1,9 @@
 package info_menu_cashier;
 
+import entity.Employee;
 import entity.ProductInStore;
+import info_menu_common.StoreProductTable;
+import info_menu_manager.StoreProductManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,13 +15,9 @@ import static bd_connection.Store_Product.getAllAboutProductsOnUPC;
 
 public class StoreProductCashier {
 
-    public static void display() {
+    public static void display(JFrame frame, Employee role) {
 
         String textForUPCField = "Enter UPC";
-
-        // Create a JFrame
-        JFrame frame = new JFrame("StoreProduct Table");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Create a JPanel for the buttons
         JToolBar buttonPanel = new JToolBar();
@@ -26,6 +25,14 @@ public class StoreProductCashier {
         // Create a "Home" button and add it to the button panel
         JButton homeButton = new JButton("Home");
         buttonPanel.add(homeButton);
+
+        homeButton.addActionListener(s -> {
+            frame.getContentPane().removeAll();
+            StoreProductTable.display(frame, role);
+            // Repaint the frame
+            frame.revalidate();
+            frame.repaint();
+        });
 
         JTextField upcField = new JTextField(textForUPCField);
         upcField.addFocusListener(new FocusListener() {
@@ -99,20 +106,18 @@ public class StoreProductCashier {
                     upcLabelN.setText(pr.getUPC());
                     nameLabelN.setText(pr.getProduct().getName());
                     priceLabelN.setText(pr.getPrice().toString());
-                    amountLabelN.setText(pr.getAmount()+"");
-                    promoLabelN.setText(pr.isPromotional()+"");
+                    amountLabelN.setText(pr.getAmount() + "");
+                    promoLabelN.setText(pr.isPromotional() + "");
 
                     productPanel.setVisible(true);
 
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, "Please enter correct upc", "Eror", JOptionPane.ERROR_MESSAGE);
-                }
-                catch(NullPointerException ex){
+                } catch (NullPointerException ex) {
                     JOptionPane.showMessageDialog(null, "Please enter correct upc", "Eror", JOptionPane.ERROR_MESSAGE);
                     productPanel.setVisible(false);
                 }
-
 
 
             } else {
@@ -121,7 +126,4 @@ public class StoreProductCashier {
         });
     }
 
-    public static void main(String[] args) {
-        display();
-    }
 }

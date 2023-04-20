@@ -19,16 +19,24 @@ public class ReceiptInfo {
 
     static Receipt receipt = null;
 
-    public static void display() throws SQLException {
+    public static void display(JFrame frame, Employee cashier){
 
         String tetxForJText = "Enter receipt number";
 
-        JFrame frame = new JFrame("Receipt info");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 
         JToolBar buttonPanel = new JToolBar();
         JButton homeButton = new JButton("Home");
         buttonPanel.add(homeButton);
+
+        homeButton.addActionListener( s ->{
+            frame.getContentPane().removeAll();
+                ReceiptViewCashier.display(frame, cashier);
+            // Repaint the frame
+            frame.revalidate();
+            frame.repaint();
+        });
+
 
         JTextField numField = new JTextField(tetxForJText);
         numField.addFocusListener(new FocusListener() {
@@ -98,26 +106,18 @@ public class ReceiptInfo {
         tablePanel.add(scrollPane, BorderLayout.CENTER);
 
 
-        //model.addRow(new Object[]{"UPC", "Name", "Amount", "Price"});
-
-        // for (SoldProduct pr : productL)
-        //   model.addRow(new Object[]{pr.getUPC(), pr.getName(), pr.getAmount(), pr.getPrice()});
-
-
         JPanel p = new JPanel(new GridLayout(2, 1));
 
         p.add(infoPanel);
         p.add(tablePanel);
         frame.add(buttonPanel, BorderLayout.PAGE_START);
 
-        //frame.add(infoPanel, BorderLayout.CENTER);
-
-        //frame.add(tablePanel, BorderLayout.PAGE_END);
-
         frame.add(p, BorderLayout.CENTER);
 
         frame.setSize(500, 500);
         frame.setVisible(true);
+
+
 
         searchButton.addActionListener(e -> {
 
@@ -155,7 +155,7 @@ else {
                 customerLabelN.setText("");
                 dateLabelN.setText("");
                 sumLabelN.setText("");
-                vatLabel.setText("");
+                vatLabelN.setText("");
             }
 
         });
@@ -167,7 +167,6 @@ else {
 
         receipt = new Receipt("00001", new Employee("1", "", "", "", null, Employee.Role.CASHIER, BigDecimal.valueOf(100), Date.valueOf("2000-10-10"), Date.valueOf("2022-10-10"), "", "", "", ""), new CustomerCard("", "", "", "", "", "", "", "", 9), Timestamp.valueOf("2020-02-20 11:11:11"), BigDecimal.valueOf(10.50), BigDecimal.valueOf(1.05), null);
 
-        ReceiptInfo.display();
 
     }
 
