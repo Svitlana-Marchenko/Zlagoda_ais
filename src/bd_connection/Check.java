@@ -22,7 +22,7 @@ public class Check {
     public static void setConnection(Connection con){
         connection=con;
     }
-   
+    
     private static final String CHECK_NUMBER = "check_number";
     private static final String ID_EMPLOYEE = "id_employee";
     private static final String CARD_NUMBER = "card_number";
@@ -101,6 +101,7 @@ public class Check {
 
             String sql = "SELECT * " +
                     "FROM `Check` " +
+                    //" WHERE DATE(print_date) >= '" + sdf.format(from) + "' AND DATE(print_date) <= '" + sdf.format(to) + "'"+
                     " WHERE DATE(print_date) >= '" + sdf.format(from) + "' AND DATE(print_date) <= '" + sdf.format(to) + "'"+
                    " ORDER BY print_date ";
             if (!acs)
@@ -129,19 +130,20 @@ public class Check {
 
 
     //19 Визначити загальну суму проданих товарів з чеків, створених певним касиром за певний період часу;+
-    public static BigDecimal getSumFromGivenCashier(Employee cashier, Date from, Date to) throws SQLException {
+    public static BigDecimal getSumFromGivenCashier(Employee cashier, Date from, Date to)  {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String sql = "SELECT SUM(sum_total) AS sumT\n" +
                 "FROM `Check` " +
                 "WHERE id_employee = " + cashier.getId() +
-                " AND print_date BETWEEN '" + sdf.format(from) + "' AND '" + sdf.format(to) + "'";
-
+                " AND DATE(print_date) >= '" + sdf.format(from) + "' AND DATE(print_date) <= '" + sdf.format(to) + "'";
         BigDecimal answ = BigDecimal.valueOf(0);
         ;
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             if (resultSet.next())
                 answ = resultSet.getBigDecimal("sumT");
+        } catch(SQLException ex){
+            ex.printStackTrace();
         }
 
         return answ;
@@ -149,17 +151,19 @@ public class Check {
 
 
     //20 Визначити загальну суму проданих товарів з чеків, створених усіма касиром за певний період часу;
-    public static BigDecimal getSumCheck(Date from, Date to) throws SQLException {
+    public static BigDecimal getSumCheck(Date from, Date to) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String sql = "SELECT SUM(sum_total) AS sumT\n" +
                 "FROM `Check` " +
-                "WHERE print_date BETWEEN '" + sdf.format(from) + "' AND '" + sdf.format(to) + "'";
-
+                //"WHERE print_date BETWEEN '" + sdf.format(from) + "' AND '" + sdf.format(to) + "'";
+                " WHERE DATE(print_date) >= '" + sdf.format(from) + "' AND DATE(print_date) <= '" + sdf.format(to) + "'";
         BigDecimal answ = BigDecimal.valueOf(0);
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             if (resultSet.next())
                 answ = resultSet.getBigDecimal("sumT");
+        }catch(SQLException ex){
+            ex.printStackTrace();
         }
 
         return answ;

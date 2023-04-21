@@ -37,7 +37,7 @@ public class ReceiptViewer {
 
 
         JToolBar toolbar = new JToolBar();
-        toolbar.setFloatable(false);
+        toolbar.setFloatable(true);
 
         JButton home = new JButton("Home");
         toolbar.add(home);
@@ -74,7 +74,16 @@ public class ReceiptViewer {
 
         table = new JTable(model);
 
+        JPanel statPanel = new JPanel(new GridLayout(1, 2));
+        JLabel statL = new JLabel("Total sum of receipts: ");
+        JLabel statT = new JLabel();
+
+            BigDecimal b = (getSumCheck(new java.sql.Date(dateFrom.getDate().getTime()), new java.sql.Date(dateTo.getDate().getTime())));
+            statT = new JLabel((b==null?"0":b.toString()));
+
+
         JButton searchButton = new JButton("Search");
+        JLabel finalStatT = statT;
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -86,9 +95,14 @@ public class ReceiptViewer {
 
                 if (cashierBox.getSelectedItem().equals("All")) {
                     receipts = getAllReceipt(sortAlph.get(), new java.sql.Date(dateFrom.getDate().getTime()), new java.sql.Date(dateTo.getDate().getTime()));
+
+                        BigDecimal b = (getSumCheck(new java.sql.Date(dateFrom.getDate().getTime()), new java.sql.Date(dateTo.getDate().getTime())));
+                        finalStatT.setText((b==null?"0":b.toString()));
+
                 } else {
                     try {
-
+                        BigDecimal b = (getSumFromGivenCashier(getEmployee(cashierBox.getSelectedItem().toString().split(" ")[0]),new java.sql.Date(dateFrom.getDate().getTime()), new java.sql.Date(dateTo.getDate().getTime())));
+                        finalStatT.setText((b==null?"0":b.toString()));
                         receipts = getAllReceiptFromGivenCashier(sortAlph.get(), getEmployee(cashierBox.getSelectedItem().toString().split(" ")[0]), new java.sql.Date(dateFrom.getDate().getTime()), new java.sql.Date(dateTo.getDate().getTime()));
                     } catch (SQLException ex) {
                         ex.printStackTrace();
@@ -144,8 +158,14 @@ public class ReceiptViewer {
 
         JScrollPane scrollPane = new JScrollPane(table);
 
-        frame.getContentPane().add(toolbar, BorderLayout.PAGE_START);
-        frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
+        frame.add(toolbar, BorderLayout.PAGE_START);
+        frame.add(scrollPane, BorderLayout.CENTER);
+
+
+        statPanel.add(statL);
+        statPanel.add(statT);
+
+        frame.add(statPanel, BorderLayout.PAGE_END);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -162,6 +182,10 @@ public class ReceiptViewer {
             frame.revalidate();
             frame.repaint();
         });
+
+
+
+
     }
 
 
@@ -186,32 +210,6 @@ public class ReceiptViewer {
         JOptionPane.showMessageDialog(null, table, "Products", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public static void main(String[] args) {
-      /*
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-
-                // create some test data
-                List<Receipt> testReceipts = new ArrayList<>();
-                testReceipts.add(new Receipt("1", null, null, Timestamp.valueOf("2020-02-20 11:11:11"), BigDecimal.valueOf(100), BigDecimal.valueOf(20), null));
-                testReceipts.add(new Receipt("1", null, null, Timestamp.valueOf("2020-02-20 11:11:11"), BigDecimal.valueOf(100), BigDecimal.valueOf(20), null));
-                testReceipts.add(new Receipt("1", null, null, Timestamp.valueOf("2020-02-20 11:11:11"), BigDecimal.valueOf(100), BigDecimal.valueOf(20), null));
-                testReceipts.add(new Receipt("1", null, null, Timestamp.valueOf("2020-02-20 11:11:11"), BigDecimal.valueOf(100), BigDecimal.valueOf(20), null));
-
-
-                receipts = testReceipts;
-                try {
-                    ReceiptViewer viewer = new ReceiptViewer();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-
-       */
-    }
 
 
     private static String[] getCahierStringList() {
