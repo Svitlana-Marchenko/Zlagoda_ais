@@ -9,6 +9,8 @@ import info_menu_common.StoreProductTable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -16,8 +18,8 @@ import java.util.List;
 
 
 public class MainMenuCashier {
-    static List<Product> product_List;
-    static JFrame frame = new JFrame("Menu");
+
+
    public static void display(JFrame frame, Employee empl){
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,7 +31,6 @@ public class MainMenuCashier {
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 
         JPanel exitPanel = new JPanel(new GridLayout(1, 1));
-        //exitPanel.setLayout(new GridLayout(1, 1, 10, 10)); // set horizontal and vertical gap between components
         exitPanel.setBorder(BorderFactory.createEmptyBorder(50, 100, 50, 100));
 
         ImageIcon icon = new ImageIcon("C:\\Zlahoda\\Zlagoda\\images\\logo.png");
@@ -62,6 +63,16 @@ public class MainMenuCashier {
         frame.setSize(500, 500);
         frame.setVisible(true);
 
+
+       // add resize listener to update logo label size
+       frame.addComponentListener(new ComponentAdapter() {
+           @Override
+           public void componentResized(ComponentEvent e) {
+               Image image = icon.getImage().getScaledInstance(-1, frame.getHeight() / 2, Image.SCALE_SMOOTH);
+               ImageIcon scaledIcon = new ImageIcon(image);
+               logoLabel.setIcon(scaledIcon);
+           }
+       });
 
         customer.addActionListener( s ->{
             frame.getContentPane().removeAll();
