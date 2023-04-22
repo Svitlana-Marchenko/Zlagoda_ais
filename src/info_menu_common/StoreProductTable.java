@@ -9,6 +9,7 @@ import info_menu_manager.CustomerTableManager;
 import info_menu_manager.StoreProductManager;
 import menu.MainMenuCashier;
 import menu.MainMenuManager;
+import menu.Report;
 
 
 import javax.swing.*;
@@ -41,6 +42,7 @@ public class StoreProductTable {
 
         homeButton.addActionListener(s -> {
             frame.getContentPane().removeAll();
+            frame.dispose();
             if (role.getRole().toString().equals("MANAGER"))
                 MainMenuManager.display(frame, role);
             else
@@ -224,7 +226,7 @@ public class StoreProductTable {
         );
 
         print.addActionListener( e -> {
-                    //TODO print panel
+            Report r = new Report(table);
                 }
         );
 

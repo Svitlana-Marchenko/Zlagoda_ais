@@ -3,6 +3,7 @@ package info_menu_manager;
 import entity.CustomerCard;
 import entity.Employee;
 import menu.MainMenuManager;
+import menu.Report;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -45,8 +46,8 @@ public class CustomerTableManager {
 
         homeButton.addActionListener( s ->{
             frame.getContentPane().removeAll();
+            frame.dispose();
             MainMenuManager.display(frame, role);
-            // Repaint the frame
             frame.revalidate();
             frame.repaint();
         });
@@ -180,7 +181,7 @@ public class CustomerTableManager {
         );
 
         print.addActionListener( e -> {
-                    //TODO print panel
+            Report r = new Report(table);
                 }
         );
 

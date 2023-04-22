@@ -2,6 +2,7 @@ package info_menu_manager;
 
 import entity.Employee;
 import menu.MainMenuManager;
+import menu.Report;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -34,6 +35,7 @@ public class EmployeeTableManager {
 
             homeButton.addActionListener( s ->{
                 frame.getContentPane().removeAll();
+                frame.dispose();
                 MainMenuManager.display(frame, role);
                 // Repaint the frame
                 frame.revalidate();
@@ -190,6 +192,7 @@ public class EmployeeTableManager {
 
             print.addActionListener( e -> {
                         //TODO print panel
+                Report r = new Report(table);
                     }
             );
 

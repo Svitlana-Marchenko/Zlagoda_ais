@@ -14,7 +14,6 @@ import java.awt.event.ComponentEvent;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.List;
 
 
 public class MainMenuCashier {
@@ -27,7 +26,7 @@ public class MainMenuCashier {
         JPanel logoPanel = new JPanel();
 
         JPanel buttonPanel = new JPanel(new GridLayout(3, 2));
-        buttonPanel.setLayout(new GridLayout(2, 3, 10, 10)); // set horizontal and vertical gap between components
+        buttonPanel.setLayout(new GridLayout(2, 3, 10, 10));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 
         JPanel exitPanel = new JPanel(new GridLayout(1, 1));
@@ -39,20 +38,21 @@ public class MainMenuCashier {
         logoPanel.add(logoLabel);
 
         JButton customer = new JButton("Customer");
+        JButton createCheck = new JButton("Add new receipt");
         JButton receipt = new JButton("Receipt");
         JButton product = new JButton("Product");
         JButton sProduct = new JButton("Store Product");
         JButton about = new JButton("About me");
+       JButton logout = new JButton("Log out");
 
         buttonPanel.add(customer);
+        buttonPanel.add(createCheck);
         buttonPanel.add(receipt);
         buttonPanel.add(product);
         buttonPanel.add(sProduct);
         buttonPanel.add(about);
 
-
-        JButton logout = new JButton("Log out");
-        buttonPanel.add(logout);
+        exitPanel.add(logout);
 
         frame.add(logoPanel, BorderLayout.PAGE_START);
 
@@ -108,6 +108,26 @@ public class MainMenuCashier {
             frame.revalidate();
             frame.repaint();
         });
+
+        about.addActionListener( s->{
+            //TODO about menu
+                }
+
+        );
+
+
+       createCheck.addActionListener( s->{
+                   //TODO about menu
+               }
+
+       );
+
+       logout.addActionListener( s->{
+                   //TODO log out menu
+               }
+
+       );
+
 
     }
 

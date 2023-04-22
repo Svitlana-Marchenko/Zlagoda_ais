@@ -5,6 +5,7 @@ import entity.Employee;
 import entity.Product;
 import menu.MainMenuCashier;
 import menu.MainMenuManager;
+import menu.Report;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -35,6 +36,7 @@ public class ProductTable2 {
 
         homeButton.addActionListener( s ->{
             frame.getContentPane().removeAll();
+            frame.dispose();
             if(role.getRole().toString().equals("MANAGER"))
             MainMenuManager.display(frame, role);
             else
@@ -71,14 +73,7 @@ public class ProductTable2 {
 
         JButton sortButton = new JButton("Sort");
         buttonPanel.add(sortButton);
-/*
-        JLabel categoriesLabel = new JLabel("Products");
-        JPanel labelPanel = new JPanel();
-        labelPanel.add(categoriesLabel);
-frame.add(labelPanel);
-labelPanel.setVisible(true);
 
- */
         JPanel tablePanel = new JPanel(new BorderLayout());
 
         JTable table = new JTable();
@@ -193,7 +188,7 @@ labelPanel.setVisible(true);
         );
 
         print.addActionListener( e -> {
-                    //TODO print panel
+            Report r = new Report(table);
                 }
         );
 

@@ -4,6 +4,7 @@ package info_menu_manager;
 import entity.Category;
 import entity.Employee;
 import menu.MainMenuManager;
+import menu.Report;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -113,7 +114,7 @@ public class CategoryTable {
         );
 
         print.addActionListener( e -> {
-                    //TODO print panel
+            Report r = new Report(table);
                 }
         );
 

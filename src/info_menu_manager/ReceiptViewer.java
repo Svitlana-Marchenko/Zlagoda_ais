@@ -3,6 +3,7 @@ package info_menu_manager;
 import com.toedter.calendar.JDateChooser;
 import entity.*;
 import menu.MainMenuManager;
+import menu.Report;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -74,7 +75,7 @@ public class ReceiptViewer {
 
         table = new JTable(model);
 
-        JPanel statPanel = new JPanel(new GridLayout(1, 2));
+        JToolBar statPanel = new JToolBar()/*(new GridLayout(1, 2))*/;
         JLabel statL = new JLabel("Total sum of receipts: ");
         JLabel statT = new JLabel();
 
@@ -161,7 +162,8 @@ public class ReceiptViewer {
         frame.add(toolbar, BorderLayout.PAGE_START);
         frame.add(scrollPane, BorderLayout.CENTER);
 
-
+JButton print = new JButton("Print");
+statPanel.add(print);
         statPanel.add(statL);
         statPanel.add(statT);
 
@@ -183,7 +185,10 @@ public class ReceiptViewer {
             frame.repaint();
         });
 
-
+        print.addActionListener( e -> {
+                    Report r = new Report(table);
+                }
+        );
 
 
     }
