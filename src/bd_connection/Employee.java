@@ -15,6 +15,7 @@ public class Employee {
         connection=con;
     }
 
+
     private static final String ID_EMPLOYEE = "id_employee";
     private static final String SURNAME = "empl_surname";
     private static final String NAME = "empl_name";
@@ -188,7 +189,7 @@ List<entity.Employee> answ = new ArrayList<>();
                 if (p == null)
                     p = "";
 
-                answ.add( new entity.Employee(resultEmp.getString("id_employee"), resultEmp.getString("empl_surname"), resultEmp.getString("empl_name"), resultEmp.getString("password"), p, entity.Employee.Role.MANAGER, resultEmp.getBigDecimal("salary"), resultEmp.getDate("date_of_birth"), resultEmp.getDate("date_of_start"), resultEmp.getString("phone_number"), resultEmp.getString("city"), resultEmp.getString("street"), resultEmp.getString("zip_code")));
+                answ.add( new entity.Employee(resultEmp.getString("id_employee"), resultEmp.getString("empl_surname"), resultEmp.getString("empl_name"), resultEmp.getString("password"), p, (role=="CASHIER"? entity.Employee.Role.CASHIER: entity.Employee.Role.MANAGER), resultEmp.getBigDecimal("salary"), resultEmp.getDate("date_of_birth"), resultEmp.getDate("date_of_start"), resultEmp.getString("phone_number"), resultEmp.getString("city"), resultEmp.getString("street"), resultEmp.getString("zip_code")));
 
             }
         }

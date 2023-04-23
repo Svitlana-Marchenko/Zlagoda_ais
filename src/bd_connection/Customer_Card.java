@@ -1,7 +1,9 @@
 package bd_connection;
 
 import entity.CustomerCard;
+import entity.ProductInStore;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,8 @@ public class Customer_Card {
     public static void setConnection(Connection con){
         connection=con;
     }
+
+
 
     private static final String CARD_NUMBER = "card_number";
     private static final String CUSTOMER_SURNAME = "cust_surname";

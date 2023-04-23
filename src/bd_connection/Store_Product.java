@@ -16,7 +16,7 @@ public class Store_Product {
     public static void setConnection(Connection con){
         connection=con;
     }
-    
+
     private static final String UPC = "UPC";
     private static final String UPC_PROM = "UPC_prom";
     private static final String SELLING_PRICE = "selling_price";
@@ -259,7 +259,6 @@ public class Store_Product {
             return new ArrayList<>();
         }
     }
-
 
 
 }
