@@ -71,7 +71,7 @@ public class StoreProductTable {
 
         JTable table = new JTable();
 
-        DefaultTableModel model = new DefaultTableModel(new Object[]{"UPC", "Name", "Category", "Price", "Amount", "Promotional"}, 0) {
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"UPC", "Name", "Category", "Price", "Amount", "Promotional", "Producer"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // make the cells non-editable
@@ -80,7 +80,7 @@ public class StoreProductTable {
         table.setModel(model);
 
         for (ProductInStore sp : store_productListList) {
-            model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional()});
+            model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional(), sp.getProduct().getProducer()});
         }
 
         JScrollPane scrollPane = new JScrollPane(table);
@@ -127,7 +127,7 @@ public class StoreProductTable {
             }
             model.setRowCount(0);
             for (ProductInStore sp : store_productListList) {
-                model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional()});
+                model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional(), sp.getProduct().getProducer()});
             }
         });
 
@@ -139,7 +139,7 @@ public class StoreProductTable {
 
                     model.setRowCount(0);
                     for (ProductInStore sp : store_productListList) {
-                        model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional()});
+                        model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional(), sp.getProduct().getProducer()});
                     }
 
                 } else if (selected.equals("Only on sale")) {
@@ -151,7 +151,7 @@ public class StoreProductTable {
 
                     model.setRowCount(0);
                     for (ProductInStore sp : store_productListList) {
-                        model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional()});
+                        model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional(), sp.getProduct().getProducer()});
                     }
 
                 } else {
@@ -162,7 +162,7 @@ public class StoreProductTable {
                     }
                     model.setRowCount(0);
                     for (ProductInStore sp : store_productListList) {
-                        model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional()});
+                        model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional(), sp.getProduct().getProducer()});
                     }
 
                 }
@@ -191,7 +191,7 @@ public class StoreProductTable {
                 }
                 model.setRowCount(0);
                 for (ProductInStore sp : store_productListList) {
-                    model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional()});
+                    model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional(), sp.getProduct().getProducer()});
                 }
             }
         });

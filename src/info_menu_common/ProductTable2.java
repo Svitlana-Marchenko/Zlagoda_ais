@@ -84,7 +84,7 @@ public class ProductTable2 {
 
         JTable table = new JTable();
 
-        DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "Name", "Category", "Characteristic"}, 0) {
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "Name", "Category", "Characteristic", "Producer" }, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -93,7 +93,7 @@ public class ProductTable2 {
         table.setModel(model);
 
         for (Product sp : product_List) {
-            model.addRow(new Object[]{sp.getId(), sp.getName(), sp.getCategory().getName(), sp.getCharacteristics()});
+            model.addRow(new Object[]{sp.getId(), sp.getName(), sp.getCategory().getName(), sp.getCharacteristics(), sp.getProducer()});
         }
 
         JScrollPane scrollPane = new JScrollPane(table);
@@ -125,7 +125,7 @@ public class ProductTable2 {
 
             model.setRowCount(0);
             for (Product sp : product_List) {
-                model.addRow(new Object[]{sp.getId(), sp.getName(), sp.getCategory().getName(), sp.getCharacteristics()});
+                model.addRow(new Object[]{sp.getId(), sp.getName(), sp.getCategory().getName(), sp.getCharacteristics(), sp.getProducer()});
             }
         });
 
@@ -174,7 +174,7 @@ public class ProductTable2 {
             }
             model.setRowCount(0);
             for (Product sp : product_List) {
-                model.addRow(new Object[]{sp.getId(), sp.getName(), sp.getCategory().getName(), sp.getCharacteristics()});
+                model.addRow(new Object[]{sp.getId(), sp.getName(), sp.getCategory().getName(), sp.getCharacteristics(), sp.getProducer()});
             }
         });
 

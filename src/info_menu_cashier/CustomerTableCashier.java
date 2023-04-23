@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static bd_connection.Customer_Card.getAllCustomersSorted;
 import static bd_connection.Customer_Card.getCustomersBySurname;
-
+//TODO percent to the cashier table of customer, producer to the store table, product table
 public class CustomerTableCashier {
     static List<CustomerCard> customerList;
 
@@ -82,7 +82,7 @@ buttonPanel.add(nameField);
 
         JTable table = new JTable();
 
-        DefaultTableModel model = new DefaultTableModel(new Object[]{"Card num", "Surname", "Name", "Patronymic", "Phone"}, 0) {
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"Card num", "Surname", "Name", "Patronymic", "Phone", "Percent"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -91,7 +91,7 @@ buttonPanel.add(nameField);
         table.setModel(model);
 
         for (CustomerCard customer : customerList) {
-            model.addRow(new Object[]{customer.getNumber(), customer.getSurname(), customer.getName(), (customer.getPatronymic()==null?"":customer.getPatronymic()), customer.getPhoneNumber()});
+            model.addRow(new Object[]{customer.getNumber(), customer.getSurname(), customer.getName(), (customer.getPatronymic()==null?"":customer.getPatronymic()), customer.getPhoneNumber(), customer.getPercent()});
         }
 
         JScrollPane scrollPane = new JScrollPane(table);
@@ -124,7 +124,7 @@ buttonPanel.add(nameField);
             model.setRowCount(0);
 
             for (CustomerCard customer : customerList) {
-                model.addRow(new Object[]{customer.getNumber(), customer.getSurname(), customer.getName(), (customer.getPatronymic()==null?"":customer.getPatronymic()), customer.getPhoneNumber()});
+                model.addRow(new Object[]{customer.getNumber(), customer.getSurname(), customer.getName(), (customer.getPatronymic()==null?"":customer.getPatronymic()), customer.getPhoneNumber(), customer.getPercent()});
             }
         });
 
@@ -157,7 +157,7 @@ buttonPanel.add(nameField);
             model.setRowCount(0);
 
             for (CustomerCard customer : customerList) {
-                model.addRow(new Object[]{customer.getNumber(), customer.getSurname(), customer.getName(), (customer.getPatronymic()==null?"":customer.getPatronymic()), customer.getPhoneNumber()});
+                model.addRow(new Object[]{customer.getNumber(), customer.getSurname(), customer.getName(), (customer.getPatronymic()==null?"":customer.getPatronymic()), customer.getPhoneNumber(), customer.getPercent()});
             }
         });
 
