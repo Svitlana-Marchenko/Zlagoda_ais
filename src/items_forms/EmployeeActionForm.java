@@ -184,7 +184,9 @@ public class EmployeeActionForm extends JFrame {
                 mainPanel.add(fields.get(i-k),c);
             }
         }
-        CheckForErrors.tFields=fields;
+        CheckForErrors.tFields=new ArrayList<>();
+        CheckForErrors.tFields.addAll(fields.subList(0,2));
+        CheckForErrors.tFields.addAll(fields.subList(3,fields.size()));
 
         buttonPanel.getEditButton().addActionListener(new ActionListener() {
             @Override
@@ -292,8 +294,8 @@ public class EmployeeActionForm extends JFrame {
     private void updateItem() {
         Employee temp = new Employee(employee.getId(),surnameField.getText(),nameField.getText(),passwordField.getText(),patronymicField.getText(),Employee.Role.valueOf(roleField.getSelectedItem().toString()), new BigDecimal(Double.valueOf(salaryField.getText())),new java.sql.Date(dateOfBirth.getDate().getTime()), new java.sql.Date(dateOfStart.getDate().getTime()),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText());
         if(!temp.equals(employee)){
-            bd_connection.Employee.updateEmployeeById(temp);
             EmployeeTableManager.getEmployee_List().set(EmployeeTableManager.getEmployee_List().indexOf(employee),temp);
+            bd_connection.Employee.updateEmployeeById(temp);
             employee=temp;
         }
     }

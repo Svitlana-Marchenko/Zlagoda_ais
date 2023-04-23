@@ -123,7 +123,9 @@ public class CustomerCardActionForm extends JFrame {
             c.fill = BOTH;
             mainPanel.add(fields.get(i),c);
         }
-        CheckForErrors.tFields=fields;
+        CheckForErrors.tFields=new ArrayList<>();
+        CheckForErrors.tFields.addAll(fields.subList(0,2));
+        CheckForErrors.tFields.addAll(fields.subList(3,fields.size()));
 
         buttonPanel.getEditButton().addActionListener(new ActionListener() {
             @Override
@@ -203,10 +205,10 @@ public class CustomerCardActionForm extends JFrame {
      * Редагуєм карту клієнта
      */
     private void updateItem() {
-        CustomerCard temp = new CustomerCard(customerCard.getNumber(),nameField.getText(),surnameField.getText(),patronymicField.getText(),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText(),Integer.valueOf(percentField.getText()));
+        CustomerCard temp = new CustomerCard(customerCard.getNumber(),surnameField.getText(),nameField.getText(),patronymicField.getText(),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText(),Integer.valueOf(percentField.getText()));
         if(!temp.equals(customerCard)){
-            Customer_Card.updateCustomerById(temp);
             CustomerTableManager.getCustomerList().set(CustomerTableManager.getCustomerList().indexOf(customerCard),temp);
+            Customer_Card.updateCustomerById(temp);
             customerCard=temp;
         }
     }

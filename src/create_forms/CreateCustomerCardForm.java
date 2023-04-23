@@ -114,7 +114,9 @@ public class CreateCustomerCardForm extends JFrame {
             c.fill = BOTH;
             mainPanel.add(fields.get(i),c);
         }
-        CheckForErrors.tFields=fields;
+        CheckForErrors.tFields=new ArrayList<>();
+        CheckForErrors.tFields.addAll(fields.subList(0,2));
+        CheckForErrors.tFields.addAll(fields.subList(3,fields.size()));
 
         JButton createButton = new JButton("Create");
         createButton.setFont(new Font("TimesRoman", Font.PLAIN, 20));
@@ -210,7 +212,7 @@ public class CreateCustomerCardForm extends JFrame {
         String number = generateNumber();
         while(Customer_Card.findCustomerCardById(number) != null)
             number = generateNumber();
-        CustomerCard customerCard = new CustomerCard(number,nameField.getText(),surnameField.getText(),patronymicField.getText(),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText(),Integer.valueOf(percentField.getText()));
+        CustomerCard customerCard = new CustomerCard(number,surnameField.getText(),nameField.getText(),patronymicField.getText(),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText(),Integer.valueOf(percentField.getText()));
         Customer_Card.addCustomer(customerCard);
         CustomerTableManager.getCustomerList().add(customerCard);
         SwitchFrames.switchFramesForCustomer(frame,model);
