@@ -21,6 +21,18 @@ public class Product {
     public static void setConnection(Connection con){
         connection=con;
     }
+    static{
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/zlagoda",
+                    "zhenia",
+                    "happydog"
+            );
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     //1. Додавати нові дані про товари
     public static boolean addProduct(entity.Product product){
@@ -62,6 +74,7 @@ public class Product {
         return true;
     }
 
+    //знайти товар за айді
     public static entity.Product findProductById(int id){
         try {
             Statement statement = connection.createStatement();
@@ -71,7 +84,6 @@ public class Product {
             while(resultSet.next()) {
                 product = new entity.Product(Integer.valueOf(resultSet.getString(ID_PRODUCT)),resultSet.getString(PRODUCT_NAME), new Category(Integer.valueOf(resultSet.getString(CATEGORY_ID)),resultSet.getString(CATEGORY_NAME)), resultSet.getString(PRODUCER),resultSet.getString(CHARACTERISTICS));
             }
-            //System.out.println(product);
             return product;
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -86,27 +98,9 @@ public class Product {
             ResultSet resultSet = statement.executeQuery(request);
             entity.Category category = null;
             while(resultSet.next()) {
-                category = new Category(Integer.valueOf(resultSet.getString(CATEGORY_ID)),resultSet.getString(CATEGORY_NAME));
+                category = new Category(resultSet.getInt(CATEGORY_ID),resultSet.getString(CATEGORY_NAME));
             }
-            //System.out.println(product);
             return category;
-        }catch (SQLException ex){
-            System.out.println(ex.getMessage());
-            return null;
-        }
-    }
-
-    public static entity.Product findProductByName(String name){
-        try {
-            Statement statement = connection.createStatement();
-            String request = "SELECT id_product, product_name,characteristics,producer, `zlagoda`.`category`.category_number,category_name FROM `zlagoda`.`product` INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`.category_number = `zlagoda`.`category`.category_number WHERE (`"+PRODUCT_NAME+"` = '"+name+"');";
-            ResultSet resultSet = statement.executeQuery(request);
-            entity.Product product = null;
-            while(resultSet.next()) {
-                product = new entity.Product(Integer.valueOf(resultSet.getString(ID_PRODUCT)),resultSet.getString(PRODUCT_NAME), new Category(Integer.valueOf(resultSet.getString(CATEGORY_ID)),resultSet.getString(CATEGORY_NAME)),resultSet.getString(PRODUCER), resultSet.getString(CHARACTERISTICS));
-            }
-            //System.out.println(product);
-            return product;
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
             return null;
@@ -121,9 +115,8 @@ public class Product {
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<entity.Product> products = new ArrayList<>();
             while(resultSet.next()) {
-                products.add(new entity.Product(Integer.valueOf(resultSet.getString(ID_PRODUCT)),resultSet.getString(PRODUCT_NAME), new Category(Integer.valueOf(resultSet.getString(CATEGORY_ID)),resultSet.getString(CATEGORY_NAME)),resultSet.getString(PRODUCER),  resultSet.getString(CHARACTERISTICS)));
+                products.add(new entity.Product(resultSet.getInt(ID_PRODUCT),resultSet.getString(PRODUCT_NAME), new Category(resultSet.getInt(CATEGORY_ID),resultSet.getString(CATEGORY_NAME)),resultSet.getString(PRODUCER),  resultSet.getString(CHARACTERISTICS)));
             }
-            //System.out.println(products);
             return products;
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -141,7 +134,6 @@ public class Product {
             while(resultSet.next()) {
                 products.add(new entity.Product(Integer.valueOf(resultSet.getString(ID_PRODUCT)),resultSet.getString(PRODUCT_NAME), new Category(Integer.valueOf(resultSet.getString(CATEGORY_ID)),resultSet.getString(CATEGORY_NAME)),resultSet.getString(PRODUCER),  resultSet.getString(CHARACTERISTICS)));
             }
-            System.out.println(products);
             return products;
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -191,8 +183,9 @@ public class Product {
                     int id = resultSet.getInt("id_product");
                     String name = resultSet.getString("product_name");
                     int categoryN = resultSet.getInt("category_number");
+                    String producer = resultSet.getString("producer");
                     String characteristic = resultSet.getString("characteristics");
-                    entity.Product product = new entity.Product(id, name, getCategory(categoryN), "", characteristic);
+                    entity.Product product = new entity.Product(id, name, getCategory(categoryN), producer, characteristic);
                     products.add(product);
                 }
             }
@@ -215,7 +208,8 @@ public class Product {
                 int id = resultSet.getInt("id_product");
                 int categoryN = resultSet.getInt("category_number");
                 String characteristic = resultSet.getString("characteristics");
-                entity.Product product = new entity.Product(id, name, getCategory(categoryN),"", characteristic);
+                String producer = resultSet.getString("producer");
+                entity.Product product = new entity.Product(id, name, getCategory(categoryN),producer, characteristic);
                 products.add(product);
             }
         }
@@ -232,7 +226,8 @@ public class Product {
                 int id = resultSet.getInt("id_product");
                 int categoryN = resultSet.getInt("category_number");
                 String characteristic = resultSet.getString("characteristics");
-                entity.Product product = new entity.Product(id, name, getCategory(categoryN),"", characteristic);
+                String producer = resultSet.getString("producer");
+                entity.Product product = new entity.Product(id, name, getCategory(categoryN),producer, characteristic);
                 products.add(product);
             }
         }
@@ -249,7 +244,6 @@ public class Product {
             while(resultSet.next()) {
                 product = new entity.Product(Integer.valueOf(resultSet.getString(ID_PRODUCT)),resultSet.getString(PRODUCT_NAME), new Category(Integer.valueOf(resultSet.getString(CATEGORY_ID)),resultSet.getString(CATEGORY_NAME)), resultSet.getString(PRODUCER),resultSet.getString(CHARACTERISTICS));
             }
-            //System.out.println(product);
             return product;
         }catch (SQLException ex){
             System.out.println(ex.getMessage());

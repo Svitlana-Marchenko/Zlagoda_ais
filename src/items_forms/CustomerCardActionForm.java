@@ -1,6 +1,7 @@
-package create_forms;
+package items_forms;
 
-import bd_connection.*;
+import bd_connection.Check;
+import bd_connection.Customer_Card;
 import entity.CustomerCard;
 import helpers.*;
 import info_menu_manager.CustomerTableManager;
@@ -15,15 +16,15 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
-import static java.awt.GridBagConstraints.*;
+
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.NONE;
 
 /**
- * Форма створення карти нового постійного клієнта
+ * Форма для відображення, редагування та видалення карти клієнта
  */
-public class CreateCustomerCardForm extends JFrame {
-
+public class CustomerCardActionForm extends JFrame {
     private JPanel backPanel;
 
     private JTextField nameField;
@@ -35,66 +36,75 @@ public class CreateCustomerCardForm extends JFrame {
     private JTextField zipCodeField;
     private JTextField percentField;
 
+    private CustomerCard customerCard;
 
-    public CreateCustomerCardForm(DefaultTableModel model,JFrame frame){
-        super("Add new customer");
+    public CustomerCardActionForm(CustomerCard customerCard, DefaultTableModel model, JFrame frame, boolean shouldIncludeDelete){
+        super("Edit customer");
         this.setSize(600,500);
-        start(frame,model);
+        this.customerCard = customerCard;
+        start(model,frame, shouldIncludeDelete);
     }
 
     /**
      * Початкова ініціалізація графічних об'єктів
      */
-    private void init(JFrame frame,DefaultTableModel model){
+    private void init(DefaultTableModel model,JFrame frame,boolean shouldIncludeDelete){
         final int[] max_length = {50,13,9};
 
+        List<JTextField> fields = new ArrayList<>();
         backPanel = new JPanel();
         backPanel.setLayout(new BoxLayout(backPanel, BoxLayout.PAGE_AXIS));
         JPanel captionPanel = new JPanel();
         captionPanel.setLayout(new BoxLayout(captionPanel, BoxLayout.LINE_AXIS));
 
         GridBagConstraints c = new GridBagConstraints();
-        JLabel captionLabel = new JLabel("New customer");
+        JLabel captionLabel = new JLabel("Customer");
         captionLabel.setHorizontalAlignment(JLabel.CENTER);
         captionLabel.setFont(new Font("TimesRoman", Font.BOLD, 40));
         captionPanel.add(captionLabel);
         backPanel.add(captionPanel);
-
-        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        ButtonsPanel buttonPanel = new ButtonsPanel(shouldIncludeDelete);
 
         JPanel mainPanel = new JPanel(new GridBagLayout());
         List<JLabel> labels = new ArrayList<>();
-        ArrayList<JTextField> fields = new ArrayList<>();
 
         nameField = new JTextField();
+        nameField.setText(customerCard.getName());
         fields.add(nameField);
         labels.add(new JLabel("Name: "));
 
         surnameField = new JTextField();
+        surnameField.setText(customerCard.getSurname());
         fields.add(surnameField);
         labels.add(new JLabel("Surname: "));
 
         patronymicField = new JTextField();
+        patronymicField.setText(customerCard.getPatronymic());
         fields.add(patronymicField);
         labels.add(new JLabel("Patronymic: "));
 
         cityField = new JTextField();
+        cityField.setText(customerCard.getCity());
         fields.add(cityField);
         labels.add(new JLabel("City: "));
 
         streetField = new JTextField();
+        streetField.setText(customerCard.getStreet());
         fields.add(streetField);
         labels.add(new JLabel("Street: "));
 
         phoneNumberField = new JTextField();
+        phoneNumberField.setText(customerCard.getPhoneNumber());
         fields.add(phoneNumberField);
         labels.add(new JLabel("Phone number: "));
 
         zipCodeField = new JTextField();
+        zipCodeField.setText(customerCard.getZipCode());
         labels.add(new JLabel("Zip code: "));
         fields.add(zipCodeField);
 
         percentField = new JTextField();
+        percentField.setText(String.valueOf(customerCard.getPercent()));
         fields.add(percentField);
         labels.add(new JLabel("Percent: "));
 
@@ -103,22 +113,29 @@ public class CreateCustomerCardForm extends JFrame {
             c.gridy = i;
             c.gridx = 0;
             c.weightx = 0;
-            c.ipadx=0;
             c.fill=NONE;
             mainPanel.add(labels.get(i),c);
 
             fields.get(i).setFont(new Font("TimesRoman",Font.PLAIN, 25));
+            fields.get(i).setEditable(false);
             c.gridx=1;
-            c.weightx = 2;
-            c.ipadx=300;
+            c.weightx = 1;
             c.fill = BOTH;
             mainPanel.add(fields.get(i),c);
         }
         CheckForErrors.tFields=fields;
 
-        JButton createButton = new JButton("Create");
-        createButton.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-        createButton.addActionListener(new ActionListener() {
+        buttonPanel.getEditButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                buttonPanel.setEnabled(true);
+                for(JTextField field: fields){
+                    field.setEditable(true);
+                }
+            }
+        });
+
+        buttonPanel.getSaveButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 List<java.util.List<JTextField>> fieldsList= new ArrayList<>();
@@ -140,40 +157,39 @@ public class CreateCustomerCardForm extends JFrame {
                 }else if(!CheckForErrors.checkPhoneNumber(phoneNumberField.getText())){
                     showError("Wrong phone number format. Must be +380xxxxxxxxx", new JTextField[]{phoneNumberField});
                 }else{
-                    createNewItem(frame,model);
-                    dispose();
+                    updateItem();
+                    buttonPanel.setEnabled(false);
+                    for(JTextField field: fields){
+                        field.setEditable(false);
+                    }
                 }
             }
         });
-        c=new GridBagConstraints();
-        c.gridy = 0;
-        c.gridx = 0;
-        c.weightx = 0.5;
-        c.weighty=0.5;
-        c.fill=HORIZONTAL;
-        c.insets = new Insets(5,5,5,0);
-        createButton.setBackground(Color.green);
-        buttonPanel.add(createButton,c);
 
+        if(shouldIncludeDelete){
+            buttonPanel.getDeleteButton().addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    int result = JOptionPane.showConfirmDialog(null,"Are you sure? Delete this customer?", "Delete category",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE);
+                    if(result == JOptionPane.YES_OPTION){
+                        deleteItem(model,frame);
+                    }
+                }
+            });
+        }
 
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-        cancelButton.addActionListener(new ActionListener() {
+        buttonPanel.getCancelButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 SwitchFrames.switchFramesForCustomer(frame, model);
                 dispose();
             }
         });
-        c.gridx = 1;
-        c.insets = new Insets(5,10,5,8);
-        cancelButton.setBackground(Color.cyan);
-        buttonPanel.add(cancelButton,c);
-        c.gridy=8;
-        c.gridx=0;
-        c.gridwidth = 2;
-        mainPanel.add(buttonPanel,c);
+
         backPanel.add(mainPanel);
+        backPanel.add(buttonPanel);
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -184,37 +200,35 @@ public class CreateCustomerCardForm extends JFrame {
     }
 
     /**
-     * Генеруєм випадковий номер покупця
-     * @return випадковий номер
+     * Редагуєм карту клієнта
      */
-    public String generateNumber() {
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 10;
-        Random random = new Random();
-        StringBuilder buffer = new StringBuilder(targetStringLength);
-        for (int i = 0; i < targetStringLength; i++) {
-            int randomLimitedInt = leftLimit + (int)
-                    (random.nextFloat() * (rightLimit - leftLimit + 1));
-            buffer.append((char) randomLimitedInt);
+    private void updateItem() {
+        CustomerCard temp = new CustomerCard(customerCard.getNumber(),nameField.getText(),surnameField.getText(),patronymicField.getText(),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText(),Integer.valueOf(percentField.getText()));
+        if(!temp.equals(customerCard)){
+            Customer_Card.updateCustomerById(temp);
+            CustomerTableManager.getCustomerList().set(CustomerTableManager.getCustomerList().indexOf(customerCard),temp);
+            customerCard=temp;
         }
-        return buffer.toString();
     }
 
     /**
-     * Створюєм карту нового клієнта
+     * Видадяєм карту клієнта
      * @param model модель таблички в основному фреймі
      * @param frame основний фрейм з табличкою
      */
-    private void createNewItem(JFrame frame,DefaultTableModel model){
-        String number = generateNumber();
-        while(Customer_Card.findCustomerCardById(number) != null)
-            number = generateNumber();
-        CustomerCard customerCard = new CustomerCard(number,nameField.getText(),surnameField.getText(),patronymicField.getText(),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText(),Integer.valueOf(percentField.getText()));
-        Customer_Card.addCustomer(customerCard);
-        CustomerTableManager.getCustomerList().add(customerCard);
+    private void deleteItem(DefaultTableModel model,JFrame frame) {
+        if(!Check.getAllReceiptWithCustomer(customerCard).isEmpty()){
+            JOptionPane.showMessageDialog(null,"You can't delete customer with checks!","Error",JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        Customer_Card.deleteCustomerById(customerCard.getNumber());
+
+        CustomerTableManager.getCustomerList().remove(customerCard);
         SwitchFrames.switchFramesForCustomer(frame,model);
+        dispose();
     }
+
+
     /**
      * Відображаєм помилку
      * @param text текст помилки
@@ -222,19 +236,19 @@ public class CreateCustomerCardForm extends JFrame {
      */
     private void showError(String text, JTextField[] fields){
         for(int i=0;i<fields.length;i++){
-            fields[i].setBackground(Color.red);
+            fields[i].setForeground(Color.red);
         }
         JOptionPane.showMessageDialog(null,text,"Error",JOptionPane.ERROR_MESSAGE);
         for(int i=0;i<fields.length;i++){
-            fields[i].setBackground(Color.white);
+            fields[i].setForeground(Color.black);
             fields[i].setText("");
         }
     }
     /**
      * Запускаєм користувацьку форму
      */
-    public void start(JFrame frame,DefaultTableModel model){
-        init(frame,model);
+    public void start(DefaultTableModel model,JFrame frame,boolean shouldIncludeDelete){
+        init(model,frame,shouldIncludeDelete);
         add(backPanel);
         this.pack();
         this.setVisible(true);

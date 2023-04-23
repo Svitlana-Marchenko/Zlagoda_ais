@@ -4,6 +4,8 @@ import bd_connection.Category;
 import bd_connection.Store_Product;
 import entity.Product;
 import entity.ProductInStore;
+import helpers.*;
+import info_menu_common.StoreProductTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -13,12 +15,17 @@ import java.math.BigDecimal;
 
 import java.util.ArrayList;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import static helpers.ComboBoxStructure.*;
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.NONE;
 
+/**
+ * Даний клас реалізує графічний інтерфейс та функціонал створення нового товару на складі
+ */
 public class CreateProductInStoreForm extends JFrame {
     private JPanel mainPanel;
     private JPanel backPanel;
@@ -29,25 +36,22 @@ public class CreateProductInStoreForm extends JFrame {
     private JComboBox productField;
     private JComboBox categoryField;
     private JCheckBox isPromotional;
-    private JButton createButton;
-    private JButton cancelButton;
-    private DefaultComboBoxModel promotionalCategoriesList;
-    private DefaultComboBoxModel promotionalProductsList;
-    private DefaultComboBoxModel notPromotionalCategoriesList;
-    private DefaultComboBoxModel notPromotionalProductsList;
 
-    public CreateProductInStoreForm(){
+
+    public CreateProductInStoreForm(DefaultTableModel model,JFrame frame){
         super("Add product in store");
         this.setSize(600,500);
-        start();
+        start(model,frame);
     }
 
     /**
      * Початкова ініціалізація графічних об'єктів
      */
-    private void init()  {
-        promotionalCategoriesList = createCategoriesList(true);
-        notPromotionalCategoriesList=createCategoriesList(false);
+    private void init(DefaultTableModel model,JFrame frame)  {
+        DefaultComboBoxModel promotionalCategoriesList = createCategoriesList(true,true,null,false);
+        DefaultComboBoxModel promotionalProductsList= createProductsList(getCategoriesArrayList(true,true).get(0),true,null, false);
+        DefaultComboBoxModel notPromotionalCategoriesList=createCategoriesList(false,true,null,false);
+        DefaultComboBoxModel notPromotionalProductsList= createProductsList(getCategoriesArrayList(false,true).get(0),false,null, false);
 
         backPanel = new JPanel();
         backPanel.setLayout(new BoxLayout(backPanel, BoxLayout.PAGE_AXIS));
@@ -73,12 +77,12 @@ public class CreateProductInStoreForm extends JFrame {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == 1) {
                     priceField.setText("");
-                    priceField.setEnabled(false);
+                    priceField.setEditable(false);
                     categoryField.setModel(promotionalCategoriesList);
                     productField.setModel(promotionalProductsList);
                 }
                 else {
-                    priceField.setEnabled(true);
+                    priceField.setEditable(true);
                     categoryField.setModel(notPromotionalCategoriesList);
                     productField.setModel(notPromotionalProductsList);
                 }
@@ -90,26 +94,14 @@ public class CreateProductInStoreForm extends JFrame {
         JLabel groupLabel = new JLabel("Category: ");
         groupLabel.setFont(new Font("TimesRoman",Font.PLAIN, 25));
         c.gridy = 1;
-        c.gridx = 0;
         mainPanel.add(groupLabel,c);
 
         categoryField = new JComboBox();
         categoryField.setModel(notPromotionalCategoriesList);
         categoryField.setFont(new Font("TimesRoman",Font.PLAIN, 20));
 
-        categoryField.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value instanceof Object[]) {
-                    Object[] rowData = (Object[]) value;
-                    setText(rowData[0].toString() + "   " + rowData[1].toString());
-                }
-                return this;
-            }
-        });
+        categoryField.setRenderer(new ComboBoxRenderer());
 
-        c.gridy = 1;
         c.gridx = 1;
         c.fill = BOTH;
 
@@ -124,7 +116,7 @@ public class CreateProductInStoreForm extends JFrame {
                         Object[] rowData = (Object[]) obj;
                         id = Integer.valueOf(rowData[0].toString());
                     }
-                    productField.setModel(createProductsList(Category.findCategoryById(id),isPromotional.isSelected()));
+                    productField.setModel(createProductsList(Category.findCategoryById(id),isPromotional.isSelected(),null,false));
                 }
             }
         });
@@ -141,78 +133,58 @@ public class CreateProductInStoreForm extends JFrame {
         productField.setModel(notPromotionalProductsList);
         productField.setFont(new Font("TimesRoman",Font.PLAIN, 20));
 
-        productField.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value instanceof Object[]) {
-                    Object[] rowData = (Object[]) value;
-                    setText(rowData[0].toString() + "   " + rowData[1].toString());
-                }
-                return this;
-            }
-        });
-        c.gridy = 2;
+        productField.setRenderer(new ComboBoxRenderer());
         c.gridx = 1;
         c.fill = BOTH;
         mainPanel.add(productField,c);
 
-        JLabel countLabel = new JLabel("Quantity: ");
-        countLabel.setFont(new Font("TimesRoman",Font.PLAIN, 25));
-        c.gridy = 3;
-        c.fill = NONE;
-        c.gridx = 0;
-        mainPanel.add(countLabel,c);
+        List<JLabel> labels = new ArrayList<>();
+        List<JTextField> fields = new ArrayList<>();
 
         countField = new JTextField();
-        c.fill=BOTH;
-        countField.setFont(new Font("TimesRoman", Font.PLAIN, 25));
-        c.gridy = 3;
-        c.gridx = 1;
-        mainPanel.add(countField,c);
-
-        JLabel priceLabel = new JLabel("Price: ");
-        priceLabel.setFont(new Font("TimesRoman",Font.PLAIN, 25));
-        c.gridy = 4;
-        c.fill = NONE;
-        c.gridx = 0;
-        mainPanel.add(priceLabel,c);
+        fields.add(countField);
+        labels.add(new JLabel("Quantity: "));
 
         priceField = new JTextField();
-        priceField.setFont(new Font("TimesRoman", Font.PLAIN, 25));
-        c.gridy = 4;
-        c.gridx = 1;
-        c.fill = BOTH;
-        c.weightx = 1;
-        c.ipadx = 300;
-        mainPanel.add(priceField,c);
+        fields.add(priceField);
+        labels.add(new JLabel("Price: "));
 
-        c.fill = NONE;
-        createButton = new JButton("Create");
+        for(int i=0;i<fields.size();i++){
+            labels.get(i).setFont(new Font("TimesRoman",Font.PLAIN, 25));
+            c.gridy = i+3;
+            c.gridx = 0;
+            c.fill=NONE;
+            c.ipadx=0;
+            c.weightx=0;
+            mainPanel.add(labels.get(i),c);
+
+            fields.get(i).setFont(new Font("TimesRoman",Font.PLAIN, 25));
+            c.gridx=1;
+            c.ipadx=300;
+            c.weightx=2;
+            c.fill = BOTH;
+            mainPanel.add(fields.get(i),c);
+        }
+        CheckForErrors.tFields=fields;
+
+        JButton createButton = new JButton("Create");
         createButton.setFont(new Font("TimesRoman", Font.PLAIN, 30));
         createButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                List<JTextField> fields = new ArrayList<>();
-                List<JTextField> checkForInt = new ArrayList<>();
-                List<JTextField> checkForDouble = new ArrayList<>();
-                fields.add(priceField);
-                fields.add(countField);
-                checkForDouble.add(priceField);
-                checkForInt.add(countField);
-                CheckForErrors.tFields=fields;
                 List<String> errors = CheckForErrors.checkForEmptyErrors();
-                List<String> errors1 = CheckForErrors.checkForNotNumbersErrors(checkForDouble,checkForInt);
+                List<String> errors1 = CheckForErrors.checkForNotNumbersErrors(new ArrayList<>(Arrays.asList(priceField)),new ArrayList<>(Arrays.asList(countField)));
                 if(errors!=null){
-                    showError(errors.get(0),CheckForErrors.getErrorTextFields(errors));
+                    showError(errors.get(0), CheckForErrors.getErrorTextFields(errors));
                 }else if(errors1!=null){
-                    showError(errors1.get(0),CheckForErrors.getErrorTextFields(errors1));
+                    showError(errors1.get(0), CheckForErrors.getErrorTextFields(errors1));
                 }else{
-                    createNewItem();
+                    createNewItem(model,frame);
                     dispose();
                 }
             }
         });
+        c.fill=NONE;
         c.gridy = 5;
         c.gridx = 0;
         c.weighty = 0.5;
@@ -221,15 +193,15 @@ public class CreateProductInStoreForm extends JFrame {
         c.insets = new Insets(10,0,10,200);
         createButton.setBackground(Color.green);
         mainPanel.add(createButton,c);
-        cancelButton = new JButton("Cancel");
+        JButton cancelButton = new JButton("Cancel");
         cancelButton.setFont(new Font("TimesRoman", Font.PLAIN, 30));
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                SwitchFrames.switchFramesForStoreProduct(frame,model);
                 dispose();
             }
         });
-        c.gridy = 5;
         c.gridx = 1;
         c.insets = new Insets(10,90,10,0);
         cancelButton.setBackground(Color.cyan);
@@ -238,89 +210,18 @@ public class CreateProductInStoreForm extends JFrame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                SwitchFrames.switchFramesForStoreProduct(frame,model);
                 dispose();
             }
         });
 
     }
 
-    private DefaultComboBoxModel createProductsList(entity.Category category, boolean condition)  {
-        ArrayList<Product> productArrayList = (ArrayList<Product>) bd_connection.Product.getAllProductsInCategorySorted(true, category);
-        for(int j=0;j<productArrayList.size();j++){
-            List<ProductInStore> productInStores = Store_Product.findStoreProductsByProductId(productArrayList.get(j).getId());
-            if(condition ? (productInStores.size()==2 || productInStores.size()==0) : productInStores.size()==2 || productInStores.size()==1) {
-                productArrayList.remove(j--);
-            }
-        }
-        return createComboBoxModelForProduct(productArrayList);
-    }
-    private DefaultComboBoxModel createComboBoxModelForProduct(ArrayList<Product> productArrayList){
-        DefaultComboBoxModel model = new DefaultComboBoxModel();
-        for (int i = 0; i < productArrayList.size(); i++) {
-            Object[] rowData = new Object[4];
-            for (int j = 0; j < rowData.length; j++) {
-                rowData[j] = createProductRow(productArrayList.get(i)).getValueAt(0, j);
-            }
-            model.addElement(rowData);
-        }
-        return model;
-    }
 
-    private DefaultComboBoxModel createCategoriesList(boolean condition) {
-        ArrayList<entity.Category> categoryArrayList = Category.findAll();
-        for(int i=0;i<categoryArrayList.size();i++){
-            int count=0;
-            List<Product> products = bd_connection.Product.getAllProductsInCategorySorted(true,categoryArrayList.get(i));
-            for(int j=0;j<products.size();j++){
-                List<ProductInStore> productInStores = Store_Product.findStoreProductsByProductId(products.get(j).getId());
-                if(condition ? (productInStores.size()==2 || productInStores.size()==0) : productInStores.size()==2 || productInStores.size()==1)
-                    count++;
-            }
-            if(count==products.size()){
-                categoryArrayList.remove(i--);
-            }
-        }
-        DefaultComboBoxModel model1 = new DefaultComboBoxModel();
-        for (int i = 0; i < categoryArrayList.size(); i++) {
-            Object[] rowData = new Object[2];
-            for (int j = 0; j < rowData.length; j++) {
-                rowData[j] = createCategoryRow(categoryArrayList.get(i)).getValueAt(0, j);
-            }
-            model1.addElement(rowData);
-        }
-        if(condition)
-            promotionalProductsList= createProductsList(categoryArrayList.get(0),condition);
-        else
-            notPromotionalProductsList= createProductsList(categoryArrayList.get(0),condition);
-        return model1;
-    }
-
-    private JTable createProductRow(Product product){
-        JTable table = new JTable();
-        DefaultTableModel model = new DefaultTableModel(new Object[]{"Id", "Name", "Characteristics", "Producer"}, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        table.setModel(model);
-        model.addRow(new Object[]{product.getId(), product.getName(), product.getCharacteristics(), product.getProducer()});
-        return table;
-    }
-
-    private JTable createCategoryRow(entity.Category category){
-        JTable table = new JTable();
-        DefaultTableModel model = new DefaultTableModel(new Object[]{"Id", "Name"}, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        table.setModel(model);
-        model.addRow(new Object[]{category.getId(), category.getName()});
-        return table;
-    }
-
+    /**
+     * Генеруєм UPC товару на складі
+     * @return UPC
+     */
     public String generateUPC() {
         int leftLimit = 97;
         int rightLimit = 122;
@@ -335,15 +236,16 @@ public class CreateProductInStoreForm extends JFrame {
         return buffer.toString();
     }
 
-    private void createNewItem(){
+    /**
+     * Додаєм новий товар на складі
+     * @param model модель таблички в основному фреймі
+     * @param frame основний фрейм з табличкою
+     */
+    private void createNewItem(DefaultTableModel model,JFrame frame){
         String UPC = generateUPC();
         while(Store_Product.findProductInStoreById(UPC) != null)
             UPC = generateUPC();
-        int id=-1;
-        if (productField.getSelectedItem() instanceof Object[]) {
-            Object[] rowData = (Object[]) productField.getSelectedItem();
-            id = Integer.valueOf(rowData[0].toString());
-        }
+        int id=getIdOfSelectedValue(productField);
         Product product = bd_connection.Product.findProductById(id);
         ProductInStore productInStore=null;
         if(!isPromotional.isSelected()){
@@ -356,7 +258,8 @@ public class CreateProductInStoreForm extends JFrame {
             Store_Product.addProductInStore(productInStore);
             Store_Product.updateProductInStoreById(mainProduct);
         }
-        System.out.println(Store_Product.findAll());
+        StoreProductTable.getStore_productListList().add(productInStore);
+        SwitchFrames.switchFramesForStoreProduct(frame,model);
     }
 
 
@@ -378,12 +281,11 @@ public class CreateProductInStoreForm extends JFrame {
     /**
      * Запускаєм користувацьку форму
      */
-    public void start() {
-        init();
+    public void start(DefaultTableModel model,JFrame frame) {
+        init(model,frame);
         add(backPanel);
         this.pack();
         this.setVisible(true);
     }
-
 
 }

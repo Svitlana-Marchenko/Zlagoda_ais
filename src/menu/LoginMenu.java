@@ -1,9 +1,14 @@
 package menu;
 
+import bd_connection.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class LoginMenu extends JFrame {
     JPanel loginPanel;
@@ -13,7 +18,6 @@ public class LoginMenu extends JFrame {
         super("Zlagoda");
         loginFrame=this;
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         init(this);
     }
 

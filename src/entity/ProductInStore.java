@@ -1,6 +1,7 @@
 package entity;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class ProductInStore {
     private String UPC;
@@ -44,6 +45,19 @@ public class ProductInStore {
 
     public boolean isPromotional() {
         return promotional;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductInStore that = (ProductInStore) o;
+        return amount == that.amount && promotional == that.promotional && Objects.equals(UPC, that.UPC) && Objects.equals(promotionalUPC, that.promotionalUPC) && Objects.equals(product, that.product) && Objects.equals(price, that.price);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(UPC, promotionalUPC, product, price, amount, promotional);
     }
 
     @Override

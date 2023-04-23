@@ -1,7 +1,10 @@
 package info_menu_manager;
 
+import bd_connection.Customer_Card;
+import create_forms.CreateCustomerCardForm;
 import entity.CustomerCard;
 import entity.Employee;
+import items_forms.CustomerCardActionForm;
 import menu.MainMenuManager;
 import menu.Report;
 
@@ -22,6 +25,10 @@ import static bd_connection.Customer_Card.*;
 
 public class CustomerTableManager {
     static List<CustomerCard> customerList;
+
+    public static List<CustomerCard> getCustomerList() {
+        return customerList;
+    }
 
     static {
         try {
@@ -176,7 +183,9 @@ public class CustomerTableManager {
         }
 
         add.addActionListener( e -> {
-                    //TODO add panel
+            frame.setEnabled(false);
+            CreateCustomerCardForm createCustomerCardForm=new CreateCustomerCardForm(model,frame);
+
                 }
         );
 
@@ -191,8 +200,8 @@ public class CustomerTableManager {
                 int row = table.getSelectedRow();
                 if (row >= 0) {
                     String customerId = (String) model.getValueAt(row, 0);
-                    System.out.println("You have clicked on " + customerId + " customer");
-                    // TODO add customer editor
+                    frame.setEnabled(false);
+                    CustomerCardActionForm customerCardActionForm = new CustomerCardActionForm(Customer_Card.findCustomerCardById(customerId),model,frame,true);
                 }
             }
             }

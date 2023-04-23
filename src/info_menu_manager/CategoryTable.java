@@ -1,8 +1,11 @@
 package info_menu_manager;
 
 
+import create_forms.CreateCategoryForm;
 import entity.Category;
+import entity.CustomerCard;
 import entity.Employee;
+import items_forms.CategoryActionForm;
 import menu.MainMenuManager;
 import menu.Report;
 
@@ -12,18 +15,28 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static bd_connection.Category.getAllCategories;
+import static bd_connection.Customer_Card.getAllCustomersSorted;
 
 public class CategoryTable {
 
-    public static void display(JFrame frame, Employee role) {
+    static List<Category> categoryList;
 
-        List<Category> categoryList = getAllCategories();
+    public static List<Category> getCategoryList() {
+        return categoryList;
+    }
+
+    static {
+        categoryList = getAllCategories();
+    }
+
+    public static void display(JFrame frame, Employee role) {
 
         JToolBar buttonPanel = new JToolBar();
 
@@ -109,7 +122,8 @@ public class CategoryTable {
         }
 
         add.addActionListener( e -> {
-                    //TODO add panel
+                    frame.setEnabled(false);
+            CreateCategoryForm categoryForm = new CreateCategoryForm(model,frame);
                 }
         );
 
@@ -124,8 +138,8 @@ public class CategoryTable {
                     int row = table.getSelectedRow();
                     if (row >= 0) {
                         int catId = (int) model.getValueAt(row, 0);
-                        System.out.println("You have clicked on " + catId + " category");
-                        // TODO add customer editor
+                        frame.setEnabled(false);
+                        CategoryActionForm categoryActionForm = new CategoryActionForm(bd_connection.Category.getCategoryById(catId),model,frame);
                     }
                 }
             }

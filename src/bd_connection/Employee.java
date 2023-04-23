@@ -14,7 +14,18 @@ public class Employee {
     public static void setConnection(Connection con){
         connection=con;
     }
-
+    static{
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/zlagoda",
+                    "zhenia",
+                    "happydog"
+            );
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     private static final String ID_EMPLOYEE = "id_employee";
     private static final String SURNAME = "empl_surname";
@@ -34,7 +45,6 @@ public class Employee {
     public static boolean addEmployee(entity.Employee employee){
         try{
             Statement statement = connection.createStatement();
-
             String request = "INSERT INTO `zlagoda`.`employee` (`id_employee`, `empl_surname`, `empl_name`, `password`, `role`, `empl_patronymic`, `salary`, `date_of_birth`, `date_of_start`, `phone_number`, `city`, `street`, `zip_code`) VALUES ('"+employee.getId()+"', '"+employee.getSurname()+"', '"+employee.getName()+"', '"+employee.getPassword()+"', '"+employee.getRole()+"', '"+employee.getPatronymic()+"', '"+employee.getSalary()+"', '"+employee.getBirthdate()+"', '"+employee.getStartDate()+"', '"+employee.getPhoneNumber()+"', '"+employee.getCity()+"', '"+employee.getStreet()+"', '"+employee.getZipCode()+"');";
             statement.execute(request);
         }catch (SQLException ex){
@@ -88,6 +98,7 @@ public class Employee {
     }
 
 
+    //знайти працівника за айді
     public static entity.Employee findEmployeeById(String id){
         try {
             Statement statement = connection.createStatement();
@@ -115,7 +126,6 @@ public class Employee {
             while(resultSet.next()) {
                 employees.add(new entity.Employee(resultSet.getString(ID_EMPLOYEE),resultSet.getString(SURNAME),resultSet.getString(NAME),resultSet.getString(PASSWORD),resultSet.getString(PATRONYMIC), entity.Employee.Role.valueOf(resultSet.getString(ROLE)),new BigDecimal(resultSet.getString(SALARY)),Date.valueOf(resultSet.getString(BIRTH_DATE)),Date.valueOf(resultSet.getString(START_DATE)),resultSet.getString(PHONE),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE)));
             }
-            //System.out.println(employees);
             return employees;
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -132,7 +142,6 @@ public class Employee {
             while(resultSet.next()) {
                 employees.add(new entity.Employee(resultSet.getString(ID_EMPLOYEE),resultSet.getString(SURNAME),resultSet.getString(NAME),resultSet.getString(PASSWORD),resultSet.getString(PATRONYMIC), entity.Employee.Role.valueOf(resultSet.getString(ROLE)),new BigDecimal(resultSet.getString(SALARY)),Date.valueOf(resultSet.getString(BIRTH_DATE)),Date.valueOf(resultSet.getString(START_DATE)),resultSet.getString(PHONE),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE)));
             }
-            //System.out.println(employees);
             return employees;
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -149,7 +158,6 @@ public class Employee {
             while(resultSet.next()) {
                 rez.add(resultSet.getString(PHONE) + ", " + resultSet.getString(CITY) + ", " + resultSet.getString(STREET) + ", " + resultSet.getString(ZIP_CODE));
             }
-            //System.out.println(rez);
             return rez;
         }catch (SQLException ex){
             System.out.println(ex.getMessage());

@@ -1,5 +1,6 @@
 package bd_connection;
 
+import entity.CustomerCard;
 import entity.Employee;
 import entity.Receipt;
 import entity.SoldProduct;
@@ -21,6 +22,18 @@ public class Check {
     private static Connection connection;
     public static void setConnection(Connection con){
         connection=con;
+    }
+    static{
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/zlagoda",
+                    "zhenia",
+                    "happydog"
+            );
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private static final String CHECK_NUMBER = "check_number";
@@ -147,6 +160,40 @@ public class Check {
         }
 
         return answ;
+    }
+
+    //Отримати всі чеки зроблені заданим касиром
+    public static ArrayList<Receipt> getAllReceiptWithEmployee(Employee employee){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "SELECT * FROM `zlagoda`.`check` WHERE (`"+ID_EMPLOYEE+"` = '"+employee.getId()+"');";
+            ResultSet resultSet = statement.executeQuery(request);
+            ArrayList<Receipt> receipts = new ArrayList<>();
+            while(resultSet.next()) {
+                receipts.add(new Receipt(resultSet.getString(CHECK_NUMBER), bd_connection.Employee.findEmployeeById(resultSet.getString(ID_EMPLOYEE)),Customer_Card.findCustomerCardById(resultSet.getString(CARD_NUMBER)),Timestamp.valueOf(resultSet.getString(PRINT_DATE)),new BigDecimal(resultSet.getString(SUM_TOTAL)),new BigDecimal(resultSet.getString(VAT)), getSoldProductsFromReceipt(resultSet.getString(CHECK_NUMBER))));
+            }
+            return receipts;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    //Отримати всі чеки для заданого покупця
+    public static ArrayList<Receipt> getAllReceiptWithCustomer(CustomerCard customerCard){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "SELECT * FROM `zlagoda`.`check` WHERE (`"+CARD_NUMBER+"` = '"+customerCard.getNumber()+"');";
+            ResultSet resultSet = statement.executeQuery(request);
+            ArrayList<Receipt> receipts = new ArrayList<>();
+            while(resultSet.next()) {
+                receipts.add(new Receipt(resultSet.getString(CHECK_NUMBER), bd_connection.Employee.findEmployeeById(resultSet.getString(ID_EMPLOYEE)),Customer_Card.findCustomerCardById(resultSet.getString(CARD_NUMBER)),Timestamp.valueOf(resultSet.getString(PRINT_DATE)),new BigDecimal(resultSet.getString(SUM_TOTAL)),new BigDecimal(resultSet.getString(VAT)), getSoldProductsFromReceipt(resultSet.getString(CHECK_NUMBER))));
+            }
+            return receipts;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return new ArrayList<>();
+        }
     }
 
 

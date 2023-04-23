@@ -15,7 +15,18 @@ public class Customer_Card {
     public static void setConnection(Connection con){
         connection=con;
     }
-
+    static{
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/zlagoda",
+                    "zhenia",
+                    "happydog"
+            );
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     private static final String CARD_NUMBER = "card_number";
@@ -75,7 +86,7 @@ public class Customer_Card {
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<CustomerCard> customerCards = new ArrayList<>();
             while(resultSet.next()) {
-                customerCards.add(new CustomerCard(resultSet.getString(CARD_NUMBER),resultSet.getString(CUSTOMER_SURNAME),resultSet.getString(CUSTOMER_NAME),resultSet.getString(CUSTOMER_PATRONYMIC),resultSet.getString(PHONE_NUMBER),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE),Integer.valueOf(resultSet.getString(PERCENT))));
+                customerCards.add(new CustomerCard(resultSet.getString(CARD_NUMBER),resultSet.getString(CUSTOMER_SURNAME),resultSet.getString(CUSTOMER_NAME),resultSet.getString(CUSTOMER_PATRONYMIC),resultSet.getString(PHONE_NUMBER),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE),resultSet.getInt(PERCENT)));
             }
             return customerCards;
         }catch (SQLException ex){
@@ -84,6 +95,7 @@ public class Customer_Card {
         }
     }
 
+    //знайти покупця за айді
     public static CustomerCard findCustomerCardById(String id){
         try {
             Statement statement = connection.createStatement();
@@ -91,7 +103,7 @@ public class Customer_Card {
             ResultSet resultSet = statement.executeQuery(request);
             CustomerCard customerCard = null;
             while(resultSet.next()) {
-                customerCard=new CustomerCard(resultSet.getString(CARD_NUMBER),resultSet.getString(CUSTOMER_SURNAME),resultSet.getString(CUSTOMER_NAME),resultSet.getString(CUSTOMER_PATRONYMIC),resultSet.getString(PHONE_NUMBER),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE),Integer.valueOf(resultSet.getString(PERCENT)));
+                customerCard=new CustomerCard(resultSet.getString(CARD_NUMBER),resultSet.getString(CUSTOMER_SURNAME),resultSet.getString(CUSTOMER_NAME),resultSet.getString(CUSTOMER_PATRONYMIC),resultSet.getString(PHONE_NUMBER),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE),resultSet.getInt(PERCENT));
             }
             return customerCard;
         }catch (SQLException ex){
@@ -109,7 +121,7 @@ public class Customer_Card {
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<CustomerCard> customerCards = new ArrayList<>();
             while(resultSet.next()) {
-                customerCards.add(new CustomerCard(resultSet.getString(CARD_NUMBER),resultSet.getString(CUSTOMER_SURNAME),resultSet.getString(CUSTOMER_NAME),resultSet.getString(CUSTOMER_PATRONYMIC),resultSet.getString(PHONE_NUMBER),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE),Integer.valueOf(resultSet.getString(PERCENT))));
+                customerCards.add(new CustomerCard(resultSet.getString(CARD_NUMBER),resultSet.getString(CUSTOMER_SURNAME),resultSet.getString(CUSTOMER_NAME),resultSet.getString(CUSTOMER_PATRONYMIC),resultSet.getString(PHONE_NUMBER),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE),resultSet.getInt(PERCENT)));
             }
             return customerCards;
         }catch (SQLException ex){
@@ -126,7 +138,7 @@ public class Customer_Card {
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<CustomerCard> customerCards = new ArrayList<>();
             while(resultSet.next()) {
-                customerCards.add(new CustomerCard(resultSet.getString(CARD_NUMBER),resultSet.getString(CUSTOMER_SURNAME),resultSet.getString(CUSTOMER_NAME),resultSet.getString(CUSTOMER_PATRONYMIC),resultSet.getString(PHONE_NUMBER),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE),Integer.valueOf(resultSet.getString(PERCENT))));
+                customerCards.add(new CustomerCard(resultSet.getString(CARD_NUMBER),resultSet.getString(CUSTOMER_SURNAME),resultSet.getString(CUSTOMER_NAME),resultSet.getString(CUSTOMER_PATRONYMIC),resultSet.getString(PHONE_NUMBER),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE),resultSet.getInt(PERCENT)));
             }
             return customerCards;
         }catch (SQLException ex){

@@ -1,6 +1,10 @@
 package info_menu_manager;
 
+import bd_connection.Customer_Card;
+import create_forms.CreateEmployeeForm;
 import entity.Employee;
+import items_forms.CustomerCardActionForm;
+import items_forms.EmployeeActionForm;
 import menu.MainMenuManager;
 import menu.Report;
 
@@ -22,7 +26,11 @@ import static bd_connection.Employee.*;
 public class EmployeeTableManager {
     static List<Employee> employee_List;
 
-        public static void display(JFrame frame, Employee role) {
+    public static List<Employee> getEmployee_List() {
+        return employee_List;
+    }
+
+    public static void display(JFrame frame, Employee role) {
 
            employee_List = findAllEmployee();
 
@@ -168,8 +176,9 @@ public class EmployeeTableManager {
                     int row = table.getSelectedRow();
                     if (row >= 0) {
                         String employeeId = (String) model.getValueAt(row, 0);
-                        System.out.println("You have clicked on " + employeeId + " employee");
-                        // TODO add employee editor
+                        frame.setEnabled(false);
+                        EmployeeActionForm employeeActionForm = new EmployeeActionForm(bd_connection.Employee.findEmployeeById(employeeId),model,frame);
+
                     }
                 }
                 }
@@ -186,7 +195,8 @@ public class EmployeeTableManager {
             }
 
             add.addActionListener( e -> {
-                        //TODO add panel
+                frame.setEnabled(false);
+                CreateEmployeeForm createEmployeeForm = new CreateEmployeeForm(model,frame);
                     }
             );
 

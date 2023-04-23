@@ -1,8 +1,11 @@
-package create_forms;
+package items_forms;
 
+import bd_connection.Check;
 import com.toedter.calendar.JDateChooser;
-import entity.Employee;
 import helpers.*;
+
+import com.toedter.calendar.JTextFieldDateEditor;
+import entity.Employee;
 import info_menu_manager.EmployeeTableManager;
 
 import javax.swing.*;
@@ -17,13 +20,13 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static java.awt.GridBagConstraints.*;
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.NONE;
 
 /**
- * Форма додавання нового працівника
+ * Форма для відображення, редагування та видалення працівника
  */
-public class CreateEmployeeForm extends JFrame {
-
+public class EmployeeActionForm extends JFrame {
     private JPanel backPanel;
 
     private JTextField nameField;
@@ -40,9 +43,13 @@ public class CreateEmployeeForm extends JFrame {
     private JTextField streetField;
     private JTextField zipCodeField;
 
-    public CreateEmployeeForm(DefaultTableModel model, JFrame frame){
-        super("Create new employee");
+    private Employee employee;
+
+
+    public EmployeeActionForm(Employee employee, DefaultTableModel model, JFrame frame){
+        super("Edit employee");
         this.setSize(600,500);
+        this.employee = employee;
         start(model,frame);
     }
 
@@ -51,64 +58,72 @@ public class CreateEmployeeForm extends JFrame {
      */
     private void init(DefaultTableModel model, JFrame frame){
         backPanel = new JPanel();
+        List<JTextField> fields = new ArrayList<>();
+        final int[] max_length = {50,13,9,72};
         backPanel.setLayout(new BoxLayout(backPanel, BoxLayout.PAGE_AXIS));
         JPanel captionPanel = new JPanel();
         captionPanel.setLayout(new BoxLayout(captionPanel, BoxLayout.LINE_AXIS));
-
-        final int[] max_length = {50,13,9,72};
+        ButtonsPanel buttonPanel = new ButtonsPanel(true);
 
         GridBagConstraints c = new GridBagConstraints();
-        JLabel captionLabel = new JLabel("New employee");
+        JLabel captionLabel = new JLabel("Employee");
         captionLabel.setHorizontalAlignment(JLabel.CENTER);
         captionLabel.setFont(new Font("TimesRoman", Font.BOLD, 35));
         captionPanel.add(captionLabel);
         backPanel.add(captionPanel);
-        JPanel buttonPanel = new JPanel();
 
 
         JPanel mainPanel = new JPanel(new GridBagLayout());
         List<JLabel> labels = new ArrayList<>();
-        List<JTextField> fields = new ArrayList<>();
 
         nameField = new JTextField();
+        nameField.setText(employee.getName());
         fields.add(nameField);
         labels.add(new JLabel("Name: "));
 
         surnameField = new JTextField();
+        surnameField.setText(employee.getSurname());
         fields.add(surnameField);
         labels.add(new JLabel("Surname: "));
 
         patronymicField = new JTextField();
+        patronymicField.setText(employee.getPatronymic());
         fields.add(patronymicField);
         labels.add(new JLabel("Patronymic: "));
 
         labels.add(new JLabel("Date of birth: "));
 
         cityField = new JTextField();
+        cityField.setText(employee.getCity());
         fields.add(cityField);
         labels.add(new JLabel("City: "));
 
         streetField = new JTextField();
+        streetField.setText(employee.getStreet());
         fields.add(streetField);
         labels.add(new JLabel("Street: "));
 
         phoneNumberField = new JTextField();
+        phoneNumberField.setText(employee.getPhoneNumber());
         fields.add(phoneNumberField);
         labels.add(new JLabel("Phone number: "));
 
         zipCodeField = new JTextField();
+        zipCodeField.setText(employee.getZipCode());
         labels.add(new JLabel("Zip code: "));
         fields.add(zipCodeField);
 
         labels.add(new JLabel("Role: "));
 
         salaryField = new JTextField();
+        salaryField.setText(String.valueOf(employee.getSalary()));
         labels.add(new JLabel("Salary: "));
         fields.add(salaryField);
 
         labels.add(new JLabel("Date of start: "));
 
         passwordField = new JTextField();
+        passwordField.setText(employee.getPassword());
         labels.add(new JLabel("Password: "));
         fields.add(passwordField);
 
@@ -128,35 +143,63 @@ public class CreateEmployeeForm extends JFrame {
 
             if(i==3){
                 dateOfBirth = new JDateChooser();
+                dateOfBirth.setDate(employee.getBirthdate());
+                dateOfBirth.setEnabled(false);
+                ((JTextFieldDateEditor)dateOfBirth.getDateEditor())
+                        .setDisabledTextColor(Color.black);
                 dateOfBirth.setFont(new Font("TimesRoman",Font.PLAIN, 20));
-                dateOfBirth.setDate(new Date());
                 mainPanel.add(dateOfBirth,c);
                 k++;
             }else if(i==8){
                 String[] roles = Stream.of(Employee.Role.values()).map(Employee.Role::name).toArray(String[]::new);
                 roleField = new JComboBox();
                 roleField.setFont(new Font("TimesRoman",Font.PLAIN, 20));
+                roleField.setEnabled(false);
                 for(String role: roles){
                     roleField.addItem(role);
+                    if(role==employee.getRole().toString())
+                        roleField.setSelectedItem(role);
                 }
+                roleField.setRenderer(new DefaultListCellRenderer() {
+                    @Override
+                    public void paint(Graphics g) {
+                        setForeground(Color.BLACK);
+                        super.paint(g);
+                    }
+                });
                 mainPanel.add(roleField,c);
                 k++;
             }else if(i==10){
                 dateOfStart = new JDateChooser();
+                dateOfStart.setEnabled(false);
+                dateOfStart.setDate(employee.getStartDate());
+                ((JTextFieldDateEditor)dateOfStart.getDateEditor())
+                        .setDisabledTextColor(Color.black);
                 dateOfStart.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-                dateOfStart.setDate(new Date());
                 mainPanel.add(dateOfStart,c);
                 k++;
             }else{
                 fields.get(i-k).setFont(new Font("TimesRoman",Font.PLAIN, 25));
+                fields.get(i-k).setEditable(false);
                 mainPanel.add(fields.get(i-k),c);
             }
         }
         CheckForErrors.tFields=fields;
 
-        JButton createButton = new JButton("Create");
-        createButton.setFont(new Font("TimesRoman", Font.PLAIN, 27));
-        createButton.addActionListener(new ActionListener() {
+        buttonPanel.getEditButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                buttonPanel.setEnabled(true);
+                for(JTextField field: fields){
+                    field.setEditable(true);
+                }
+                dateOfStart.setEnabled(true);
+                dateOfBirth.setEnabled(true);
+                roleField.setEnabled(true);
+            }
+        });
+
+        buttonPanel.getSaveButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 List<List<JTextField>> fieldsList = new ArrayList<>();
@@ -169,11 +212,11 @@ public class CreateEmployeeForm extends JFrame {
                 List<String> errors2 = CheckForErrors.checkForNotNumbersErrors(new ArrayList<>(Arrays.asList(salaryField)), new ArrayList<>());
                 List<String> errors3 = CheckForErrors.checkForLength(max_length,fieldsList);
                 if(errors!=null){
-                    showError(errors.get(0),CheckForErrors.getErrorTextFields(errors));
+                    showError(errors.get(0), CheckForErrors.getErrorTextFields(errors));
                 }else if(errors2!=null){
-                    showError(errors2.get(0),CheckForErrors.getErrorTextFields(errors2));
+                    showError(errors2.get(0), CheckForErrors.getErrorTextFields(errors2));
                 }else if(errors3!=null){
-                    showError(errors3.get(0),CheckForErrors.getErrorTextFields(errors3));
+                    showError(errors3.get(0), CheckForErrors.getErrorTextFields(errors3));
                 }else if(dateOfBirth.getDate().after(new java.sql.Date(2005-1900,3,25))){
                     JOptionPane.showMessageDialog(null, "Employee must be >=18 years old", "Error", JOptionPane.ERROR_MESSAGE);
                     dateOfBirth.setDate(new Date());
@@ -181,43 +224,42 @@ public class CreateEmployeeForm extends JFrame {
                     JOptionPane.showMessageDialog(null, "Employee can't start in the future", "Error", JOptionPane.ERROR_MESSAGE);
                     dateOfStart.setDate(new Date());
                 }else if(!CheckForErrors.checkPhoneNumber(phoneNumberField.getText())){
-                    phoneNumberField.setBackground(Color.red);
-                    JOptionPane.showMessageDialog(null, "Wrong phone number format. Must be +380xxxxxxxxx", "Error", JOptionPane.ERROR_MESSAGE);
-                    phoneNumberField.setText("");
-                    phoneNumberField.setBackground(Color.white);
+                    showError("Wrong phone number format. Must be +380xxxxxxxxx", new JTextField[]{phoneNumberField});
                 }else{
-                    createNewItem(model,frame);
-                    dispose();
+                    updateItem();
+                    buttonPanel.setEnabled(false);
+                    for(JTextField field: fields){
+                        field.setEditable(false);
+                    }
+                    dateOfStart.setEnabled(false);
+                    dateOfBirth.setEnabled(false);
+                    roleField.setEnabled(false);
                 }
             }
         });
-        c=new GridBagConstraints();
-        c.gridy = 0;
-        c.gridx = 0;
-        c.weightx = 0.5;
-        c.weighty=0.5;
-        c.fill=HORIZONTAL;
-        c.insets = new Insets(5,5,5,0);
-        createButton.setBackground(Color.green);
-        buttonPanel.add(createButton,c);
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.setFont(new Font("TimesRoman", Font.PLAIN, 27));
-        cancelButton.addActionListener(new ActionListener() {
+
+        buttonPanel.getDeleteButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int result = JOptionPane.showConfirmDialog(null,"Are you sure? Delete this employee?", "Delete category",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE);
+                if(result == JOptionPane.YES_OPTION){
+                    deleteItem(model,frame);
+                }
+            }
+        });
+
+        buttonPanel.getCancelButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 SwitchFrames.switchFramesForEmployee(frame,model);
                 dispose();
             }
         });
-        c.gridx = 1;
-        c.insets = new Insets(5,10,5,8);
-        cancelButton.setBackground(Color.cyan);
-        buttonPanel.add(cancelButton,c);
-        c.gridy=12;
-        c.gridx=0;
-        c.gridwidth = 2;
-        mainPanel.add(buttonPanel,c);
+
         backPanel.add(mainPanel);
+        backPanel.add(buttonPanel);
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -228,38 +270,33 @@ public class CreateEmployeeForm extends JFrame {
     }
 
     /**
-     * Генеруєм випадковий номер працівника
-     * @return випадковий номер
-     */
-    private String generateNumber() {
-        int leftLimit = 97;
-        int rightLimit = 122;
-        int targetStringLength = 10;
-        Random random = new Random();
-        StringBuilder buffer = new StringBuilder(targetStringLength);
-        for (int i = 0; i < targetStringLength; i++) {
-            int randomLimitedInt = leftLimit + (int)
-                    (random.nextFloat() * (rightLimit - leftLimit + 1));
-            buffer.append((char) randomLimitedInt);
-        }
-        return buffer.toString();
-    }
-
-    /**
-     * Додаєм нового працівника
+     * Видадяєм працівника з бази
      * @param model модель таблички в основному фреймі
      * @param frame основний фрейм з табличкою
      */
-    private void createNewItem(DefaultTableModel model, JFrame frame){
-        String number = generateNumber();
-        while(bd_connection.Employee.findEmployeeById(number) != null)
-            number = generateNumber();
-        Employee employee = new Employee(number,surnameField.getText(),nameField.getText(),passwordField.getText(),patronymicField.getText(),Employee.Role.valueOf(roleField.getSelectedItem().toString()), new BigDecimal(Double.valueOf(salaryField.getText())),new java.sql.Date(dateOfBirth.getDate().getTime()), new java.sql.Date(dateOfStart.getDate().getTime()),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText());
-        bd_connection.Employee.addEmployee(employee);
-        EmployeeTableManager.getEmployee_List().add(employee);
+    private void deleteItem(DefaultTableModel model, JFrame frame) {
+        if(!Check.getAllReceiptWithEmployee(employee).isEmpty()){
+            JOptionPane.showMessageDialog(null,"You can't delete employee with checks!","Error",JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        bd_connection.Employee.deleteEmployeeById(employee.getId());
+
+        EmployeeTableManager.getEmployee_List().remove(employee);
         SwitchFrames.switchFramesForEmployee(frame,model);
+        dispose();
     }
 
+    /**
+     * Редагуєм інформацію про працівника
+     */
+    private void updateItem() {
+        Employee temp = new Employee(employee.getId(),surnameField.getText(),nameField.getText(),passwordField.getText(),patronymicField.getText(),Employee.Role.valueOf(roleField.getSelectedItem().toString()), new BigDecimal(Double.valueOf(salaryField.getText())),new java.sql.Date(dateOfBirth.getDate().getTime()), new java.sql.Date(dateOfStart.getDate().getTime()),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText());
+        if(!temp.equals(employee)){
+            bd_connection.Employee.updateEmployeeById(temp);
+            EmployeeTableManager.getEmployee_List().set(EmployeeTableManager.getEmployee_List().indexOf(employee),temp);
+            employee=temp;
+        }
+    }
 
     /**
      * Відображаєм помилку
@@ -267,13 +304,12 @@ public class CreateEmployeeForm extends JFrame {
      * @param fields поля з помилкою
      */
     private void showError(String text, JTextField[] fields){
-
         for(int i=0;i<fields.length;i++){
-            fields[i].setBackground(Color.red);
+            fields[i].setForeground(Color.red);
         }
         JOptionPane.showMessageDialog(null,text,"Error",JOptionPane.ERROR_MESSAGE);
         for(int i=0;i<fields.length;i++){
-            fields[i].setBackground(Color.white);
+            fields[i].setForeground(Color.black);
             fields[i].setText("");
         }
     }

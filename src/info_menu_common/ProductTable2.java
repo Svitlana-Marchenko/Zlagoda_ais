@@ -1,8 +1,10 @@
 package info_menu_common;
 
+import create_forms.CreateProductForm;
 import entity.Category;
 import entity.Employee;
 import entity.Product;
+import items_forms.ProductActionForm;
 import menu.MainMenuCashier;
 import menu.MainMenuManager;
 import menu.Report;
@@ -23,6 +25,10 @@ import static bd_connection.Product.*;
 
 public class ProductTable2 {
     static List<Product> product_List;
+
+    public static List<Product> getProduct_List() {
+        return product_List;
+    }
 
     public static void display(JFrame frame, Employee role) {
 
@@ -183,7 +189,8 @@ public class ProductTable2 {
         }
 
         add.addActionListener( e -> {
-            //TODO add panel
+            frame.setEnabled(false);
+            CreateProductForm createProductForm = new CreateProductForm(model,frame);
                 }
         );
 
@@ -198,8 +205,8 @@ public class ProductTable2 {
                     int row = table.getSelectedRow();
                     if (row >= 0) {
                         int prId = (int) model.getValueAt(row, 0);
-                        System.out.println("You have clicked on " + prId + " product");
-                        // TODO add customer editor
+                        frame.setEnabled(false);
+                        ProductActionForm productActionForm = new ProductActionForm(bd_connection.Product.findProductById(prId),model,frame);
                     }
                 }
             }

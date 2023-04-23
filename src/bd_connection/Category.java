@@ -14,6 +14,18 @@ public class Category {
     public static void setConnection(Connection con){
         connection=con;
     }
+    static{
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/zlagoda",
+                    "zhenia",
+                    "happydog"
+            );
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     private static final String CATEGORY_NUMBER = "category_number";
     private static final String CATEGORY_NAME = "category_name";
@@ -59,7 +71,7 @@ public class Category {
         return true;
     }
 
-
+//знайти категорії товарів за айді
     public static entity.Category findCategoryById(int id){
         try {
             Statement statement = connection.createStatement();
@@ -67,26 +79,8 @@ public class Category {
             ResultSet resultSet = statement.executeQuery(request);
             entity.Category category =null;
             while(resultSet.next()) {
-                category = new entity.Category(Integer.valueOf(resultSet.getString(CATEGORY_NUMBER)),resultSet.getString(CATEGORY_NAME));
+                category = new entity.Category(resultSet.getInt(CATEGORY_NUMBER),resultSet.getString(CATEGORY_NAME));
             }
-            //System.out.println(categories);
-            return category;
-        }catch (SQLException ex){
-            System.out.println(ex.getMessage());
-            return null;
-        }
-    }
-
-    public static entity.Category findCategoryByName(String name){
-        try {
-            Statement statement = connection.createStatement();
-            String request = "SELECT * FROM `zlagoda`.`category` WHERE (`category_name` = '"+name+"');";
-            ResultSet resultSet = statement.executeQuery(request);
-            entity.Category category =null;
-            while(resultSet.next()) {
-                category = new entity.Category(Integer.valueOf(resultSet.getString(CATEGORY_NUMBER)),resultSet.getString(CATEGORY_NAME));
-            }
-            //System.out.println(categories);
             return category;
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -102,9 +96,8 @@ public class Category {
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<entity.Category> categories = new ArrayList<>();
             while(resultSet.next()) {
-                categories.add(new entity.Category(Integer.valueOf(resultSet.getString(CATEGORY_NUMBER)),resultSet.getString(CATEGORY_NAME)));
+                categories.add(new entity.Category(resultSet.getInt(CATEGORY_NUMBER),resultSet.getString(CATEGORY_NAME)));
             }
-            //System.out.println(categories);
             return categories;
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -121,9 +114,8 @@ public class Category {
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<entity.Category> categories = new ArrayList<>();
             while(resultSet.next()) {
-                categories.add(new entity.Category(Integer.valueOf(resultSet.getString(CATEGORY_NUMBER)),resultSet.getString(CATEGORY_NAME)));
+                categories.add(new entity.Category(resultSet.getInt(CATEGORY_NUMBER),resultSet.getString(CATEGORY_NAME)));
             }
-            //System.out.println(categories);
             return categories;
         }catch (SQLException ex){
             System.out.println(ex.getMessage());

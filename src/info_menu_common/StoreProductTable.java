@@ -1,5 +1,7 @@
 package info_menu_common;
 
+import bd_connection.Store_Product;
+import create_forms.CreateProductInStoreForm;
 import entity.Category;
 import entity.Employee;
 import entity.Product;
@@ -7,6 +9,7 @@ import entity.ProductInStore;
 import info_menu_cashier.StoreProductCashier;
 import info_menu_manager.CustomerTableManager;
 import info_menu_manager.StoreProductManager;
+import items_forms.ProductInStoreActionForm;
 import menu.MainMenuCashier;
 import menu.MainMenuManager;
 import menu.Report;
@@ -31,8 +34,11 @@ public class StoreProductTable {
 
     static List<ProductInStore> store_productListList;
 
-    public static void display(JFrame frame, Employee role) {
+    public static List<ProductInStore> getStore_productListList() {
+        return store_productListList;
+    }
 
+    public static void display(JFrame frame, Employee role) {
         store_productListList = getAllProductsInStoreSorted(true);
 
         JToolBar buttonPanel = new JToolBar();
@@ -221,7 +227,8 @@ public class StoreProductTable {
         }
         frame.add(managerTools, BorderLayout.PAGE_END);
         add.addActionListener( e -> {
-                    //TODO add panel
+                    frame.setEnabled(false);
+            CreateProductInStoreForm createProductInStoreForm = new CreateProductInStoreForm(model,frame);
                 }
         );
 
@@ -236,8 +243,8 @@ public class StoreProductTable {
                     int row = table.getSelectedRow();
                     if (row >= 0) {
                         String storeId = (String) model.getValueAt(row, 0);
-                        System.out.println("You have clicked on " + storeId + " store product");
-                        // TODO add customer editor
+                        frame.setEnabled(false);
+                        ProductInStoreActionForm productInStoreActionForm = new ProductInStoreActionForm(Store_Product.findProductInStoreById(storeId),model,frame);
                     }
                 }
             }

@@ -1,13 +1,15 @@
 package entity;
 
+import java.util.Objects;
+
 public class CustomerCard {
     private String number;
-    private String surname;
     private String name;
+    private String surname;
     private String patronymic;
-    private String phoneNumber;
     private String city;
     private String street;
+    private String phoneNumber;
     private String zipCode;
     private int percent;
 
@@ -57,6 +59,19 @@ public class CustomerCard {
 
     public int getPercent() {
         return percent;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CustomerCard that = (CustomerCard) o;
+        return percent == that.percent && Objects.equals(number, that.number) && Objects.equals(name, that.name) && Objects.equals(surname, that.surname) && Objects.equals(patronymic, that.patronymic) && Objects.equals(city, that.city) && Objects.equals(street, that.street) && Objects.equals(phoneNumber, that.phoneNumber) && Objects.equals(zipCode, that.zipCode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(number, name, surname, patronymic, city, street, phoneNumber, zipCode, percent);
     }
 
     @Override

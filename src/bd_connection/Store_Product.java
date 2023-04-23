@@ -16,7 +16,18 @@ public class Store_Product {
     public static void setConnection(Connection con){
         connection=con;
     }
-
+    static{
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/zlagoda",
+                    "zhenia",
+                    "happydog"
+            );
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
     private static final String UPC = "UPC";
     private static final String UPC_PROM = "UPC_prom";
     private static final String SELLING_PRICE = "selling_price";
@@ -49,8 +60,7 @@ public class Store_Product {
     public static boolean updateProductInStoreById(ProductInStore product){
         try {
             Statement statement = connection.createStatement();
-            //Запитати за айді
-            String request = "UPDATE `zlagoda`.`store_product` SET `UPC_prom` = '"+product.getPromotionalUPC()+"', `id_product` = '"+product.getProduct().getId()+"', `selling_price` = '"+product.getPrice()+"', `products_number` = '"+product.getAmount()+"', `promotional_product` = '"+Boolean.compare(product.isPromotional(),false)+"' WHERE (`UPC` = '"+product.getUPC()+"');\n";
+            String request = "UPDATE `zlagoda`.`store_product` SET `selling_price` = '"+product.getPrice()+"', `products_number` = '"+product.getAmount()+"' WHERE (`UPC` = '"+product.getUPC()+"');";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -77,7 +87,6 @@ public class Store_Product {
     public static ArrayList<ProductInStore> findAll(){
         try {
             Statement statement = connection.createStatement();
-            //Чи треба іннер джоін ProductCommands.findProductById
             String request = "SELECT "+UPC+", "+UPC_PROM+",`zlagoda`.`product`."+ID_PRODUCT+", "+SELLING_PRICE+", "+PRODUCTS_NUMBER+", "+PROMOTIONAL_PRODUCT+", "+CHARACTERISTICS+", "+PRODUCT_NAME+", `zlagoda`.`category`."+CATEGORY_ID+", "+CATEGORY_NAME+" FROM `zlagoda`.`store_product` INNER JOIN `zlagoda`.`product` ON `zlagoda`.`product`."+ID_PRODUCT+" = `zlagoda`.`store_product`."+ID_PRODUCT+"" +
                     " INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`."+CATEGORY_ID+" = `zlagoda`.`category`."+CATEGORY_ID+";";
             ResultSet resultSet = statement.executeQuery(request);
@@ -86,7 +95,6 @@ public class Store_Product {
                 products.add(new ProductInStore(resultSet.getString(UPC), resultSet.getString(UPC_PROM),
                         bd_connection.Product.findProductById(Integer.valueOf(resultSet.getString(ID_PRODUCT))), new BigDecimal(resultSet.getString(SELLING_PRICE)), Integer.valueOf(resultSet.getString(PRODUCTS_NUMBER)), (Integer.valueOf(resultSet.getString(PROMOTIONAL_PRODUCT)) == 1 ? true : false)));
             }
-            //System.out.println(products);
             return products;
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -94,6 +102,7 @@ public class Store_Product {
         }
     }
 
+    //знайти товари на складі для певного товару
     public static ArrayList<ProductInStore> findStoreProductsByProductId(int id){
         try {
             Statement statement = connection.createStatement();
@@ -105,7 +114,6 @@ public class Store_Product {
                 products.add(new ProductInStore(resultSet.getString(UPC), resultSet.getString(UPC_PROM),
                         bd_connection.Product.findProductById(Integer.valueOf(resultSet.getString(ID_PRODUCT))), new BigDecimal(resultSet.getString(SELLING_PRICE)), Integer.valueOf(resultSet.getString(PRODUCTS_NUMBER)), (Integer.valueOf(resultSet.getString(PROMOTIONAL_PRODUCT)) == 1 ? true : false)));
             }
-            //System.out.println(products);
             return products;
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -113,10 +121,10 @@ public class Store_Product {
         }
     }
 
+    //знайти товар на складі за айді
     public static ProductInStore findProductInStoreById(String productUPC){
         try {
             Statement statement = connection.createStatement();
-            //Чи треба іннер джоін ProductCommands.findProductById
             String request = "SELECT "+UPC+", "+UPC_PROM+",`zlagoda`.`product`."+ID_PRODUCT+", "+SELLING_PRICE+", "+PRODUCTS_NUMBER+", "+PROMOTIONAL_PRODUCT+", "+CHARACTERISTICS+", "+PRODUCT_NAME+", `zlagoda`.`category`."+CATEGORY_ID+", "+CATEGORY_NAME+" FROM `zlagoda`.`store_product` INNER JOIN `zlagoda`.`product` ON `zlagoda`.`product`."+ID_PRODUCT+" = `zlagoda`.`store_product`."+ID_PRODUCT+"" +
                     " INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`."+CATEGORY_ID+" = `zlagoda`.`category`."+CATEGORY_ID+" WHERE (`"+UPC+"` = '"+productUPC+"');";
             ResultSet resultSet = statement.executeQuery(request);
@@ -136,7 +144,6 @@ public class Store_Product {
     public static ArrayList<ProductInStore> findAllSortedByAmount(){
         try {
             Statement statement = connection.createStatement();
-            //Чи треба іннер джоін ProductCommands.findProductById
             String request = "SELECT "+UPC+", "+UPC_PROM+",`zlagoda`.`product`."+ID_PRODUCT+", "+SELLING_PRICE+", "+PRODUCTS_NUMBER+", "+PROMOTIONAL_PRODUCT+", "+CHARACTERISTICS+", "+PRODUCT_NAME+", `zlagoda`.`category`."+CATEGORY_ID+", "+CATEGORY_NAME+" FROM `zlagoda`.`store_product` INNER JOIN `zlagoda`.`product` ON `zlagoda`.`product`."+ID_PRODUCT+" = `zlagoda`.`store_product`."+ID_PRODUCT+"" +
                     " INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`."+CATEGORY_ID+" = `zlagoda`.`category`."+CATEGORY_ID+" ORDER BY "+PRODUCTS_NUMBER+";";
             ResultSet resultSet = statement.executeQuery(request);
@@ -145,7 +152,6 @@ public class Store_Product {
                 products.add(new ProductInStore(resultSet.getString(UPC), resultSet.getString(UPC_PROM),
                         bd_connection.Product.findProductById(Integer.valueOf(resultSet.getString(ID_PRODUCT))), new BigDecimal(resultSet.getString(SELLING_PRICE)), Integer.valueOf(resultSet.getString(PRODUCTS_NUMBER)), (Integer.valueOf(resultSet.getString(PROMOTIONAL_PRODUCT)) == 1 ? true : false)));
             }
-            //System.out.println(products);
             return products;
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -165,6 +171,7 @@ public class Store_Product {
             if (resultSet.next()) {
                 int id = resultSet.getInt("id_product");
                 String upc_prom = resultSet.getString("UPC_prom");
+                String producer = resultSet.getString("producer");
                 BigDecimal price = resultSet.getBigDecimal("selling_price");
                 int products_number = resultSet.getInt("products_number");
                 boolean prom_products = resultSet.getBoolean("promotional_product");
@@ -175,7 +182,7 @@ public class Store_Product {
 
                 String sqlCat = "SELECT * FROM Category WHERE category_number = '"+categoryN+"'";
                 ResultSet resultCat = statement.executeQuery(sqlCat);
-                return new ProductInStore(upc, upc_prom, new Product(id, name, getCategory(categoryN), "", characteristic), price, products_number, prom_products);
+                return new ProductInStore(upc, upc_prom, new Product(id, name, getCategory(categoryN), producer, characteristic), price, products_number, prom_products);
 
             }
         }
@@ -207,6 +214,7 @@ public class Store_Product {
                 int id = resultSet.getInt("id_product");
                 String upc = resultSet.getString("upc");
                 String upc_prom = resultSet.getString("upc_prom");
+                String producer = resultSet.getString("producer");
                 BigDecimal price = resultSet.getBigDecimal("selling_price");
                 int products_number = resultSet.getInt("products_number");
                 boolean prom_products = resultSet.getBoolean("promotional_product");
@@ -216,7 +224,7 @@ public class Store_Product {
                 String characteristic = resultSet.getString("characteristics");
 
 
-                ProductInStore product = new ProductInStore(upc, upc_prom, new Product(id, name, getCategory(categoryN), "", characteristic), price, products_number, prom_products);
+                ProductInStore product = new ProductInStore(upc, upc_prom, new Product(id, name, getCategory(categoryN), producer, characteristic), price, products_number, prom_products);
                 products.add(product);
             }
         }
@@ -241,6 +249,7 @@ public class Store_Product {
                     int id = resultSet.getInt("id_product");
                     String upc = resultSet.getString("upc");
                     String upc_prom = resultSet.getString("upc_prom");
+                    String producer = resultSet.getString("producer");
                     BigDecimal price = resultSet.getBigDecimal("selling_price");
                     int products_number = resultSet.getInt("products_number");
                     boolean prom_products = resultSet.getBoolean("promotional_product");
@@ -249,7 +258,7 @@ public class Store_Product {
                     int categoryN = resultSet.getInt("category_number");
                     String characteristic = resultSet.getString("characteristics");
 
-                    ProductInStore product = new ProductInStore(upc, upc_prom, new Product(id, name, getCategory(categoryN), "", characteristic), price, products_number, prom_products);
+                    ProductInStore product = new ProductInStore(upc, upc_prom, new Product(id, name, getCategory(categoryN), producer, characteristic), price, products_number, prom_products);
                     products.add(product);
                 }
             }

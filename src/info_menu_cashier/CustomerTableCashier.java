@@ -1,7 +1,10 @@
 package info_menu_cashier;
 
+import bd_connection.Customer_Card;
+import create_forms.CreateCustomerCardForm;
 import entity.CustomerCard;
 import entity.Employee;
+import items_forms.CustomerCardActionForm;
 import menu.MainMenuCashier;
 import menu.MainMenuManager;
 
@@ -167,7 +170,8 @@ buttonPanel.add(nameField);
         }
 
         add.addActionListener( e -> {
-                    //TODO add panel
+                    frame.setEnabled(false);
+            CreateCustomerCardForm createCustomerCardForm = new CreateCustomerCardForm(model,frame);
                 }
         );
 
@@ -179,8 +183,8 @@ buttonPanel.add(nameField);
                     int row = table.getSelectedRow();
                     if (row >= 0) {
                         String custId = (String) model.getValueAt(row, 0);
-                        System.out.println("You have clicked on " + custId + " cust");
-                        // TODO add customer editor
+                        frame.setEnabled(false);
+                        CustomerCardActionForm customerCardActionForm = new CustomerCardActionForm(Customer_Card.findCustomerCardById(custId),model,frame,false);
                     }
 
             }

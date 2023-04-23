@@ -6,6 +6,7 @@ public class SoldProduct {
     private String UPC;
     private String name;
     private int amount;
+
     private BigDecimal price;
 
     public SoldProduct(String UPC, String name, int amount, BigDecimal price) {

@@ -22,6 +22,13 @@ public class Receipt {
         this.VAT = VAT;
         this.products = products;
     }
+    public boolean includeProductInStore(ProductInStore productInStore){
+        for(SoldProduct soldProduct:products){
+            if(soldProduct.getUPC().equals(productInStore.getUPC()))
+                return true;
+        }
+        return false;
+    }
 
     public String getNumber() {
         return number;

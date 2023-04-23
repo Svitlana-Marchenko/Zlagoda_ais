@@ -2,6 +2,7 @@ package entity;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.Objects;
 
 public class Employee {
     public enum Role {
@@ -89,6 +90,19 @@ public class Employee {
 
     public String getId() {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return Objects.equals(id, employee.id) && Objects.equals(surname, employee.surname) && Objects.equals(name, employee.name) && Objects.equals(password, employee.password) && Objects.equals(patronymic, employee.patronymic) && role == employee.role && Objects.equals(salary, employee.salary) && Objects.equals(birthdate, employee.birthdate) && Objects.equals(startDate, employee.startDate) && Objects.equals(phoneNumber, employee.phoneNumber) && Objects.equals(city, employee.city) && Objects.equals(street, employee.street) && Objects.equals(zipCode, employee.zipCode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, surname, name, password, patronymic, role, salary, birthdate, startDate, phoneNumber, city, street, zipCode);
     }
 
     @Override

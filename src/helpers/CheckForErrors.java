@@ -1,4 +1,4 @@
-package create_forms;
+package helpers;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class CheckForErrors {
         List<String> rez = new LinkedList<>();
         rez.add("Field can't be empty!");
         for(int i=0;i<tFields.size();i++){
-            if(tFields.get(i).getText().trim().equals("") && tFields.get(i).isEnabled())
+            if(tFields.get(i).getText().trim().equals("") && tFields.get(i).isEnabled() && tFields.get(i).isEditable())
                 rez.add(String.valueOf(i+1));
         }
         if(rez.size()>1){
@@ -50,11 +50,11 @@ public class CheckForErrors {
         List<String> rez = new LinkedList<>();
         rez.add("Incorrect input!\nField can include only numbers >=0");
         for(int i=0;i<checkDouble.size();i++){
-            if(checkDouble.get(i).isEnabled() && (!checkDoubleNumber(checkDouble.get(i).getText()) ||Double.valueOf(checkDouble.get(i).getText())<0))
+            if(checkDouble.get(i).isEnabled() &&  checkDouble.get(i).isEditable() && (!checkDoubleNumber(checkDouble.get(i).getText()) ||Double.valueOf(checkDouble.get(i).getText())<0))
                 rez.add(String.valueOf(tFields.indexOf(checkDouble.get(i))+1));
         }
         for(int i=0;i<checkInt.size();i++){
-            if(checkInt.get(i).isEnabled() &&(!checkNumber(checkInt.get(i).getText()) ||Integer.valueOf(checkInt.get(i).getText())<0))
+            if(checkInt.get(i).isEnabled() &&checkInt.get(i).isEditable() &&(!checkNumber(checkInt.get(i).getText()) ||Integer.valueOf(checkInt.get(i).getText())<0))
                 rez.add(String.valueOf(tFields.indexOf(checkInt.get(i))+1));
         }
         if(rez.size()>1){
