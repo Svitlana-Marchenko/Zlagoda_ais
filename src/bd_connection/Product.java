@@ -21,18 +21,7 @@ public class Product {
     public static void setConnection(Connection con){
         connection=con;
     }
-    static{
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/ais_supermarket",
-                    "Svitlana",
-                    "Password_for_mysql1"
-            );
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     //1. Додавати нові дані про товари
     public static boolean addProduct(entity.Product product){
