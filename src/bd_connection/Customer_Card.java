@@ -19,9 +19,9 @@ public class Customer_Card {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/zlagoda",
-                    "zhenia",
-                    "happydog"
+                    "jdbc:mysql://localhost:3306/ais_supermarket",
+                    "Svitlana",
+                    "Password_for_mysql1"
             );
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
@@ -43,7 +43,7 @@ public class Customer_Card {
     public static boolean addCustomer(CustomerCard customer){
         try{
             Statement statement = connection.createStatement();
-            String request="INSERT INTO `zlagoda`.`customer_card` (`card_number`, `cust_surname`, `cust_name`, `cust_patronymic`, `phone_number`, `city`, `street`, `zip_code`, `percent`) VALUES ('"+customer.getNumber()+"', '"+customer.getSurname()+"', '"+customer.getName()+"', '"+customer.getPatronymic()+"', '"+customer.getPhoneNumber()+"', '"+customer.getCity()+"', '"+customer.getStreet()+"', '"+customer.getZipCode()+"', '"+customer.getPercent()+"');";
+            String request="INSERT INTO customer_card (`card_number`, `cust_surname`, `cust_name`, `cust_patronymic`, `phone_number`, `city`, `street`, `zip_code`, `percent`) VALUES ('"+customer.getNumber()+"', '"+customer.getSurname()+"', '"+customer.getName()+"', '"+customer.getPatronymic()+"', '"+customer.getPhoneNumber()+"', '"+customer.getCity()+"', '"+customer.getStreet()+"', '"+customer.getZipCode()+"', '"+customer.getPercent()+"');";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -56,7 +56,7 @@ public class Customer_Card {
     public static boolean updateCustomerById(CustomerCard customer){
         try {
             Statement statement = connection.createStatement();
-            String request="UPDATE `zlagoda`.`customer_card` SET `cust_surname` = '"+customer.getSurname()+"', `cust_name` = '"+customer.getName()+"', `cust_patronymic` = '"+customer.getPatronymic()+"', `phone_number` = '"+customer.getPhoneNumber()+"', `city` = '"+customer.getCity()+"', `street` = '"+customer.getStreet()+"', `zip_code` = '"+customer.getZipCode()+"', `percent` = '"+customer.getPercent()+"' WHERE (`card_number` = '"+customer.getNumber()+"');";
+            String request="UPDATE customer_card SET `cust_surname` = '"+customer.getSurname()+"', `cust_name` = '"+customer.getName()+"', `cust_patronymic` = '"+customer.getPatronymic()+"', `phone_number` = '"+customer.getPhoneNumber()+"', `city` = '"+customer.getCity()+"', `street` = '"+customer.getStreet()+"', `zip_code` = '"+customer.getZipCode()+"', `percent` = '"+customer.getPercent()+"' WHERE (`card_number` = '"+customer.getNumber()+"');";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -69,7 +69,7 @@ public class Customer_Card {
     public static boolean deleteCustomerById(String id){
         try {
             Statement statement = connection.createStatement();
-            String request = "DELETE FROM `zlagoda`.`customer_card` WHERE (`"+CARD_NUMBER+"` = '"+id+"');";
+            String request = "DELETE FROM customer_card WHERE (`"+CARD_NUMBER+"` = '"+id+"');";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -82,7 +82,7 @@ public class Customer_Card {
     public static ArrayList<CustomerCard> findAll(){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT * FROM `zlagoda`.`customer_card`;";
+            String request = "SELECT * FROM customer_card;";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<CustomerCard> customerCards = new ArrayList<>();
             while(resultSet.next()) {
@@ -99,7 +99,7 @@ public class Customer_Card {
     public static CustomerCard findCustomerCardById(String id){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT * FROM `zlagoda`.`customer_card` WHERE (`"+CARD_NUMBER+"` = '"+id+"');";
+            String request = "SELECT * FROM customer_card WHERE (`"+CARD_NUMBER+"` = '"+id+"');";
             ResultSet resultSet = statement.executeQuery(request);
             CustomerCard customerCard = null;
             while(resultSet.next()) {
@@ -117,7 +117,7 @@ public class Customer_Card {
     public static ArrayList<CustomerCard> findAllSortedBySurname(){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT * FROM `zlagoda`.`customer_card` ORDER BY "+CUSTOMER_SURNAME+";";
+            String request = "SELECT * FROM customer_card ORDER BY "+CUSTOMER_SURNAME+";";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<CustomerCard> customerCards = new ArrayList<>();
             while(resultSet.next()) {
@@ -134,7 +134,7 @@ public class Customer_Card {
     public static ArrayList<CustomerCard> findAllSortedBySurnameWithPercent(){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT * FROM `zlagoda`.`customer_card` WHERE (`"+PERCENT+"` >0) ORDER BY "+CUSTOMER_SURNAME+";";
+            String request = "SELECT * FROM customer_card WHERE (`"+PERCENT+"` >0) ORDER BY "+CUSTOMER_SURNAME+";";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<CustomerCard> customerCards = new ArrayList<>();
             while(resultSet.next()) {

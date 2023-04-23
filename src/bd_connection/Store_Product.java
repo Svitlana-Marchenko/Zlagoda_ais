@@ -20,9 +20,9 @@ public class Store_Product {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/zlagoda",
-                    "zhenia",
-                    "happydog"
+                    "jdbc:mysql://localhost:3306/ais_supermarket",
+                    "Svitlana",
+                    "Password_for_mysql1"
             );
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
