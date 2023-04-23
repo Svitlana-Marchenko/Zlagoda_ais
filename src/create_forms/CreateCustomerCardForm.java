@@ -210,7 +210,7 @@ public class CreateCustomerCardForm extends JFrame {
         String number = generateNumber();
         while(Customer_Card.findCustomerCardById(number) != null)
             number = generateNumber();
-        CustomerCard customerCard = new CustomerCard(number,nameField.getText(),surnameField.getText(),patronymicField.getText(),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText(),Integer.valueOf(percentField.getText()));
+        CustomerCard customerCard = new CustomerCard(number,surnameField.getText(), nameField.getText(),patronymicField.getText(),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText(),Integer.valueOf(percentField.getText()));
         Customer_Card.addCustomer(customerCard);
         CustomerTableManager.getCustomerList().add(customerCard);
         SwitchFrames.switchFramesForCustomer(frame,model);

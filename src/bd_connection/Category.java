@@ -18,9 +18,9 @@ public class Category {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/zlagoda",
-                    "zhenia",
-                    "happydog"
+                    "jdbc:mysql://localhost:3306/ais_supermarket",
+                    "Svitlana",
+                    "Password_for_mysql1"
             );
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
@@ -35,7 +35,7 @@ public class Category {
     public static boolean addCategory(entity.Category category){
         try{
             Statement statement = connection.createStatement();
-            String request = "INSERT INTO `zlagoda`.`category` (`category_number`, `category_name`) VALUES ('"+category.getId()+"', '"+category.getName()+"'); ";
+            String request = "INSERT INTO category (`category_number`, `category_name`) VALUES ('"+category.getId()+"', '"+category.getName()+"'); ";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -49,7 +49,7 @@ public class Category {
         try {
             Statement statement = connection.createStatement();
             //Запитати за айді
-            String request = "UPDATE `zlagoda`.`category` SET `category_name` = '"+category.getName()+"' WHERE (`category_number` = '"+category.getId()+"');";
+            String request = "UPDATE category SET `category_name` = '"+category.getName()+"' WHERE (`category_number` = '"+category.getId()+"');";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -62,7 +62,7 @@ public class Category {
     public static boolean deleteCategoryById(int categoryId){
         try {
             Statement statement = connection.createStatement();
-            String request = "DELETE FROM `zlagoda`.`category` WHERE (`category_number` = '"+categoryId+"');";
+            String request = "DELETE FROM category WHERE (`category_number` = '"+categoryId+"');";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -75,7 +75,7 @@ public class Category {
     public static entity.Category findCategoryById(int id){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT * FROM `zlagoda`.`category` WHERE (`category_number` = '"+id+"');";
+            String request = "SELECT * FROM category WHERE (`category_number` = '"+id+"');";
             ResultSet resultSet = statement.executeQuery(request);
             entity.Category category =null;
             while(resultSet.next()) {
@@ -92,7 +92,7 @@ public class Category {
     public static ArrayList<entity.Category> findAll(){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT * FROM `zlagoda`.`category`;";
+            String request = "SELECT * FROM category;";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<entity.Category> categories = new ArrayList<>();
             while(resultSet.next()) {
@@ -110,7 +110,7 @@ public class Category {
     public static ArrayList<entity.Category> findAllSortedByName(){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT * FROM `zlagoda`.`category` ORDER BY `category_name`;";
+            String request = "SELECT * FROM category ORDER BY `category_name`;";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<entity.Category> categories = new ArrayList<>();
             while(resultSet.next()) {

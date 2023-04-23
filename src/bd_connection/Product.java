@@ -25,9 +25,9 @@ public class Product {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/zlagoda",
-                    "zhenia",
-                    "happydog"
+                    "jdbc:mysql://localhost:3306/ais_supermarket",
+                    "Svitlana",
+                    "Password_for_mysql1"
             );
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
@@ -38,7 +38,7 @@ public class Product {
     public static boolean addProduct(entity.Product product){
         try{
             Statement statement = connection.createStatement();
-            String request = "INSERT INTO `zlagoda`.`product` (`id_product`, `category_number`, `product_name`, `characteristics`, `producer`) VALUES ('"+product.getId()+"', '"+product.getCategory().getId()+"', '"+product.getName()+"', '"+product.getCharacteristics()+"', '"+product.getProducer()+"');\n";
+            String request = "INSERT INTO product (`id_product`, `category_number`, `product_name`, `characteristics`, `producer`) VALUES ('"+product.getId()+"', '"+product.getCategory().getId()+"', '"+product.getName()+"', '"+product.getCharacteristics()+"', '"+product.getProducer()+"');\n";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -52,7 +52,7 @@ public class Product {
         try {
             Statement statement = connection.createStatement();
             //Запитати за айді
-            String request = "UPDATE `zlagoda`.`product` SET `category_number` = '"+product.getCategory().getId()+"', `product_name` = '"+product.getName()+"', `characteristics` = '"+product.getCharacteristics()+"', `producer` = '"+product.getProducer()+"' WHERE (`id_product` = '"+product.getId()+"');";
+            String request = "UPDATE product SET `category_number` = '"+product.getCategory().getId()+"', `product_name` = '"+product.getName()+"', `characteristics` = '"+product.getCharacteristics()+"', `producer` = '"+product.getProducer()+"' WHERE (`id_product` = '"+product.getId()+"');";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -65,7 +65,7 @@ public class Product {
     public static boolean deleteProductById(int productId){
         try {
             Statement statement = connection.createStatement();
-            String request = "DELETE FROM `zlagoda`.`product` WHERE (`id_product` = '"+productId+"');";
+            String request = "DELETE FROM product WHERE (`id_product` = '"+productId+"');";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -78,7 +78,7 @@ public class Product {
     public static entity.Product findProductById(int id){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT id_product, product_name,characteristics, producer, `zlagoda`.`category`.category_number,category_name FROM `zlagoda`.`product` INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`.category_number = `zlagoda`.`category`.category_number WHERE (`id_product` = '"+id+"');";
+            String request = "SELECT id_product, product_name,characteristics, producer, category.category_number,category_name FROM product INNER JOIN category ON product.category_number = category.category_number WHERE (`id_product` = '"+id+"');";
             ResultSet resultSet = statement.executeQuery(request);
             entity.Product product = null;
             while(resultSet.next()) {
@@ -94,7 +94,7 @@ public class Product {
     public static entity.Category findCategoryByProductId(int id){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT id_product, product_name,characteristics, producer, `zlagoda`.`category`.category_number,category_name FROM `zlagoda`.`product` INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`.category_number = `zlagoda`.`category`.category_number WHERE (`id_product` = '"+id+"');";
+            String request = "SELECT id_product, product_name,characteristics, producer, category.category_number,category_name FROM product INNER JOIN category ON product.category_number = category.category_number WHERE (`id_product` = '"+id+"');";
             ResultSet resultSet = statement.executeQuery(request);
             entity.Category category = null;
             while(resultSet.next()) {
@@ -111,7 +111,7 @@ public class Product {
     public static ArrayList<entity.Product> findAll(){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT id_product, product_name,characteristics,producer,`zlagoda`.`category`.category_number, category_name FROM `zlagoda`.`product` INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`.category_number = `zlagoda`.`category`.category_number;";
+            String request = "SELECT id_product, product_name,characteristics,producer,category.category_number, category_name FROM product INNER JOIN category ON product.category_number = category.category_number;";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<entity.Product> products = new ArrayList<>();
             while(resultSet.next()) {
@@ -128,7 +128,7 @@ public class Product {
     public static ArrayList<entity.Product> findAllSortedByName(){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT id_product, product_name,characteristics, producer,`zlagoda`.`category`.category_number, category_name FROM `zlagoda`.`product` INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`.category_number = `zlagoda`.`category`.category_number ORDER BY "+PRODUCT_NAME+";";
+            String request = "SELECT id_product, product_name,characteristics, producer, category.category_number, category_name FROM product INNER JOIN category ON product.category_number = category.category_number ORDER BY "+PRODUCT_NAME+";";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<entity.Product> products = new ArrayList<>();
             while(resultSet.next()) {
@@ -238,7 +238,7 @@ public class Product {
     public static entity.Product getProductById(int id){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT id_product, product_name, characteristics, producer, Category.category_number, category_name FROM `zlagoda`.`product` INNER JOIN Category ON Product.category_number = Category.category_number WHERE (`id_product` = '"+id+"');";
+            String request = "SELECT id_product, product_name, characteristics, producer, Category.category_number, category_name FROM product INNER JOIN Category ON Product.category_number = Category.category_number WHERE (`id_product` = '"+id+"');";
             ResultSet resultSet = statement.executeQuery(request);
             entity.Product product = null;
             while(resultSet.next()) {

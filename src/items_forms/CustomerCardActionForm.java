@@ -203,7 +203,7 @@ public class CustomerCardActionForm extends JFrame {
      * Редагуєм карту клієнта
      */
     private void updateItem() {
-        CustomerCard temp = new CustomerCard(customerCard.getNumber(),nameField.getText(),surnameField.getText(),patronymicField.getText(),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText(),Integer.valueOf(percentField.getText()));
+        CustomerCard temp = new CustomerCard(customerCard.getNumber(),surnameField.getText(), nameField.getText(),patronymicField.getText(),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText(),Integer.valueOf(percentField.getText()));
         if(!temp.equals(customerCard)){
             Customer_Card.updateCustomerById(temp);
             CustomerTableManager.getCustomerList().set(CustomerTableManager.getCustomerList().indexOf(customerCard),temp);

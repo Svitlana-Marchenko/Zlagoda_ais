@@ -27,9 +27,9 @@ public class Check {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/zlagoda",
-                    "zhenia",
-                    "happydog"
+                    "jdbc:mysql://localhost:3306/ais_supermarket",
+                    "Svitlana",
+                    "Password_for_mysql1"
             );
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
@@ -50,7 +50,7 @@ public class Check {
     public static boolean deleteReceiptById(String check_number){
         try {
             Statement statement = connection.createStatement();
-            String request = "DELETE FROM `zlagoda`.`check` WHERE (`"+CHECK_NUMBER+"` = '"+check_number+"');";
+            String request = "DELETE FROM `check` WHERE (`"+CHECK_NUMBER+"` = '"+check_number+"');";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -63,7 +63,7 @@ public class Check {
     public static ArrayList<Receipt> findAll(){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT * FROM `zlagoda`.`check`;";
+            String request = "SELECT * FROM `check`;";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<Receipt> receipts = new ArrayList<>();
             while(resultSet.next()) {
@@ -166,7 +166,7 @@ public class Check {
     public static ArrayList<Receipt> getAllReceiptWithEmployee(Employee employee){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT * FROM `zlagoda`.`check` WHERE (`"+ID_EMPLOYEE+"` = '"+employee.getId()+"');";
+            String request = "SELECT * FROM `check` WHERE (`"+ID_EMPLOYEE+"` = '"+employee.getId()+"');";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<Receipt> receipts = new ArrayList<>();
             while(resultSet.next()) {
@@ -183,7 +183,7 @@ public class Check {
     public static ArrayList<Receipt> getAllReceiptWithCustomer(CustomerCard customerCard){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT * FROM `zlagoda`.`check` WHERE (`"+CARD_NUMBER+"` = '"+customerCard.getNumber()+"');";
+            String request = "SELECT * FROM `check` WHERE (`"+CARD_NUMBER+"` = '"+customerCard.getNumber()+"');";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<Receipt> receipts = new ArrayList<>();
             while(resultSet.next()) {
@@ -246,7 +246,7 @@ public class Check {
 
     //7. Здійснювати продаж товарів (додавання чеків);
     public static void AddNewReceipt(Receipt receipt) throws SQLException{
-        String sql = "INSERT INTO Check (check_number, id_employee, card_number, print_date, sum_total, vat)" +
+        String sql = "INSERT INTO `Check` (check_number, id_employee, card_number, print_date, sum_total, vat)" +
                 "VALUES ("+receipt.getNumber()+", "+receipt.getEmployee().getId()+", "+receipt.getCard().getNumber()+", "+receipt.getPrintDate()+", "+receipt.getVAT()+")";
         Statement statement = connection.createStatement();
         statement.executeQuery(sql);
