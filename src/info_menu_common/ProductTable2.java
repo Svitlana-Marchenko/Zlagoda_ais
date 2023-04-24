@@ -213,7 +213,7 @@ public class ProductTable2 {
         });
     }
 
-    private static String[] getAllCategoryList(){
+    public static String[] getAllCategoryList(){
         List<Category> categories = getAllCategories();
         String[] labels = new String[categories.size()+1];
         labels[0] = "All";

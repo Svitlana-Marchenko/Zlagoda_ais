@@ -111,9 +111,6 @@ public class StoreProductCashier {
 
                     productPanel.setVisible(true);
 
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Please enter correct upc", "Eror", JOptionPane.ERROR_MESSAGE);
                 } catch (NullPointerException ex) {
                     JOptionPane.showMessageDialog(null, "Please enter correct upc", "Eror", JOptionPane.ERROR_MESSAGE);
                     productPanel.setVisible(false);

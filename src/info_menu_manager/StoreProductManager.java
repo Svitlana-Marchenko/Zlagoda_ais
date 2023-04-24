@@ -73,17 +73,27 @@ public class StoreProductManager {
         JLabel priceLabelN = new JLabel("");
         JLabel amountLabelN = new JLabel("");
         JLabel promoLabelN = new JLabel("");
-
+        JSeparator  separator = new JSeparator(SwingConstants.HORIZONTAL);
+        separator.setPreferredSize(new Dimension(0, 1));
         infoPanel.add(upcLabel);
         infoPanel.add(upcLabelN);
+
         infoPanel.add(nameLabel);
         infoPanel.add(nameLabelN);
+
+        infoPanel.add(separator);
         infoPanel.add(descrLabel);
         infoPanel.add(descrLabelN);
+
+        infoPanel.add(separator);
         infoPanel.add(priceLabel);
         infoPanel.add(priceLabelN);
+
+        infoPanel.add(separator);
         infoPanel.add(amountLabel);
         infoPanel.add(amountLabelN);
+
+        infoPanel.add(separator);
         infoPanel.add(promoLabel);
         infoPanel.add(promoLabelN);
 
@@ -117,11 +127,7 @@ public class StoreProductManager {
 
                     productPanel.setVisible(true);
 
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Please enter correct upc", "Eror", JOptionPane.ERROR_MESSAGE);
-                }
-                    catch (NullPointerException ex){
+                } catch (NullPointerException ex){
                         JOptionPane.showMessageDialog(null, "Please enter correct upc", "Eror", JOptionPane.ERROR_MESSAGE);
                         productPanel.setVisible(false);
                     }

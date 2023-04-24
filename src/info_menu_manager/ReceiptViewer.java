@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static bd_connection.Check.*;
 import static bd_connection.Employee.getAllSpecial;
 import static bd_connection.Employee.getEmployee;
+import static bd_connection.Store_Product.getAllAboutProductsOnUPC;
 
 
 public class ReceiptViewer {
@@ -210,8 +211,8 @@ statPanel.add(print);
         model.addRow(new Object[]{"UPC", "Name", "Amount", "Price"});
 
         for (SoldProduct pr : productL)
-            model.addRow(new Object[]{pr.getUPC(), pr.getName(), pr.getAmount(), pr.getPrice()});
-
+            //model.addRow(new Object[]{pr.getUPC(), pr.getName(), pr.getAmount(), pr.getPrice()});
+            model.addRow(new Object[]{pr.getUPC(), (getAllAboutProductsOnUPC(pr.getUPC())==null?"":getAllAboutProductsOnUPC(pr.getUPC()).getProduct().getName()), pr.getAmount(), pr.getPrice()});
         JOptionPane.showMessageDialog(null, table, "Products", JOptionPane.INFORMATION_MESSAGE);
     }
 
