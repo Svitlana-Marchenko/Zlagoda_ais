@@ -7,7 +7,6 @@ import entity.Employee;
 import entity.Product;
 import entity.ProductInStore;
 import info_menu_cashier.StoreProductCashier;
-import info_menu_manager.CustomerTableManager;
 import info_menu_manager.StoreProductManager;
 import items_forms.ProductInStoreActionForm;
 import menu.MainMenuCashier;
@@ -227,8 +226,13 @@ public class StoreProductTable {
         }
         frame.add(managerTools, BorderLayout.PAGE_END);
         add.addActionListener( e -> {
-                    frame.setEnabled(false);
-            CreateProductInStoreForm createProductInStoreForm = new CreateProductInStoreForm(model,frame);
+            if(checkForProductsWithoutStoreProducts()){
+                frame.setEnabled(false);
+                CreateProductInStoreForm createProductInStoreForm = new CreateProductInStoreForm(model,frame);
+            }else{
+                JOptionPane.showMessageDialog(null,"Products in store for all products already exist!","Error",JOptionPane.ERROR_MESSAGE);
+            }
+
                 }
         );
 
@@ -249,6 +253,13 @@ public class StoreProductTable {
                 }
             }
         });
+    }
+    private static boolean checkForProductsWithoutStoreProducts(){
+        int length = Store_Product.getAllProductsInStoreSorted(true).size();
+        int length2 = bd_connection.Product.findAll().size();
+        if(length==length2*2)
+            return false;
+        return true;
     }
 
     public static void main(String[] args) {

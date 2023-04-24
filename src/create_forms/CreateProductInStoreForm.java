@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.math.BigDecimal;
 
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import java.util.Arrays;
@@ -49,9 +50,11 @@ public class CreateProductInStoreForm extends JFrame {
      */
     private void init(DefaultTableModel model,JFrame frame)  {
         DefaultComboBoxModel promotionalCategoriesList = createCategoriesList(true,true,null,false);
-        DefaultComboBoxModel promotionalProductsList= createProductsList(getCategoriesArrayList(true,true).get(0),true,null, false);
         DefaultComboBoxModel notPromotionalCategoriesList=createCategoriesList(false,true,null,false);
-        DefaultComboBoxModel notPromotionalProductsList= createProductsList(getCategoriesArrayList(false,true).get(0),false,null, false);
+        ArrayList<entity.Category> cats = getCategoriesArrayList(true,true);
+        DefaultComboBoxModel promotionalProductsList= createProductsList(cats.isEmpty() ? null : cats.get(0),true,null, false);
+        cats = getCategoriesArrayList(false,true);
+        DefaultComboBoxModel notPromotionalProductsList= createProductsList(cats.isEmpty() ? null : cats.get(0),false,null, false);
 
         backPanel = new JPanel();
         backPanel.setLayout(new BoxLayout(backPanel, BoxLayout.PAGE_AXIS));
@@ -72,6 +75,12 @@ public class CreateProductInStoreForm extends JFrame {
         c.gridy = 0;
         c.gridx = 0;
         c.gridwidth=2;
+        if(promotionalProductsList==null)
+            isPromotional.setEnabled(false);
+        if(notPromotionalCategoriesList==null){
+            isPromotional.setSelected(true);
+            isPromotional.setEnabled(false);
+        }
         isPromotional.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
@@ -88,6 +97,7 @@ public class CreateProductInStoreForm extends JFrame {
                 }
             }
         });
+
         mainPanel.add(isPromotional,c);
         c.gridwidth=1;
 
@@ -97,7 +107,10 @@ public class CreateProductInStoreForm extends JFrame {
         mainPanel.add(groupLabel,c);
 
         categoryField = new JComboBox();
-        categoryField.setModel(notPromotionalCategoriesList);
+        if(notPromotionalCategoriesList!=null)
+            categoryField.setModel(notPromotionalCategoriesList);
+        else
+            categoryField.setModel(promotionalCategoriesList);
         categoryField.setFont(new Font("TimesRoman",Font.PLAIN, 20));
 
         categoryField.setRenderer(new ComboBoxRenderer());
@@ -130,7 +143,11 @@ public class CreateProductInStoreForm extends JFrame {
         mainPanel.add(productLabel,c);
 
         productField = new JComboBox();
-        productField.setModel(notPromotionalProductsList);
+        if(notPromotionalProductsList!=null)
+            productField.setModel(notPromotionalProductsList);
+        else
+            productField.setModel(promotionalProductsList);
+
         productField.setFont(new Font("TimesRoman",Font.PLAIN, 20));
 
         productField.setRenderer(new ComboBoxRenderer());
@@ -146,6 +163,8 @@ public class CreateProductInStoreForm extends JFrame {
         labels.add(new JLabel("Quantity: "));
 
         priceField = new JTextField();
+        if(notPromotionalProductsList==null)
+            priceField.setEditable(false);
         fields.add(priceField);
         labels.add(new JLabel("Price: "));
 
@@ -214,7 +233,6 @@ public class CreateProductInStoreForm extends JFrame {
                 dispose();
             }
         });
-
     }
 
 
@@ -253,7 +271,7 @@ public class CreateProductInStoreForm extends JFrame {
             Store_Product.addProductInStore(productInStore);
         }else{
             ProductInStore mainProduct = Store_Product.findStoreProductsByProductId(id).get(0);
-            productInStore = new ProductInStore(UPC, null, product, mainProduct.getPrice().multiply(new BigDecimal(0.8)).setScale(4),Integer.valueOf(countField.getText()),true);
+            productInStore = new ProductInStore(UPC, null, product, mainProduct.getPrice().multiply(new BigDecimal(0.8)).setScale(4, RoundingMode.HALF_DOWN),Integer.valueOf(countField.getText()),true);
             mainProduct.setPromotionalUPC(UPC);
             Store_Product.addProductInStore(productInStore);
             Store_Product.updateProductInStoreById(mainProduct);

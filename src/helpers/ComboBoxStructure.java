@@ -22,6 +22,8 @@ public class ComboBoxStructure {
     }
 
     public static DefaultComboBoxModel createProductsList(entity.Category category, boolean condition, Product product, boolean shouldIncludeAll)  {
+        if(category==null)
+            return null;
         ArrayList<Product> productArrayList = (ArrayList<Product>) bd_connection.Product.getAllProductsInCategorySorted(true, category);
         if(!shouldIncludeAll){
             for(int j=0;j<productArrayList.size();j++){
@@ -33,6 +35,7 @@ public class ComboBoxStructure {
         }
         if(!productArrayList.contains(product) && product!=null)
             productArrayList.add(product);
+
         return createComboBoxModelForProduct(productArrayList, product!=null, product);
     }
     public static DefaultComboBoxModel createComboBoxModelForProduct(ArrayList<Product> productArrayList, boolean shouldIncludeThis, Product product){
@@ -70,6 +73,8 @@ public class ComboBoxStructure {
 
     public static DefaultComboBoxModel createCategoriesList(boolean condition, boolean shouldIncludeProducts, Category category, boolean shouldIncludeThis) {
         ArrayList<entity.Category> categoryArrayList = getCategoriesArrayList(condition,shouldIncludeProducts);
+        if(categoryArrayList.isEmpty())
+            return null;
         if(shouldIncludeThis && !categoryArrayList.contains(category))
             categoryArrayList.add(category);
         DefaultComboBoxModel model1 = new DefaultComboBoxModel();

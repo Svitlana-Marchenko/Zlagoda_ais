@@ -17,6 +17,19 @@ public class Sale {
     public static void setConnection(Connection con){
         connection=con;
     }
+    static{
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/zlagoda",
+                    "zhenia",
+                    "happydog"
+            );
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     //21  Визначити загальну кількість одиниць певного товару, проданого за певний період часу.+
     public static int getNumSold(Date from, Date to, SoldProduct saleP) throws SQLException {
 
@@ -43,14 +56,14 @@ public class Sale {
     //additional method for getting list of sold product having check_number from receipt
     static List<SoldProduct> getSoldProductsFromReceipt(String rec_num) throws SQLException {
         List<SoldProduct> products = new ArrayList<>();
-        String sql = "SELECT * FROM Sale WHERE check_number = '" + rec_num + "'";
+        String sql = "SELECT * FROM sale WHERE check_number = '" + rec_num + "'";
 
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             while (resultSet.next()) {
 
                 String name = resultSet.getString("UPC");
-                int num = resultSet.getInt("quantity");
+                int num = resultSet.getInt("product_number");
                 BigDecimal price = resultSet.getBigDecimal("selling_price");
 
                 SoldProduct product = new SoldProduct(name, rec_num, num, price);
