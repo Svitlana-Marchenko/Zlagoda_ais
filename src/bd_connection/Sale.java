@@ -17,6 +17,7 @@ public class Sale {
     public static void setConnection(Connection con){
         connection=con;
     }
+
     //21  Визначити загальну кількість одиниць певного товару, проданого за певний період часу.+
     public static int getNumSold(Date from, Date to, SoldProduct saleP) throws SQLException {
 
@@ -50,7 +51,7 @@ public class Sale {
             while (resultSet.next()) {
 
                 String name = resultSet.getString("UPC");
-                int num = resultSet.getInt("quantity");
+                int num = resultSet.getInt("product_number");
                 BigDecimal price = resultSet.getBigDecimal("selling_price");
 
                 SoldProduct product = new SoldProduct(name, rec_num, num, price);
