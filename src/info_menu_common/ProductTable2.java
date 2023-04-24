@@ -206,7 +206,7 @@ public class ProductTable2 {
                     if (row >= 0) {
                         int prId = (int) model.getValueAt(row, 0);
                         frame.setEnabled(false);
-                        ProductActionForm productActionForm = new ProductActionForm(bd_connection.Product.findProductById(prId),model,frame);
+                        ProductActionForm productActionForm = new ProductActionForm(product_List.get(row),model,frame);
                     }
                 }
             }

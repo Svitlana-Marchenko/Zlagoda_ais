@@ -209,7 +209,7 @@ public class ProductInStoreActionForm extends JFrame {
      */
     private void updateItem() {
         if(Integer.valueOf(countField.getText()) != productInStore.getAmount() || !(new BigDecimal(priceField.getText())).equals(productInStore.getPrice())){
-            ProductInStore temp = new ProductInStore(productInStore.getUPC(),productInStore.getPromotionalUPC(),productInStore.getProduct(),new BigDecimal(priceField.getText()),Integer.valueOf(countField.getText()),productInStore.isPromotional());
+            ProductInStore temp = new ProductInStore(productInStore.getUPC(),productInStore.getPromotionalUPC(),productInStore.getProduct(),new BigDecimal(priceField.getText()).setScale(4),Integer.valueOf(countField.getText()),productInStore.isPromotional());
             StoreProductTable.getStore_productListList().set(StoreProductTable.getStore_productListList().indexOf(productInStore),temp);
             productInStore=temp;
             Store_Product.updateProductInStoreById(productInStore);

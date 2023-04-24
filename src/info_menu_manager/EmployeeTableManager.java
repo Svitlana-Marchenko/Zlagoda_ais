@@ -30,6 +30,7 @@ public class EmployeeTableManager {
         return employee_List;
     }
 
+
     public static void display(JFrame frame, Employee role) {
 
            employee_List = findAllEmployee();
@@ -177,7 +178,7 @@ public class EmployeeTableManager {
                     if (row >= 0) {
                         String employeeId = (String) model.getValueAt(row, 0);
                         frame.setEnabled(false);
-                        EmployeeActionForm employeeActionForm = new EmployeeActionForm(bd_connection.Employee.findEmployeeById(employeeId),model,frame);
+                        EmployeeActionForm employeeActionForm = new EmployeeActionForm(employee_List.get(row),model,frame);
 
                     }
                 }
