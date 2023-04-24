@@ -104,6 +104,22 @@ public class Employee {
         }
     }
 
+    public static entity.Employee findEmployeeByPhoneNumber(String phoneNumber){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "SELECT * FROM employee WHERE (`phone_number` = '"+phoneNumber+"');";
+            ResultSet resultSet = statement.executeQuery(request);
+            entity.Employee employee = null;
+            while(resultSet.next()) {
+                employee=new entity.Employee(resultSet.getString(ID_EMPLOYEE),resultSet.getString(SURNAME),resultSet.getString(NAME),resultSet.getString(PASSWORD),resultSet.getString(PATRONYMIC), entity.Employee.Role.valueOf(resultSet.getString(ROLE)),new BigDecimal(resultSet.getString(SALARY)),Date.valueOf(resultSet.getString(BIRTH_DATE)),Date.valueOf(resultSet.getString(START_DATE)),resultSet.getString(PHONE),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE));
+            }
+            return employee;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return null;
+        }
+    }
+
 
     //5. Отримати інформацію про усіх працівників, відсортованих за прізвищем;
     public static ArrayList<entity.Employee> findAllSortedBySurname(){
