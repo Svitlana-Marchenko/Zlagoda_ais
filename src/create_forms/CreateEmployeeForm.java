@@ -182,6 +182,9 @@ public class CreateEmployeeForm extends JFrame {
                 }else if(dateOfStart.getDate().after(new Date())){
                     JOptionPane.showMessageDialog(null, "Employee can't start in the future", "Error", JOptionPane.ERROR_MESSAGE);
                     dateOfStart.setDate(new Date());
+                }else if(dateOfStart.getDate().before(new java.sql.Date(dateOfBirth.getDate().getYear()+18,dateOfBirth.getDate().getMonth(),dateOfBirth.getDate().getDay()))){
+                    JOptionPane.showMessageDialog(null, "Date of Start error!\nEmployee must be >=18 y.o at the date of start", "Error", JOptionPane.ERROR_MESSAGE);
+                    dateOfStart.setDate(new Date());
                 }else if(!CheckForErrors.checkPhoneNumber(phoneNumberField.getText())){
                     phoneNumberField.setBackground(Color.red);
                     JOptionPane.showMessageDialog(null, "Wrong phone number format. Must be +380xxxxxxxxx", "Error", JOptionPane.ERROR_MESSAGE);
