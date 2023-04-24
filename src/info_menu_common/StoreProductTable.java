@@ -244,7 +244,7 @@ public class StoreProductTable {
                     if (row >= 0) {
                         String storeId = (String) model.getValueAt(row, 0);
                         frame.setEnabled(false);
-                        ProductInStoreActionForm productInStoreActionForm = new ProductInStoreActionForm(Store_Product.findProductInStoreById(storeId),model,frame);
+                        ProductInStoreActionForm productInStoreActionForm = new ProductInStoreActionForm(store_productListList.get(row),model,frame);
                     }
                 }
             }

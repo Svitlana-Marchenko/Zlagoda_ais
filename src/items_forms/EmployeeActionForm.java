@@ -228,7 +228,7 @@ public class EmployeeActionForm extends JFrame {
                 }else if(!CheckForErrors.checkPhoneNumber(phoneNumberField.getText())){
                     showError("Wrong phone number format. Must be +380xxxxxxxxx", new JTextField[]{phoneNumberField});
                 }else{
-                    updateItem();
+                    updateItem(1);
                     buttonPanel.setEnabled(false);
                     for(JTextField field: fields){
                         field.setEditable(false);
@@ -291,10 +291,11 @@ public class EmployeeActionForm extends JFrame {
     /**
      * Редагуєм інформацію про працівника
      */
-    private void updateItem() {
-        Employee temp = new Employee(employee.getId(),surnameField.getText(),nameField.getText(),passwordField.getText(),patronymicField.getText(),Employee.Role.valueOf(roleField.getSelectedItem().toString()), new BigDecimal(Double.valueOf(salaryField.getText())),new java.sql.Date(dateOfBirth.getDate().getTime()), new java.sql.Date(dateOfStart.getDate().getTime()),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText());
+    private void updateItem(int index) {
+        Employee temp = new Employee(employee.getId(),surnameField.getText(),nameField.getText(),passwordField.getText(),patronymicField.getText(),Employee.Role.valueOf(roleField.getSelectedItem().toString()), new BigDecimal(salaryField.getText()).setScale(4),new java.sql.Date(dateOfBirth.getDate().getTime()), new java.sql.Date(dateOfStart.getDate().getTime()),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText());
         if(!temp.equals(employee)){
-            EmployeeTableManager.getEmployee_List().set(EmployeeTableManager.getEmployee_List().indexOf(employee),temp);
+            index=EmployeeTableManager.getEmployee_List().indexOf(employee);
+            EmployeeTableManager.getEmployee_List().set(index,temp);
             bd_connection.Employee.updateEmployeeById(temp);
             employee=temp;
         }

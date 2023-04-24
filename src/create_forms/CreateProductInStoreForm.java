@@ -249,11 +249,11 @@ public class CreateProductInStoreForm extends JFrame {
         Product product = bd_connection.Product.findProductById(id);
         ProductInStore productInStore=null;
         if(!isPromotional.isSelected()){
-            productInStore= new ProductInStore(UPC, null, product, new BigDecimal(Double.valueOf(priceField.getText())),Integer.valueOf(countField.getText()),false);
+            productInStore= new ProductInStore(UPC, null, product, new BigDecimal(priceField.getText()).setScale(4),Integer.valueOf(countField.getText()),false);
             Store_Product.addProductInStore(productInStore);
         }else{
             ProductInStore mainProduct = Store_Product.findStoreProductsByProductId(id).get(0);
-            productInStore = new ProductInStore(UPC, null, product, mainProduct.getPrice().multiply(new BigDecimal(0.8)),Integer.valueOf(countField.getText()),true);
+            productInStore = new ProductInStore(UPC, null, product, mainProduct.getPrice().multiply(new BigDecimal(0.8)).setScale(4),Integer.valueOf(countField.getText()),true);
             mainProduct.setPromotionalUPC(UPC);
             Store_Product.addProductInStore(productInStore);
             Store_Product.updateProductInStoreById(mainProduct);

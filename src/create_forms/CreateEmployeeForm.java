@@ -256,7 +256,7 @@ public class CreateEmployeeForm extends JFrame {
         String number = generateNumber();
         while(bd_connection.Employee.findEmployeeById(number) != null)
             number = generateNumber();
-        Employee employee = new Employee(number,surnameField.getText(),nameField.getText(),passwordField.getText(),patronymicField.getText(),Employee.Role.valueOf(roleField.getSelectedItem().toString()), new BigDecimal(Double.valueOf(salaryField.getText())),new java.sql.Date(dateOfBirth.getDate().getTime()), new java.sql.Date(dateOfStart.getDate().getTime()),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText());
+        Employee employee = new Employee(number,surnameField.getText(),nameField.getText(),passwordField.getText(),patronymicField.getText(),Employee.Role.valueOf(roleField.getSelectedItem().toString()), new BigDecimal(salaryField.getText()).setScale(4),new java.sql.Date(dateOfBirth.getDate().getTime()), new java.sql.Date(dateOfStart.getDate().getTime()),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText());
         bd_connection.Employee.addEmployee(employee);
         EmployeeTableManager.getEmployee_List().add(employee);
         SwitchFrames.switchFramesForEmployee(frame,model);
