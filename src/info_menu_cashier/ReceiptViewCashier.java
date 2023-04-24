@@ -87,14 +87,14 @@ public class ReceiptViewCashier {
 
         model.setRowCount(0);
         for (Receipt receipt : receipts) {
-            model.addRow(new Object[] {receipt.getNumber(), (receipt.getCard()==null?"Non authorisedr":receipt.getCard().getNumber()+" "+receipt.getCard().getSurname()+" "+receipt.getCard().getName()), receipt.getPrintDate(),receipt.getTotalSum(),receipt.getVAT()});
+            model.addRow(new Object[] {receipt.getNumber(), (receipt.getCard()==null?"Non authorised":receipt.getCard().getNumber()+" "+receipt.getCard().getSurname()+" "+receipt.getCard().getName()), receipt.getPrintDate(),receipt.getTotalSum(),receipt.getVAT()});
         }
         JButton searchButton = new JButton("Search");
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                    if(dateFrom.getDate().getTime()>dateTo.getDate().getTime()){
-                       JOptionPane.showMessageDialog(null, "Please chose the correct date", "Eror", JOptionPane.ERROR_MESSAGE);
+                       JOptionPane.showMessageDialog(null, "Please chose the correct date", "Error", JOptionPane.ERROR_MESSAGE);
                    }
 
                     try {
@@ -106,7 +106,7 @@ public class ReceiptViewCashier {
 
                 model.setRowCount(0);
                 for (Receipt receipt : receipts) {
-                    model.addRow(new Object[] {receipt.getNumber(), (receipt.getCard()==null?"Non authorisedr":receipt.getCard().getNumber()+" "+receipt.getCard().getSurname()+" "+receipt.getCard().getName()), receipt.getPrintDate(),receipt.getTotalSum(),receipt.getVAT()});
+                    model.addRow(new Object[] {receipt.getNumber(), (receipt.getCard()==null?"Non authorised":receipt.getCard().getNumber()+" "+receipt.getCard().getSurname()+" "+receipt.getCard().getName()), receipt.getPrintDate(),receipt.getTotalSum(),receipt.getVAT()});
                 }
 
             }
@@ -130,7 +130,7 @@ public class ReceiptViewCashier {
                 }
                 model.setRowCount(0);
                 for (Receipt receipt : receipts) {
-                    model.addRow(new Object[] {receipt.getNumber(), (receipt.getCard()==null?"Non authorisedr":receipt.getCard().getNumber()+" "+receipt.getCard().getSurname()+" "+receipt.getCard().getName()), receipt.getPrintDate(),receipt.getTotalSum(),receipt.getVAT()});
+                    model.addRow(new Object[] {receipt.getNumber(), (receipt.getCard()==null?"Non authorised":receipt.getCard().getNumber()+" "+receipt.getCard().getSurname()+" "+receipt.getCard().getName()), receipt.getPrintDate(),receipt.getTotalSum(),receipt.getVAT()});
                 }
 
             }

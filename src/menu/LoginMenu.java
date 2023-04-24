@@ -23,11 +23,9 @@ public class LoginMenu extends JFrame {
 
     private void init(JFrame frame) {
         loginPanel = new JPanel(new GridLayout(4,2));
-        loginPanel.setBackground(Color.decode("#F7FAA5"));
         add(loginPanel);
         JLabel panelName = new JLabel("Login", SwingConstants.CENTER);
         panelName.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 30));
-        panelName.setForeground(Color.decode("#970EAB"));
         loginPanel.add(panelName);
 
         JLabel filler = new JLabel();
@@ -36,22 +34,18 @@ public class LoginMenu extends JFrame {
         //TODO change to what instead username
         JLabel userLabel = new JLabel("username:");
         userLabel.setFont(new Font("Arial", Font.PLAIN, 25));
-        userLabel.setForeground(Color.decode("#970EAB"));
         loginPanel.add(userLabel);
 
         JTextField userField = new JTextField();
         userField.setFont(new Font("Arial", Font.PLAIN, 25));
-        userField.setForeground(Color.decode("#970EAB"));
         loginPanel.add(userField);
 
         JLabel passwordLabel = new JLabel("password:");
         passwordLabel.setFont(new Font("Arial", Font.PLAIN, 25));
-        passwordLabel.setForeground(Color.decode("#970EAB"));
         loginPanel.add(passwordLabel);
 
         JPasswordField passwordField = new JPasswordField();
         passwordField.setFont(new Font("Arial", Font.PLAIN, 25));
-        passwordField.setForeground(Color.decode("#970EAB"));
         loginPanel.add(passwordField);
 
         JButton loginButton = new JButton("log in");
@@ -68,4 +62,6 @@ public class LoginMenu extends JFrame {
     private void logIn() {
         //TODO method for log in
     }
+
+
 }
