@@ -16,18 +16,8 @@ public class Store_Product {
     public static void setConnection(Connection con){
         connection=con;
     }
-    static{
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/ais_supermarket",
-                    "Svitlana",
-                    "Password_for_mysql1"
-            );
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-    }
+
+   
     private static final String UPC = "UPC";
     private static final String UPC_PROM = "UPC_prom";
     private static final String SELLING_PRICE = "selling_price";
@@ -39,15 +29,16 @@ public class Store_Product {
     private static final String CATEGORY_ID = "category_number";
     private static final String CATEGORY_NAME = "category_name";
 
+
     //1. Додавати нові дані про товари у магазині;
     public static boolean addProductInStore(ProductInStore product){
         try{
             Statement statement = connection.createStatement();
             String request="";
             if(product.getPromotionalUPC()!=null)
-                request= "INSERT INTO `zlagoda`.`store_product` (`UPC`, `UPC_prom`, `id_product`, `selling_price`, `products_number`, `promotional_product`) VALUES ('"+product.getUPC()+"', '"+product.getPromotionalUPC()+"', '"+product.getProduct().getId()+"', '"+product.getPrice()+"', '"+product.getAmount()+"', '"+Boolean.compare(product.isPromotional(),false)+"');";
+                request= "INSERT INTO store_product (`UPC`, `UPC_prom`, `id_product`, `selling_price`, `products_number`, `promotional_product`) VALUES ('"+product.getUPC()+"', '"+product.getPromotionalUPC()+"', '"+product.getProduct().getId()+"', '"+product.getPrice()+"', '"+product.getAmount()+"', '"+Boolean.compare(product.isPromotional(),false)+"');";
             else
-                request= "INSERT INTO `zlagoda`.`store_product` (`UPC`, `id_product`, `selling_price`, `products_number`, `promotional_product`) VALUES ('"+product.getUPC()+"', '"+product.getProduct().getId()+"', '"+product.getPrice()+"', '"+product.getAmount()+"', '"+Boolean.compare(product.isPromotional(),false)+"');";
+                request= "INSERT INTO store_product (`UPC`, `id_product`, `selling_price`, `products_number`, `promotional_product`) VALUES ('"+product.getUPC()+"', '"+product.getProduct().getId()+"', '"+product.getPrice()+"', '"+product.getAmount()+"', '"+Boolean.compare(product.isPromotional(),false)+"');";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -60,7 +51,7 @@ public class Store_Product {
     public static boolean updateProductInStoreById(ProductInStore product){
         try {
             Statement statement = connection.createStatement();
-            String request = "UPDATE `zlagoda`.`store_product` SET `selling_price` = '"+product.getPrice()+"', `products_number` = '"+product.getAmount()+"' WHERE (`UPC` = '"+product.getUPC()+"');";
+            String request = "UPDATE store_product SET `selling_price` = '"+product.getPrice()+"', `products_number` = '"+product.getAmount()+"' WHERE (`UPC` = '"+product.getUPC()+"');";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -73,7 +64,7 @@ public class Store_Product {
     public static boolean deleteProductInStoreByUPC(String productUPC){
         try {
             Statement statement = connection.createStatement();
-            String request = "DELETE FROM `zlagoda`.`store_product` WHERE (`"+UPC+"` = '"+productUPC+"');";
+            String request = "DELETE FROM store_product WHERE (`"+UPC+"` = '"+productUPC+"');";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -87,8 +78,8 @@ public class Store_Product {
     public static ArrayList<ProductInStore> findAll(){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT "+UPC+", "+UPC_PROM+",`zlagoda`.`product`."+ID_PRODUCT+", "+SELLING_PRICE+", "+PRODUCTS_NUMBER+", "+PROMOTIONAL_PRODUCT+", "+CHARACTERISTICS+", "+PRODUCT_NAME+", `zlagoda`.`category`."+CATEGORY_ID+", "+CATEGORY_NAME+" FROM `zlagoda`.`store_product` INNER JOIN `zlagoda`.`product` ON `zlagoda`.`product`."+ID_PRODUCT+" = `zlagoda`.`store_product`."+ID_PRODUCT+"" +
-                    " INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`."+CATEGORY_ID+" = `zlagoda`.`category`."+CATEGORY_ID+";";
+            String request = "SELECT "+UPC+", "+UPC_PROM+",product."+ID_PRODUCT+", "+SELLING_PRICE+", "+PRODUCTS_NUMBER+", "+PROMOTIONAL_PRODUCT+", "+CHARACTERISTICS+", "+PRODUCT_NAME+", `zlagoda`.`category`."+CATEGORY_ID+", "+CATEGORY_NAME+" FROM `zlagoda`.`store_product` INNER JOIN `zlagoda`.`product` ON `zlagoda`.`product`."+ID_PRODUCT+" = `zlagoda`.`store_product`."+ID_PRODUCT+"" +
+                    " INNER JOIN category ON product."+CATEGORY_ID+" = category."+CATEGORY_ID+";";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<ProductInStore> products = new ArrayList<>();
             while(resultSet.next()) {
@@ -106,8 +97,8 @@ public class Store_Product {
     public static ArrayList<ProductInStore> findStoreProductsByProductId(int id){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT "+UPC+", "+UPC_PROM+",`zlagoda`.`product`."+ID_PRODUCT+", "+SELLING_PRICE+", "+PRODUCTS_NUMBER+", "+PROMOTIONAL_PRODUCT+", "+CHARACTERISTICS+", "+PRODUCT_NAME+", `zlagoda`.`category`."+CATEGORY_ID+", "+CATEGORY_NAME+" FROM `zlagoda`.`store_product` INNER JOIN `zlagoda`.`product` ON `zlagoda`.`product`."+ID_PRODUCT+" = `zlagoda`.`store_product`."+ID_PRODUCT+"" +
-                    " INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`."+CATEGORY_ID+" = `zlagoda`.`category`."+CATEGORY_ID+" WHERE (`zlagoda`.`product`."+ID_PRODUCT+" = '"+id+"');";
+            String request = "SELECT "+UPC+", "+UPC_PROM+",product."+ID_PRODUCT+", "+SELLING_PRICE+", "+PRODUCTS_NUMBER+", "+PROMOTIONAL_PRODUCT+", "+CHARACTERISTICS+", "+PRODUCT_NAME+", category."+CATEGORY_ID+", "+CATEGORY_NAME+" FROM store_product INNER JOIN product ON product."+ID_PRODUCT+" = store_product."+ID_PRODUCT+"" +
+                    " INNER JOIN category ON product."+CATEGORY_ID+" = category."+CATEGORY_ID+" WHERE (product."+ID_PRODUCT+" = '"+id+"');";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<ProductInStore> products = new ArrayList<>();
             while(resultSet.next()) {
@@ -125,8 +116,8 @@ public class Store_Product {
     public static ProductInStore findProductInStoreById(String productUPC){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT "+UPC+", "+UPC_PROM+",`zlagoda`.`product`."+ID_PRODUCT+", "+SELLING_PRICE+", "+PRODUCTS_NUMBER+", "+PROMOTIONAL_PRODUCT+", "+CHARACTERISTICS+", "+PRODUCT_NAME+", `zlagoda`.`category`."+CATEGORY_ID+", "+CATEGORY_NAME+" FROM `zlagoda`.`store_product` INNER JOIN `zlagoda`.`product` ON `zlagoda`.`product`."+ID_PRODUCT+" = `zlagoda`.`store_product`."+ID_PRODUCT+"" +
-                    " INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`."+CATEGORY_ID+" = `zlagoda`.`category`."+CATEGORY_ID+" WHERE (`"+UPC+"` = '"+productUPC+"');";
+            String request = "SELECT "+UPC+", "+UPC_PROM+",product."+ID_PRODUCT+", "+SELLING_PRICE+", "+PRODUCTS_NUMBER+", "+PROMOTIONAL_PRODUCT+", "+CHARACTERISTICS+", "+PRODUCT_NAME+", category."+CATEGORY_ID+", "+CATEGORY_NAME+" FROM store_product INNER JOIN product ON product."+ID_PRODUCT+" = store_product."+ID_PRODUCT+"" +
+                    " INNER JOIN category ON product."+CATEGORY_ID+" = category."+CATEGORY_ID+" WHERE (`"+UPC+"` = '"+productUPC+"');";
             ResultSet resultSet = statement.executeQuery(request);
             ProductInStore product = null;
             while(resultSet.next()) {
@@ -144,8 +135,8 @@ public class Store_Product {
     public static ArrayList<ProductInStore> findAllSortedByAmount(){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT "+UPC+", "+UPC_PROM+",`zlagoda`.`product`."+ID_PRODUCT+", "+SELLING_PRICE+", "+PRODUCTS_NUMBER+", "+PROMOTIONAL_PRODUCT+", "+CHARACTERISTICS+", "+PRODUCT_NAME+", `zlagoda`.`category`."+CATEGORY_ID+", "+CATEGORY_NAME+" FROM `zlagoda`.`store_product` INNER JOIN `zlagoda`.`product` ON `zlagoda`.`product`."+ID_PRODUCT+" = `zlagoda`.`store_product`."+ID_PRODUCT+"" +
-                    " INNER JOIN `zlagoda`.`category` ON `zlagoda`.`product`."+CATEGORY_ID+" = `zlagoda`.`category`."+CATEGORY_ID+" ORDER BY "+PRODUCTS_NUMBER+";";
+            String request = "SELECT "+UPC+", "+UPC_PROM+",product."+ID_PRODUCT+", "+SELLING_PRICE+", "+PRODUCTS_NUMBER+", "+PROMOTIONAL_PRODUCT+", "+CHARACTERISTICS+", "+PRODUCT_NAME+", category."+CATEGORY_ID+", "+CATEGORY_NAME+" FROM store_product INNER JOIN product ON product."+ID_PRODUCT+" = store_product."+ID_PRODUCT+"" +
+                    " INNER JOIN category ON product."+CATEGORY_ID+" = category."+CATEGORY_ID+" ORDER BY "+PRODUCTS_NUMBER+";";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<ProductInStore> products = new ArrayList<>();
             while(resultSet.next()) {
@@ -162,7 +153,7 @@ public class Store_Product {
 
     //14 За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару, назву та характеристики товару;+
     //14. За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару.
-    public static ProductInStore getAllAboutProductsOnUPC(String upc) throws SQLException {
+    public static ProductInStore getAllAboutProductsOnUPC(String upc){
 
         String sql = "SELECT * FROM Store_Product s LEFT JOIN Product p ON s.id_product=p.id_product WHERE s.UPC = '"+ upc+"'";
 
@@ -185,6 +176,8 @@ public class Store_Product {
                 return new ProductInStore(upc, upc_prom, new Product(id, name, getCategory(categoryN), producer, characteristic), price, products_number, prom_products);
 
             }
+        } catch(SQLException ex){
+            ex.printStackTrace();
         }
         return null;
     }

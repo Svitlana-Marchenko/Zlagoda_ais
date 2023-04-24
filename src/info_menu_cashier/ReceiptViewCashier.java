@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static bd_connection.Check.*;
-
+import static bd_connection.Store_Product.getAllAboutProductsOnUPC;
 
 
 public class ReceiptViewCashier {
@@ -210,7 +210,7 @@ if(receipts!=null) {
         model.addRow(new Object[]{"UPC", "Name", "Amount", "Price"});
             if(productL!=null) {
                 for (SoldProduct pr : productL) {
-                    model.addRow(new Object[]{pr.getUPC(), pr.getName(), pr.getAmount(), pr.getPrice()});
+                    model.addRow(new Object[]{pr.getUPC(), (getAllAboutProductsOnUPC(pr.getUPC())==null?"":getAllAboutProductsOnUPC(pr.getUPC()).getProduct().getName()), pr.getAmount(), pr.getPrice()});
                 }
             }
 

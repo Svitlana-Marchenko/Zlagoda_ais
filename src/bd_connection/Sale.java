@@ -17,19 +17,6 @@ public class Sale {
     public static void setConnection(Connection con){
         connection=con;
     }
-    static{
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/ais_supermarket",
-                    "Svitlana",
-                    "Password_for_mysql1"
-            );
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     //21  Визначити загальну кількість одиниць певного товару, проданого за певний період часу.+
     public static int getNumSold(Date from, Date to, SoldProduct saleP) throws SQLException {
 
@@ -63,9 +50,7 @@ public class Sale {
             while (resultSet.next()) {
 
                 String name = resultSet.getString("UPC");
-
-
-                int num = resultSet.getInt("product_number");
+                int num = resultSet.getInt("quantity");
                 BigDecimal price = resultSet.getBigDecimal("selling_price");
 
                 SoldProduct product = new SoldProduct(name, rec_num, num, price);
@@ -74,6 +59,31 @@ public class Sale {
         }
         return products;
     }
+
+    //21  Визначити загальну кількість одиниць певного товару, проданого за певний період часу.+
+    public static int getNumSold(Date from, Date to, ProductInStore saleP){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+
+        String sql = "SELECT SUM(s.product_number) AS sumT\n" +
+                "FROM Sale s\n" +
+                "JOIN `Check` c ON s.check_number = c.check_number\n" +
+                "WHERE s.upc = "+saleP.getUPC()+"\n" +
+                "AND c.print_date BETWEEN '"+sdf.format(from) +"' AND '"+sdf.format(to)+"'";
+
+        int answ = 0;
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+            if(resultSet.next())
+                answ = resultSet.getInt("sumT");
+        }
+catch (SQLException ex){
+            ex.printStackTrace();
+}
+        return answ;
+    }
+
 
 
 }

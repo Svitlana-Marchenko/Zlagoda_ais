@@ -23,18 +23,7 @@ public class Check {
     public static void setConnection(Connection con){
         connection=con;
     }
-    static{
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/ais_supermarket",
-                    "Svitlana",
-                    "Password_for_mysql1"
-            );
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     private static final String CHECK_NUMBER = "check_number";
     private static final String ID_EMPLOYEE = "id_employee";
