@@ -23,7 +23,7 @@ public class SwitchFrames {
         model.setRowCount(0);
 
         for (Product sp : ProductTable2.getProduct_List()) {
-            model.addRow(new Object[]{sp.getId(), sp.getName(), sp.getCategory().getName(), sp.getCharacteristics()});
+            model.addRow(new Object[]{sp.getId(), sp.getName(), sp.getCategory().getName(), sp.getCharacteristics(), sp.getProducer()});
         }
         frame.setEnabled(true);
     }
@@ -31,7 +31,7 @@ public class SwitchFrames {
         model.setRowCount(0);
 
         for (ProductInStore sp : StoreProductTable.getStore_productListList()) {
-            model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional()});
+            model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional(), sp.getProduct().getProducer()});
         }
         frame.setEnabled(true);
     }
