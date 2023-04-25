@@ -70,6 +70,7 @@ public class LoginMenu extends JFrame {
 
     private entity.Employee checkPassword(String phoneNumber, String password) {
         entity.Employee employee = Employee.findEmployeeByPhoneNumber(phoneNumber);
+        if(employee == null) return null;
         if(BCrypt.checkpw(password,employee.getPassword())){
             return employee;
         }else{
