@@ -20,9 +20,9 @@ public class Store_Product {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/zlagoda",
-                    "zhenia",
-                    "happydog"
+                    "jdbc:mysql://localhost:3308/zlagoda",
+                    "root",
+                    ""
             );
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
@@ -286,5 +286,40 @@ public class Store_Product {
         }
     }
 
+    public static List<ProductInStore> getAllProductsInStoreByName(String searchName){
+        try {
+            List<ProductInStore> products = new ArrayList<>();
+            String sql = "SELECT * " +
+                    "FROM Store_Product sp " +
+                    "LEFT JOIN Product p ON p.id_product = sp.id_product " +
+                    "WHERE p.product_name='"+searchName+"' " +
+                    "ORDER BY p.product_name;";
+
+            try (Statement statement = connection.createStatement();
+                 ResultSet resultSet = statement.executeQuery(sql)) {
+                while (resultSet.next()) {
+
+                    int id = resultSet.getInt("id_product");
+                    String upc = resultSet.getString("upc");
+                    String upc_prom = resultSet.getString("upc_prom");
+                    String producer = resultSet.getString("producer");
+                    BigDecimal price = resultSet.getBigDecimal("selling_price");
+                    int products_number = resultSet.getInt("products_number");
+                    boolean prom_products = resultSet.getBoolean("promotional_product");
+
+                    String name = resultSet.getString("product_name");
+                    int categoryN = resultSet.getInt("category_number");
+                    String characteristic = resultSet.getString("characteristics");
+
+                    ProductInStore product = new ProductInStore(upc, upc_prom, new Product(id, name, getCategory(categoryN), producer, characteristic), price, products_number, prom_products);
+                    products.add(product);
+                }
+            }
+            return products;
+        }catch(SQLException ex){
+            ex.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 
 }

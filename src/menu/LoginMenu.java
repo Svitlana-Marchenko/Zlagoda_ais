@@ -3,6 +3,7 @@ package menu;
 import additional_libraries.BCrypt;
 import bd_connection.*;
 
+import javax.sql.ConnectionEvent;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -61,6 +62,18 @@ public class LoginMenu extends JFrame {
 
     private void logIn(String phoneNumber, String password) {
         //TODO create connection
+        Connection connection = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3308/zlagoda",
+                    "root",
+                    ""
+            );
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        Employee.setConnection(connection);
         entity.Employee employee = checkPassword(phoneNumber, password);
         if( employee != null) {
             loginFrame.getContentPane().removeAll();

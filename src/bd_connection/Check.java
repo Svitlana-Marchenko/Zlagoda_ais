@@ -235,11 +235,14 @@ public class Check {
 
     //7. Здійснювати продаж товарів (додавання чеків);
     public static void AddNewReceipt(Receipt receipt) throws SQLException{
-        String customerNumber;
-        if(receipt.getCard() == null) customerNumber = null;
-        else customerNumber = receipt.getCard().getNumber();
-        String sql = "INSERT INTO check (`check_number`, `id_employee`, `card_number`, `print_date`, `sum_total`, `vat`) " +
-                "VALUES ('"+receipt.getNumber()+"', '"+receipt.getEmployee().getId()+"', '"+customerNumber+"', '"+receipt.getPrintDate()+"', '"+receipt.getVAT()+"');";
+        String sql="";
+        if(receipt.getCard() == null){
+            sql = "INSERT INTO `Check` (check_number, id_employee, print_date, sum_total, vat) " +
+                    "VALUES ('"+receipt.getNumber()+"', '"+receipt.getEmployee().getId()+"', '"+receipt.getPrintDate()+"', '"+receipt.getTotalSum()+"', '"+receipt.getVAT()+"');\n";
+        } else {
+            sql = "INSERT INTO `Check` (check_number, id_employee, card_number, print_date, sum_total, vat) " +
+                    "VALUES ('" + receipt.getNumber() + "', '" + receipt.getEmployee().getId() + "', '" + receipt.getCard().getNumber() + "', '" + receipt.getPrintDate() + "', '" + receipt.getTotalSum() + "', '" + receipt.getVAT() + "');\n";
+        }
         Statement statement = connection.createStatement();
         statement.execute(sql);
         for (SoldProduct product:receipt.getProducts()) {
@@ -250,9 +253,9 @@ public class Check {
     //additional method for 7
     public static void AddSaleToReceipt(String check_number,SoldProduct product) throws SQLException{
         String sql = "INSERT INTO Sale (UPC, check_number, product_number, selling_price)" +
-                "VALUES ("+product.getUPC()+", "+check_number+", "+product.getAmount()+", "+product.getPrice()+")";
+                "VALUES ('"+product.getUPC()+"', '"+check_number+"', '"+product.getUPC()+"', '"+product.getPrice()+"');";
         Statement statement = connection.createStatement();
-        statement.executeQuery(sql);
+        statement.execute(sql);
     }
 
     //9. Переглянути список усіх чеків, що створив касир за цей день;
