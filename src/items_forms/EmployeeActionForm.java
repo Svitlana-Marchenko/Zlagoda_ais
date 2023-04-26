@@ -1,5 +1,6 @@
 package items_forms;
 
+import additional_libraries.BCrypt;
 import bd_connection.Check;
 import com.toedter.calendar.JDateChooser;
 import helpers.*;
@@ -11,10 +12,7 @@ import info_menu_manager.EmployeeTableManager;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.List;
@@ -35,7 +33,7 @@ public class EmployeeActionForm extends JFrame {
     private JComboBox roleField;
     private JDateChooser dateOfBirth;
     private JDateChooser dateOfStart;
-    private JTextField passwordField;
+    private JPasswordField passwordField;
     private JTextField salaryField;
 
     private JTextField phoneNumberField;
@@ -122,8 +120,9 @@ public class EmployeeActionForm extends JFrame {
 
         labels.add(new JLabel("Date of start: "));
 
-        passwordField = new JTextField();
-        passwordField.setText(employee.getPassword());
+        passwordField = new JPasswordField();
+        passwordField.setText("111111");
+        char defaultCh = passwordField.getEchoChar();
         labels.add(new JLabel("Password: "));
         fields.add(passwordField);
 
@@ -186,7 +185,7 @@ public class EmployeeActionForm extends JFrame {
         }
         CheckForErrors.tFields=new ArrayList<>();
         CheckForErrors.tFields.addAll(fields.subList(0,2));
-        CheckForErrors.tFields.addAll(fields.subList(3,fields.size()));
+        CheckForErrors.tFields.addAll(fields.subList(3,fields.size()-1));
 
         buttonPanel.getEditButton().addActionListener(new ActionListener() {
             @Override
@@ -195,6 +194,8 @@ public class EmployeeActionForm extends JFrame {
                 for(JTextField field: fields){
                     field.setEditable(true);
                 }
+                passwordField.setText("");
+                passwordField.setEchoChar((char) 0);
                 dateOfStart.setEnabled(true);
                 dateOfBirth.setEnabled(true);
                 roleField.setEnabled(true);
@@ -230,12 +231,19 @@ public class EmployeeActionForm extends JFrame {
                     dateOfStart.setDate(new Date());
                 }else if(!CheckForErrors.checkPhoneNumber(phoneNumberField.getText())){
                     showError("Wrong phone number format. Must be +380xxxxxxxxx", new JTextField[]{phoneNumberField});
+                }else if(!CheckForErrors.checkForUniquePhoneNumber(phoneNumberField.getText(), employee.getPhoneNumber())){
+                    showError("This phone number is already registered\nPhone number must be unique!", new JTextField[]{phoneNumberField});
+                }else if(passwordField.getPassword().length<4 && passwordField.getPassword().length>0){
+                    showError("Password min length is 4 symbols!\nLeave the field empty to save the previous password", new JTextField[]{passwordField});
                 }else{
                     updateItem(1);
                     buttonPanel.setEnabled(false);
                     for(JTextField field: fields){
                         field.setEditable(false);
                     }
+                    if(passwordField.getPassword().length==0)
+                        passwordField.setText("111111");
+                    passwordField.setEchoChar(defaultCh);
                     dateOfStart.setEnabled(false);
                     dateOfBirth.setEnabled(false);
                     roleField.setEnabled(false);
@@ -295,7 +303,10 @@ public class EmployeeActionForm extends JFrame {
      * Редагуєм інформацію про працівника
      */
     private void updateItem(int index) {
-        Employee temp = new Employee(employee.getId(),surnameField.getText(),nameField.getText(),passwordField.getText(),patronymicField.getText(),Employee.Role.valueOf(roleField.getSelectedItem().toString()), new BigDecimal(salaryField.getText()).setScale(4),new java.sql.Date(dateOfBirth.getDate().getTime()), new java.sql.Date(dateOfStart.getDate().getTime()),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText());
+        Employee temp = new Employee(employee.getId(),surnameField.getText(),nameField.getText(),employee.getPassword(),patronymicField.getText(),Employee.Role.valueOf(roleField.getSelectedItem().toString()), new BigDecimal(salaryField.getText()).setScale(4),new java.sql.Date(dateOfBirth.getDate().getTime()), new java.sql.Date(dateOfStart.getDate().getTime()),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText());
+        if(passwordField.getPassword().length!=0){
+            temp.setPassword(BCrypt.hashpw(String.valueOf(passwordField.getPassword()),BCrypt.gensalt()));
+        }
         if(!temp.equals(employee)){
             index=EmployeeTableManager.getEmployee_List().indexOf(employee);
             EmployeeTableManager.getEmployee_List().set(index,temp);

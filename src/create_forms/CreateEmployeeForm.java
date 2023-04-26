@@ -1,5 +1,6 @@
 package create_forms;
 
+import additional_libraries.BCrypt;
 import com.toedter.calendar.JDateChooser;
 import entity.Employee;
 import helpers.*;
@@ -190,6 +191,13 @@ public class CreateEmployeeForm extends JFrame {
                     JOptionPane.showMessageDialog(null, "Wrong phone number format. Must be +380xxxxxxxxx", "Error", JOptionPane.ERROR_MESSAGE);
                     phoneNumberField.setText("");
                     phoneNumberField.setBackground(Color.white);
+                }else if(!CheckForErrors.checkForUniquePhoneNumber(phoneNumberField.getText(),null)){
+                    phoneNumberField.setBackground(Color.red);
+                    JOptionPane.showMessageDialog(null, "This phone number is already registered\nPhone number must be unique!", "Error", JOptionPane.ERROR_MESSAGE);
+                    phoneNumberField.setText("");
+                    phoneNumberField.setBackground(Color.white);
+                }else if(passwordField.getText().length()<4){
+                    showError("Password min length is 4 symbols!", new JTextField[]{passwordField});
                 }else{
                     createNewItem(model,frame);
                     dispose();
@@ -259,7 +267,7 @@ public class CreateEmployeeForm extends JFrame {
         String number = generateNumber();
         while(bd_connection.Employee.findEmployeeById(number) != null)
             number = generateNumber();
-        Employee employee = new Employee(number,surnameField.getText(),nameField.getText(),passwordField.getText(),patronymicField.getText(),Employee.Role.valueOf(roleField.getSelectedItem().toString()), new BigDecimal(salaryField.getText()).setScale(4),new java.sql.Date(dateOfBirth.getDate().getTime()), new java.sql.Date(dateOfStart.getDate().getTime()),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText());
+        Employee employee = new Employee(number,surnameField.getText(),nameField.getText(), BCrypt.hashpw(passwordField.getText(), BCrypt.gensalt()),patronymicField.getText(),Employee.Role.valueOf(roleField.getSelectedItem().toString()), new BigDecimal(salaryField.getText()).setScale(4),new java.sql.Date(dateOfBirth.getDate().getTime()), new java.sql.Date(dateOfStart.getDate().getTime()),phoneNumberField.getText(),cityField.getText(),streetField.getText(),zipCodeField.getText());
         bd_connection.Employee.addEmployee(employee);
         EmployeeTableManager.getEmployee_List().add(employee);
         SwitchFrames.switchFramesForEmployee(frame,model);

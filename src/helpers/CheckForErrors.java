@@ -1,5 +1,7 @@
 package helpers;
 
+import bd_connection.Employee;
+
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -30,6 +32,9 @@ public class CheckForErrors {
         Pattern pattern1 = Pattern.compile ("\\+380[0-9]{9}");
         Matcher matcher1 = pattern1.matcher (phoneNumber);
         return matcher1.find();
+    }
+    public static boolean checkForUniquePhoneNumber(String phoneNumber, String emplPhoneNum){
+        return Employee.findEmployeeByPhoneNumber(phoneNumber) == null ||  phoneNumber.equals(emplPhoneNum);
     }
     public static JTextField[] getErrorTextFields(List<String> fields){
         if(fields!=null){
