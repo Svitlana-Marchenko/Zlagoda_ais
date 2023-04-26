@@ -161,12 +161,8 @@ public class SpecialSearchCategory {
     private static List<CategorySpecSearch> createCommonList(Date from, Date to) {
         List<String[]> notSp = Category.countNumOfProductsThatHasNotBeenSold();
         List<String[]> soldSP = Category.countSoldProductInGivenCategoryHavingDate(new java.sql.Date(from.getTime()), new java.sql.Date(to.getTime()));
-
-        System.out.println(notSp);
-        System.out.println(soldSP);
         ArrayList<CategorySpecSearch> answ = new ArrayList<>();
         for (int i = 0; i < notSp.size(); i++) {
-            System.out.println(Integer.parseInt(soldSP.get(i)[2]));
             answ.add(new CategorySpecSearch(Integer.parseInt(notSp.get(i)[0]), soldSP.get(i)[1], Integer.parseInt(soldSP.get(i)[2]), Integer.parseInt(notSp.get(i)[1])));
         }
         return answ;
