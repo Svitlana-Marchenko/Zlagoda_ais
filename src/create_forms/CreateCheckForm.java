@@ -23,6 +23,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -307,6 +308,7 @@ public class CreateCheckForm{
         if(card!=null) sum = sum.multiply(BigDecimal.valueOf(1-card.getPercent()/100));
         BigDecimal vat = sum.multiply(BigDecimal.valueOf(0.2));
         sum = sum.add(vat);
+        sum = sum.round(new MathContext(2));
         ArrayList<SoldProduct> sold = new ArrayList<>();
         for (String key: added.keySet()) {
             sold.add(added.get(key));
