@@ -1,11 +1,13 @@
 package menu;
 
+//TODO percent to the cashier table of customer, producer to the store table, product table
 import entity.Employee;
 import entity.Product;
 import info_menu_cashier.CustomerTableCashier;
 import info_menu_cashier.ReceiptViewCashier;
 import info_menu_common.ProductTable2;
 import info_menu_common.StoreProductTable;
+import panel.InfoAboutUserPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -110,10 +112,24 @@ public class MainMenuCashier {
         });
 
         about.addActionListener( s->{
-            //TODO about menu
+            frame.getContentPane().removeAll();
+            frame.add(new InfoAboutUserPanel(frame, empl));
+            frame.revalidate();
+            frame.repaint();
                 }
-
         );
+
+       logout.addActionListener( s->{
+                   frame.getContentPane().removeAll();
+                   frame.setVisible(false);
+                   LoginMenu a = new LoginMenu();
+                   a.setBounds(800,400,300,200);
+                   a.setVisible(true);
+
+                   frame.revalidate();
+                   frame.repaint();
+               }
+       );
 
 
        createCheck.addActionListener( s->{

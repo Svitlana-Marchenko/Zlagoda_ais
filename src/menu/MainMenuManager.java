@@ -127,6 +127,17 @@ public class MainMenuManager {
             frame.repaint();
         });
 
+        logout.addActionListener( s->{
+            frame.getContentPane().removeAll();
+            frame.setVisible(false);
+            LoginMenu a = new LoginMenu();
+            a.setBounds(800,400,300,200);
+            a.setVisible(true);
+
+            frame.revalidate();
+            frame.repaint();
+                }
+        );
     }
 
 

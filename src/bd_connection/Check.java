@@ -235,10 +235,13 @@ public class Check {
 
     //7. Здійснювати продаж товарів (додавання чеків);
     public static void AddNewReceipt(Receipt receipt) throws SQLException{
-        String sql = "INSERT INTO `Check` (check_number, id_employee, card_number, print_date, sum_total, vat)" +
-                "VALUES ("+receipt.getNumber()+", "+receipt.getEmployee().getId()+", "+receipt.getCard().getNumber()+", "+receipt.getPrintDate()+", "+receipt.getVAT()+")";
+        String customerNumber;
+        if(receipt.getCard() == null) customerNumber = null;
+        else customerNumber = receipt.getCard().getNumber();
+        String sql = "INSERT INTO check (`check_number`, `id_employee`, `card_number`, `print_date`, `sum_total`, `vat`) " +
+                "VALUES ('"+receipt.getNumber()+"', '"+receipt.getEmployee().getId()+"', '"+customerNumber+"', '"+receipt.getPrintDate()+"', '"+receipt.getVAT()+"');";
         Statement statement = connection.createStatement();
-        statement.executeQuery(sql);
+        statement.execute(sql);
         for (SoldProduct product:receipt.getProducts()) {
             AddSaleToReceipt(receipt.getNumber(),product);
         }

@@ -63,14 +63,19 @@ public class LoginMenu extends JFrame {
         //TODO create connection
         entity.Employee employee = checkPassword(phoneNumber, password);
         if( employee != null) {
-            if (employee.getRole().equals(entity.Employee.Role.CASHIER)) MainMenuCashier.display(loginFrame, employee);
+            loginFrame.getContentPane().removeAll();
+            if (employee.getRole().equals(entity.Employee.Role.CASHIER))
+                MainMenuCashier.display(loginFrame, employee);
             else MainMenuManager.display(loginFrame, employee);
+            loginFrame.revalidate();
+            loginFrame.repaint();
         }
     }
 
     private entity.Employee checkPassword(String phoneNumber, String password) {
         entity.Employee employee = Employee.findEmployeeByPhoneNumber(phoneNumber);
-        if(BCrypt.checkpw(password,employee.getPassword())){
+        if(employee == null) return null;
+      if(BCrypt.checkpw(password,employee.getPassword())){
             return employee;
         }else{
             JOptionPane.showMessageDialog(new JFrame(), "Wrong phone number or password", "Error",
