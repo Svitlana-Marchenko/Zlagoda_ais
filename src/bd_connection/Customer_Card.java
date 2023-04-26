@@ -296,7 +296,7 @@ public class Customer_Card {
                     "WHERE NOT EXISTS " +
                     "(SELECT id_employee " +
                     "FROM Employee e " +
-                    "WHERE e.role=CASHIER " +
+                    "WHERE e.role='CASHIER' " +
                     "AND e.id_employee NOT IN " +
                     "(SELECT id_employee " +
                     "FROM `Check` ch " +
@@ -317,11 +317,15 @@ public class Customer_Card {
     public static HashMap<CustomerCard, Integer> countReceiptsForCustomersAboveSum(BigDecimal sum){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT cc.card_number, cust_surname, cust_name, cust_patronymic, phone_number, city, street, zip_code, percent, COUNT(DISTINCT check_number) AS amount " +
-                    "FROM `check`" +
-                    "RIGHT JOIN Customer_Card cc ON cc.card_number = `check`.card_number " +
-                    "WHERE sum_total >= '"+sum+"' " +
-                    "GROUP BY card_number;";
+            String request = "SELECT cc.card_number, cc.cust_surname, cc.cust_name, cc.cust_patronymic, cc.phone_number, cc.city, cc.street, cc.zip_code, cc.percent, IFNULL(s.amount,0) AS amount " +
+                    "FROM Customer_Card cc " +
+                    "LEFT OUTER JOIN (" +
+                                "SELECT cc2.card_number, COUNT(DISTINCT check_number) AS amount " +
+                                "FROM Customer_Card cc2 " +
+                                "LEFT OUTER JOIN`check` ch ON cc2.card_number = ch.card_number " +
+                                "WHERE sum_total >= '"+sum+"' " +
+                                "GROUP BY cc2.card_number " +
+                    ") s ON cc.card_number = s.card_number;";
             ResultSet resultSet = statement.executeQuery(request);
             HashMap<CustomerCard, Integer> customerCards = new HashMap<CustomerCard, Integer>();
             while(resultSet.next()) {
