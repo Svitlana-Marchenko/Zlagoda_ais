@@ -500,17 +500,19 @@ public class CreateCheckForm{
             }
         });
         String result = JOptionPane.showInputDialog(tempFrame2, "Enter amount:");
-        try {
-            int amount = Integer.parseInt(result);
-            if(amount<1) throw new NumberFormatException();
-            if(amount>inStore) {
-                JOptionPane.showMessageDialog(new JFrame(), "Amount can not be bigger than amount in the store", "Error",
+        if (result!=null) {
+            try {
+                int amount = Integer.parseInt(result);
+                if (amount < 1) throw new NumberFormatException();
+                if (amount > inStore) {
+                    JOptionPane.showMessageDialog(new JFrame(), "Amount can not be bigger than amount in the store", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                return amount;
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(new JFrame(), "Amount must be natural number", "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
-            return amount;
-        }catch(NumberFormatException e){
-            JOptionPane.showMessageDialog(new JFrame(), "Amount must be natural number", "Error",
-                    JOptionPane.ERROR_MESSAGE);
         }
         return 0;
     }
