@@ -16,8 +16,20 @@ public class Store_Product {
     public static void setConnection(Connection con){
         connection=con;
     }
+    static{
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/zlagoda",
+                    "zhenia",
+                    "happydog"
+            );
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-   
+
     private static final String UPC = "UPC";
     private static final String UPC_PROM = "UPC_prom";
     private static final String SELLING_PRICE = "selling_price";
@@ -52,6 +64,18 @@ public class Store_Product {
         try {
             Statement statement = connection.createStatement();
             String request = "UPDATE store_product SET `selling_price` = '"+product.getPrice()+"', `products_number` = '"+product.getAmount()+"' WHERE (`UPC` = '"+product.getUPC()+"');";
+            statement.execute(request);
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return false;
+        }
+        return true;
+    }
+    //2. Редагувати дані про товари у магазині;
+    public static boolean setPromUPCByProductInStoreId(ProductInStore product){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "UPDATE store_product SET `UPC_prom` = '"+product.getPromotionalUPC()+"' WHERE (`UPC` = '"+product.getUPC()+"');";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());

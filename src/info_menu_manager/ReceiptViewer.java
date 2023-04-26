@@ -150,7 +150,7 @@ public class ReceiptViewer {
                 if (row >= 0) {
                     String receiptId = (String) model.getValueAt(row, 0);
                     try {
-                        displayReceiptProducts(receiptId);
+                        displayReceiptProducts(receiptId,row);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -195,7 +195,7 @@ statPanel.add(print);
     }
 
 
-    private static void displayReceiptProducts(String receiptId){
+    private static void displayReceiptProducts(String receiptId, int row){
 
         Receipt rec = getReceipt(receiptId);
         List<SoldProduct> productL = rec.getProducts();
@@ -213,9 +213,28 @@ statPanel.add(print);
         for (SoldProduct pr : productL)
             //model.addRow(new Object[]{pr.getUPC(), pr.getName(), pr.getAmount(), pr.getPrice()});
             model.addRow(new Object[]{pr.getUPC(), (getAllAboutProductsOnUPC(pr.getUPC())==null?"":getAllAboutProductsOnUPC(pr.getUPC()).getProduct().getName()), pr.getAmount(), pr.getPrice()});
-        JOptionPane.showMessageDialog(null, table, "Products", JOptionPane.INFORMATION_MESSAGE);
+        Object[] options = {"Delete",
+                "OK"};
+        int n = JOptionPane.showOptionDialog(null, table,
+                "Receipt details",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,//do not use a custom Icon
+                options,//the titles of buttons
+                options[1]);//default button title
+        if(n == JOptionPane.YES_OPTION){
+            deleteReceipt(receiptId,row);
+        }
     }
 
+    private static void deleteReceipt(String id, int row) {
+        receipts.remove(row);
+        deleteReceiptById(id);
+        model.setRowCount(0);
+        for (Receipt receipt : receipts) {
+            model.addRow(new Object[] {receipt.getNumber(), (receipt.getEmployee() == null?"Non authorised":receipt.getEmployee().getId()+" "+receipt.getEmployee().getSurname()+" "+receipt.getEmployee().getName()), (receipt.getCard() == null?"Non authorised":receipt.getCard().getNumber()+" "+receipt.getCard().getSurname()),receipt.getPrintDate(), receipt.getTotalSum(), receipt.getVAT()});
+        }
+    }
 
 
     private static String[] getCahierStringList() {

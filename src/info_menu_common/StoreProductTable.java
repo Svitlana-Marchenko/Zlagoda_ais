@@ -198,7 +198,7 @@ public class StoreProductTable {
         searchUPC.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (role.toString().equals("MANAGER")) {
+                if (role.getRole().toString().equals("MANAGER")) {
                     frame.getContentPane().removeAll();
                     StoreProductManager.display(frame, role);
                     // Repaint the frame

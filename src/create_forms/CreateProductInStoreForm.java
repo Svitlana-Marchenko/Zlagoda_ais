@@ -274,7 +274,8 @@ public class CreateProductInStoreForm extends JFrame {
             productInStore = new ProductInStore(UPC, null, product, mainProduct.getPrice().multiply(new BigDecimal(0.8)).setScale(4, RoundingMode.HALF_DOWN),Integer.valueOf(countField.getText()),true);
             mainProduct.setPromotionalUPC(UPC);
             Store_Product.addProductInStore(productInStore);
-            Store_Product.updateProductInStoreById(mainProduct);
+            Store_Product.setPromUPCByProductInStoreId(mainProduct);
+
         }
         StoreProductTable.getStore_productListList().add(productInStore);
         SwitchFrames.switchFramesForStoreProduct(frame,model);

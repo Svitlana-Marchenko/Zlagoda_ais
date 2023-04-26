@@ -114,9 +114,10 @@ public class CategoryTable {
         JToolBar managerTools = new JToolBar();
         JButton add = new JButton("Add");
         JButton print = new JButton("Print");
-
+        JButton  paramSearch = new JButton("Parametric search");
         managerTools.add(add);
         managerTools.add(print);
+        managerTools.add( paramSearch);
         if(role.getRole().toString().equals("MANAGER")){
             frame.add(managerTools, BorderLayout.PAGE_END);
         }
@@ -144,6 +145,12 @@ public class CategoryTable {
                 }
             }
         });
+
+        paramSearch.addActionListener( e ->{
+                    //TODO add parametric search
+                }
+
+        );
     }
 
     public static void main(String[] args) {
