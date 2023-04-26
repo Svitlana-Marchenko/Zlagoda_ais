@@ -67,7 +67,7 @@ public class CreateCheckForm{
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
                 frame.getContentPane().removeAll();
-                ReceiptViewCashier.display(frame, employee);
+                MainMenuCashier.display(frame, employee);
                 // Repaint the frame
                 frame.revalidate();
                 frame.repaint();
@@ -165,7 +165,7 @@ public class CreateCheckForm{
                         JOptionPane.showMessageDialog(new JFrame(), "New receipt created", "Success",
                                 JOptionPane.PLAIN_MESSAGE);
                         frame.getContentPane().removeAll();
-                        ReceiptViewCashier.display(frame, employee);
+                        MainMenuCashier.display(frame, employee);
                         // Repaint the frame
                         frame.revalidate();
                         frame.repaint();
