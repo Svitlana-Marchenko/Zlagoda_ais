@@ -86,8 +86,10 @@ public class ReceiptViewCashier {
         }
 
         model.setRowCount(0);
-        for (Receipt receipt : receipts) {
-            model.addRow(new Object[] {receipt.getNumber(), (receipt.getCard()==null?"Non authorised":receipt.getCard().getNumber()+" "+receipt.getCard().getSurname()+" "+receipt.getCard().getName()), receipt.getPrintDate(),receipt.getTotalSum(),receipt.getVAT()});
+        if(receipts!=null) {
+            for (Receipt receipt : receipts) {
+                model.addRow(new Object[]{receipt.getNumber(), (receipt.getCard() == null ? "Non authorised" : receipt.getCard().getNumber() + " " + receipt.getCard().getSurname() + " " + receipt.getCard().getName()), receipt.getPrintDate(), receipt.getTotalSum(), receipt.getVAT()});
+            }
         }
         JButton searchButton = new JButton("Search");
         searchButton.addActionListener(new ActionListener() {
@@ -105,10 +107,11 @@ public class ReceiptViewCashier {
                     }
 
                 model.setRowCount(0);
-                for (Receipt receipt : receipts) {
-                    model.addRow(new Object[] {receipt.getNumber(), (receipt.getCard()==null?"Non authorised":receipt.getCard().getNumber()+" "+receipt.getCard().getSurname()+" "+receipt.getCard().getName()), receipt.getPrintDate(),receipt.getTotalSum(),receipt.getVAT()});
+                if(receipts!=null) {
+                    for (Receipt receipt : receipts) {
+                        model.addRow(new Object[]{receipt.getNumber(), (receipt.getCard() == null ? "Non authorised" : receipt.getCard().getNumber() + " " + receipt.getCard().getSurname() + " " + receipt.getCard().getName()), receipt.getPrintDate(), receipt.getTotalSum(), receipt.getVAT()});
+                    }
                 }
-
             }
         });
         toolbar.add(searchButton);
