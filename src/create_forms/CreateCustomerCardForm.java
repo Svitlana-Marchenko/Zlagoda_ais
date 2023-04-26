@@ -116,7 +116,8 @@ public class CreateCustomerCardForm extends JFrame {
         }
         CheckForErrors.tFields=new ArrayList<>();
         CheckForErrors.tFields.addAll(fields.subList(0,2));
-        CheckForErrors.tFields.addAll(fields.subList(3,fields.size()));
+        CheckForErrors.tFields.add(phoneNumberField);
+        CheckForErrors.tFields.addAll(fields.subList(7,fields.size()));
 
         JButton createButton = new JButton("Create");
         createButton.setFont(new Font("TimesRoman", Font.PLAIN, 20));

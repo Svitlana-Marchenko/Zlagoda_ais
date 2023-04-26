@@ -178,11 +178,9 @@ public class CustomerTableManager {
         JButton add = new JButton("Add");
         JButton print = new JButton("Print");
         JButton additionalSearch = new JButton("Additional search");
-        JButton paramSearch = new JButton("Parametric search");
 
         managerTools.add(add);
         managerTools.add(print);
-        managerTools.add(paramSearch);
         managerTools.add(Box.createGlue());
         managerTools.add(additionalSearch);
         if(role.getRole().toString().equals("MANAGER")){
@@ -219,17 +217,12 @@ public class CustomerTableManager {
                 if (row >= 0) {
                     String customerId = (String) model.getValueAt(row, 0);
                     frame.setEnabled(false);
-                    CustomerCardActionForm customerCardActionForm = new CustomerCardActionForm(Customer_Card.findCustomerCardById(customerId),model,frame,true);
+                    CustomerCardActionForm customerCardActionForm = new CustomerCardActionForm(customerList.get(row),model,frame,true);
                 }
             }
             }
         });
 
-        paramSearch.addActionListener( e ->{
-           //TODO add parametric search
-                }
-
-        );
     }
 
 
