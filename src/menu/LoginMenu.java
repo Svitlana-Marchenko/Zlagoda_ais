@@ -74,6 +74,12 @@ public class LoginMenu extends JFrame {
             e.printStackTrace();
         }
         Employee.setConnection(connection);
+        Category.setConnection(connection);
+        Check.setConnection(connection);
+        Customer_Card.setConnection(connection);
+        Product.setConnection(connection);
+        Sale.setConnection(connection);
+        Store_Product.setConnection(connection);
         entity.Employee employee = checkPassword(phoneNumber, password);
         if( employee != null) {
             loginFrame.getContentPane().removeAll();

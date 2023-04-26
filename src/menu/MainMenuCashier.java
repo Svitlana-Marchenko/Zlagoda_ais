@@ -1,6 +1,7 @@
 package menu;
 
 //TODO percent to the cashier table of customer, producer to the store table, product table
+import create_forms.CreateCheckForm;
 import entity.Employee;
 import entity.Product;
 import info_menu_cashier.CustomerTableCashier;
@@ -133,17 +134,14 @@ public class MainMenuCashier {
 
 
        createCheck.addActionListener( s->{
-                   //TODO about menu
+           frame.getContentPane().removeAll();
+           CreateCheckForm a = new CreateCheckForm(frame, empl);
+
+           frame.revalidate();
+           frame.repaint();
                }
 
        );
-
-       logout.addActionListener( s->{
-                   //TODO log out menu
-               }
-
-       );
-
 
     }
 
