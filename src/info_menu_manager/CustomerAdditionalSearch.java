@@ -4,14 +4,11 @@ import bd_connection.Customer_Card;
 import com.toedter.calendar.JDateChooser;
 import entity.CustomerCard;
 import entity.Employee;
-import entity.Receipt;
-import entity.SoldProduct;
+
 import helpers.CheckForErrors;
-import menu.MainMenuManager;
-import menu.Report;
+
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -19,16 +16,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.util.*;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static bd_connection.Check.*;
-import static bd_connection.Check.deleteReceiptById;
-import static bd_connection.Employee.getAllSpecial;
-import static bd_connection.Employee.getEmployee;
-import static bd_connection.Store_Product.getAllAboutProductsOnUPC;
 
 public class CustomerAdditionalSearch {
     private static JTable table;
@@ -230,6 +218,7 @@ public class CustomerAdditionalSearch {
                 }
             };
             table.setModel(model);
+            isDefault=true;
         }
         model.setRowCount(0);
         for (CustomerCard customer : customerCards) {
