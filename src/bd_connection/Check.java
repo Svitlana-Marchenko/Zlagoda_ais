@@ -253,7 +253,7 @@ public class Check {
     //additional method for 7
     public static void AddSaleToReceipt(String check_number,SoldProduct product) throws SQLException{
         String sql = "INSERT INTO Sale (UPC, check_number, product_number, selling_price)" +
-                "VALUES ('"+product.getUPC()+"', '"+check_number+"', '"+product.getUPC()+"', '"+product.getPrice()+"');";
+                "VALUES ('"+product.getUPC()+"', '"+check_number+"', '"+product.getAmount()+"', '"+product.getPrice()+"');";
         Statement statement = connection.createStatement();
         statement.execute(sql);
     }
