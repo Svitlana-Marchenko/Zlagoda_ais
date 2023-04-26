@@ -68,6 +68,11 @@ public class CreateCheckForm{
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
                 frame.getContentPane().removeAll();
+                for (String productId: added.keySet()) {
+                    ProductInStore inStore = Store_Product.findProductInStoreById(added.get(productId).getUPC());
+                    Store_Product.updateProductInStoreById(new ProductInStore(inStore.getUPC(), inStore.getPromotionalUPC(), inStore.getProduct(),
+                            inStore.getPrice(), inStore.getAmount() + added.get(productId).getAmount(), inStore.isPromotional()));
+                }
                 MainMenuCashier.display(frame, employee);
                 // Repaint the frame
                 frame.revalidate();
@@ -185,6 +190,12 @@ public class CreateCheckForm{
 
     private void chooseCustomer() throws SQLException {
         JFrame tempFrame = new JFrame();
+        tempFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                frame.setEnabled(true);
+            }
+        });
         customersList = Customer_Card.getAllCustomersSorted(true);
         JToolBar buttonPanel = new JToolBar();
 
@@ -339,6 +350,12 @@ public class CreateCheckForm{
 
     private void chooseProduct() {
         JFrame tempFrame = new JFrame();
+        tempFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                frame.setEnabled(true);
+            }
+        });
         store_productListList = getAllProductsInStoreSorted(true);
 
         JToolBar buttonPanel = new JToolBar();
@@ -451,26 +468,37 @@ public class CreateCheckForm{
                     if(added.containsKey(product.getUPC())) {
                         amountThere = added.get(product.getUPC()).getAmount();
                     }
-                    int amount = askAmount(product.getAmount()-amountThere);
-                    added.put(product.getUPC(),new SoldProduct(product.getUPC(),product.getProduct().getName(),amount+amountThere,product.getPrice()));
+                    int amount = askAmount(tempFrame, product.getAmount()-amountThere);
+                    if(amount!=0) {
+                        added.put(product.getUPC(), new SoldProduct(product.getUPC(), product.getProduct().getName(), amount + amountThere, product.getPrice()));
 
-                    ProductInStore inStore = Store_Product.findProductInStoreById(product.getUPC());
-                    Store_Product.updateProductInStoreById(new ProductInStore(inStore.getUPC(), inStore.getPromotionalUPC(), inStore.getProduct(),
-                            inStore.getPrice(), inStore.getAmount() - amount, inStore.isPromotional()));
+                        ProductInStore inStore = Store_Product.findProductInStoreById(product.getUPC());
+                        Store_Product.updateProductInStoreById(new ProductInStore(inStore.getUPC(), inStore.getPromotionalUPC(), inStore.getProduct(),
+                                inStore.getPrice(), inStore.getAmount() - amount, inStore.isPromotional()));
 
-                    tempFrame.setVisible(false);
-                    frame.getContentPane().removeAll();
-                    init();
-                    frame.revalidate();
-                    frame.repaint();
-                    frame.setEnabled(true);
+                        tempFrame.setVisible(false);
+                        frame.getContentPane().removeAll();
+                        init();
+                        frame.revalidate();
+                        frame.repaint();
+                        frame.setEnabled(true);
+                    }else{
+                        tempFrame.setEnabled(true);
+                    }
                 }
             }
         });
     }
 
-    private int askAmount(int inStore) {
+    private int askAmount(JFrame tempFrame, int inStore) {
         JFrame tempFrame2 = new JFrame();
+        tempFrame2.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                tempFrame.setVisible(false);
+                frame.setEnabled(true);
+            }
+        });
         String result = JOptionPane.showInputDialog(tempFrame2, "Enter amount:");
         try {
             int amount = Integer.parseInt(result);
@@ -478,14 +506,13 @@ public class CreateCheckForm{
             if(amount>inStore) {
                 JOptionPane.showMessageDialog(new JFrame(), "Amount can not be bigger than amount in the store", "Error",
                         JOptionPane.ERROR_MESSAGE);
-                return askAmount(inStore);
             }
             return amount;
         }catch(NumberFormatException e){
             JOptionPane.showMessageDialog(new JFrame(), "Amount must be natural number", "Error",
                     JOptionPane.ERROR_MESSAGE);
-            return askAmount(inStore);
         }
+        return 0;
     }
 
     public static void main(String[] args) throws IOException, UnsupportedAudioFileException {
