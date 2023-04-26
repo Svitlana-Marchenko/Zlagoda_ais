@@ -17,18 +17,6 @@ public class Customer_Card {
     public static void setConnection(Connection con){
         connection=con;
     }
-    static{
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/zlagoda",
-                    "zhenia",
-                    "happydog"
-            );
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     private static final String CARD_NUMBER = "card_number";
@@ -96,7 +84,6 @@ public class Customer_Card {
             return new ArrayList<>();
         }
     }
-
 
     //знайти покупця за айді
     public static CustomerCard findCustomerCardById(String id){

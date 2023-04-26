@@ -15,7 +15,7 @@ public class Employee {
         connection=con;
     }
 
-
+    
     private static final String ID_EMPLOYEE = "id_employee";
     private static final String SURNAME = "empl_surname";
     private static final String NAME = "empl_name";
@@ -47,7 +47,7 @@ public class Employee {
     public static boolean updateEmployeeById(entity.Employee employee){
         try {
             Statement statement = connection.createStatement();
-            String request = "UPDATE employee SET `empl_surname` = '"+employee.getSurname()+"', `empl_name` = '"+employee.getName()+"', `password` = '"+employee.getPassword()+"', `role` = '"+employee.getRole()+"', `empl_patronymic` = '"+employee.getRole()+"', `salary` = '"+employee.getSalary()+"', `date_of_birth` = '"+employee.getBirthdate()+"', `date_of_start` = '"+employee.getStartDate()+"', `phone_number` = '"+employee.getPhoneNumber()+"', `city` = '"+employee.getCity()+"', `street` = '"+employee.getStreet()+"', `zip_code` = '"+employee.getZipCode()+"' WHERE (`id_employee` = '"+employee.getId()+"');\n";
+            String request = "UPDATE employee SET `empl_surname` = '"+employee.getSurname()+"', `empl_name` = '"+employee.getName()+"', `password` = '"+employee.getPassword()+"', `role` = '"+employee.getRole()+"', `empl_patronymic` = '"+employee.getPatronymic()+"', `salary` = '"+employee.getSalary()+"', `date_of_birth` = '"+employee.getBirthdate()+"', `date_of_start` = '"+employee.getStartDate()+"', `phone_number` = '"+employee.getPhoneNumber()+"', `city` = '"+employee.getCity()+"', `street` = '"+employee.getStreet()+"', `zip_code` = '"+employee.getZipCode()+"' WHERE (`id_employee` = '"+employee.getId()+"');\n";
             statement.execute(request);
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
@@ -184,6 +184,7 @@ public class Employee {
                 return new entity.Employee(num, resultEmp.getString("empl_surname"), resultEmp.getString("empl_name"), resultEmp.getString("password"), p, entity.Employee.Role.CASHIER, resultEmp.getBigDecimal("salary"), resultEmp.getDate("date_of_birth"), resultEmp.getDate("date_of_start"), resultEmp.getString("phone_number"), resultEmp.getString("city"), resultEmp.getString("street"), resultEmp.getString("zip_code"));
 
             }
+         
         }
         return null;
     }
@@ -217,7 +218,9 @@ List<entity.Employee> answ = new ArrayList<>();
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<entity.Employee> employees = new ArrayList<>();
             while (resultSet.next()) {
-                employees.add(new entity.Employee(resultSet.getString(ID_EMPLOYEE), resultSet.getString(SURNAME), resultSet.getString(NAME), resultSet.getString(PASSWORD), resultSet.getString(PATRONYMIC), entity.Employee.Role.valueOf(resultSet.getString(ROLE)), new BigDecimal(resultSet.getString(SALARY)), Date.valueOf(resultSet.getString(BIRTH_DATE)), Date.valueOf(resultSet.getString(START_DATE)), resultSet.getString(PHONE), resultSet.getString(CITY), resultSet.getString(STREET), resultSet.getString(ZIP_CODE)));
+                //employees.add(new entity.Employee(resultSet.getString(ID_EMPLOYEE), resultSet.getString(SURNAME), resultSet.getString(NAME), resultSet.getString(PASSWORD), resultSet.getString(PATRONYMIC), entity.Employee.Role.valueOf(resultSet.getString(ROLE)), new BigDecimal(resultSet.getString(SALARY)), Date.valueOf(resultSet.getString(BIRTH_DATE)), Date.valueOf(resultSet.getString(START_DATE)), resultSet.getString(PHONE), resultSet.getString(CITY), resultSet.getString(STREET), resultSet.getString(ZIP_CODE)));
+                employees.add(new entity.Employee(resultSet.getString(ID_EMPLOYEE), resultSet.getString(SURNAME), resultSet.getString(NAME), resultSet.getString(PASSWORD), resultSet.getString(PATRONYMIC), (resultSet.getString(ROLE).equals("CASHIER")? entity.Employee.Role.CASHIER:entity.Employee.Role.MANAGER), new BigDecimal(resultSet.getString(SALARY)), Date.valueOf(resultSet.getString(BIRTH_DATE)), Date.valueOf(resultSet.getString(START_DATE)), resultSet.getString(PHONE), resultSet.getString(CITY), resultSet.getString(STREET), resultSet.getString(ZIP_CODE)));
+
             }
             return employees;
         } catch (SQLException ex) {
@@ -247,6 +250,36 @@ List<entity.Employee> answ = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
             String request = "SELECT * FROM `Employee` WHERE "+SURNAME+" = '"+surname+"' AND "+ROLE+" = '"+role+"'";
+            ResultSet resultSet = statement.executeQuery(request);
+            ArrayList<entity.Employee> employees = new ArrayList<>();
+            while(resultSet.next()) {
+                employees.add(new entity.Employee(resultSet.getString(ID_EMPLOYEE),resultSet.getString(SURNAME),resultSet.getString(NAME),resultSet.getString(PASSWORD),resultSet.getString(PATRONYMIC), entity.Employee.Role.valueOf(resultSet.getString(ROLE)),new BigDecimal(resultSet.getString(SALARY)),Date.valueOf(resultSet.getString(BIRTH_DATE)),Date.valueOf(resultSet.getString(START_DATE)),resultSet.getString(PHONE),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE)));
+            }
+            return employees;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public static ArrayList<entity.Employee> findAllCashierWhoSellProductFromAllCategories(){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "SELECT *\n" +
+                    "FROM employee c\n" +
+                    "WHERE NOT EXISTS (\n" +
+                    "  SELECT *\n" +
+                    "  FROM category c1\n" +
+                    "  WHERE NOT EXISTS (\n" +
+                    "    SELECT *\n" +
+                    "    FROM sale s\n" +
+                    "    JOIN store_product sp ON sp.UPC = s.UPC\n" +
+                    "    JOIN product p ON sp.id_product = p.id_product\n" +
+                    "    JOIN category c2 ON p.category_number = c2.category_number\n" +
+                    "    JOIN `check` ch ON s.check_number = ch.check_number\n" +
+                    "    WHERE ch.id_employee = c.id_employee AND c2.category_number = c1.category_number\n" +
+                    "  )\n" +
+                    ");\n";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<entity.Employee> employees = new ArrayList<>();
             while(resultSet.next()) {

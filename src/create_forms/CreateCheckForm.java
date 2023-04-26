@@ -2,8 +2,10 @@ package create_forms;
 
 import bd_connection.Check;
 import bd_connection.Customer_Card;
+import bd_connection.Sale;
 import bd_connection.Store_Product;
 import entity.*;
+import info_menu_cashier.CustomerTableCashier;
 import info_menu_cashier.ReceiptViewCashier;
 import info_menu_cashier.StoreProductCashier;
 import info_menu_common.StoreProductTable;
@@ -18,10 +20,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -34,8 +33,9 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static bd_connection.Store_Product.getAllProductsInStoreSaleSorted;
-import static bd_connection.Store_Product.getAllProductsInStoreSorted;
+import static bd_connection.Customer_Card.getAllCustomersSorted;
+import static bd_connection.Customer_Card.getCustomersBySurname;
+import static bd_connection.Store_Product.*;
 import static entity.Employee.Role.CASHIER;
 
 public class CreateCheckForm{
@@ -45,7 +45,8 @@ public class CreateCheckForm{
     private Employee employee;
     private CustomerCard card;
     private HashMap<String,SoldProduct> added;
-    private Connection connection;
+    private static List<CustomerCard> customersList;
+    private static List<ProductInStore>  store_productListList;
 
     public CreateCheckForm(JFrame frame, Employee employee) {
         this.frame = frame;
@@ -56,20 +57,6 @@ public class CreateCheckForm{
     }
 
     private void init() {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3308/zlagoda",
-                    "root",
-                    ""
-            );
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-        Store_Product.setConnection(connection);
-        Check.setConnection(connection);
-        bd_connection.Category.setConnection(connection);
-        Customer_Card.setConnection(connection);
         checkPanel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         frame.add(checkPanel);
@@ -197,7 +184,7 @@ public class CreateCheckForm{
 
     private void chooseCustomer() throws SQLException {
         JFrame tempFrame = new JFrame();
-        List<CustomerCard> customersList = Customer_Card.getAllCustomersSorted(true);
+        customersList = Customer_Card.getAllCustomersSorted(true);
         JToolBar buttonPanel = new JToolBar();
 
         JButton cancelButton = new JButton("Cancel");
@@ -227,30 +214,73 @@ public class CreateCheckForm{
 
         tablePanel.add(scrollPane, BorderLayout.CENTER);
 
+        String textForJText = "Enter customer surname (optional)";
 
-        JToolBar searchTools = new JToolBar();
+        JTextField nameField = new JTextField(textForJText);
+        nameField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (nameField.getText().equals(textForJText)) {
+                    nameField.setText("");
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (nameField.getText().isEmpty()) {
+                    nameField.setText(textForJText);
+                }
+            }
+        });
+
+        buttonPanel.add(nameField);
+
         JButton searchUPC = new JButton("Search");
-        searchTools.add(searchUPC);
+        buttonPanel.add(searchUPC);
 
         tempFrame.add(buttonPanel, BorderLayout.PAGE_START);
 
         tempFrame.add(tablePanel, BorderLayout.CENTER);
 
-
-
         tempFrame.setSize(500, 500);
         tempFrame.setVisible(true);
         AtomicBoolean sortAlph = new AtomicBoolean(true);
 
-        searchUPC.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                tempFrame.getContentPane().removeAll();
-                StoreProductCashier.display(tempFrame, employee);
+        searchUPC.addActionListener(e -> {
+
+                //no name
+                if(nameField.getText().equals(textForJText)){
+                    try {
+                        customersList = getAllCustomersSorted(sortAlph.get());
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                //with name
+                else{
+                    try {
+                        customersList = getCustomersBySurname(nameField.getText());
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+
+                if (sortAlph.get()) {
+                    Collections.sort(customersList, (c1, c2) -> (c1.getSurname()+c1.getName()).compareToIgnoreCase(c2.getSurname()+c2.getName()));
+
+                } else {
+                    Collections.sort(customersList, (c1, c2) -> (c2.getSurname()+c2.getName()).compareToIgnoreCase(c1.getSurname()+c1.getName()));
+                }
+
+                model.setRowCount(0);
+
+                for (CustomerCard customer : customersList) {
+                    model.addRow(new Object[]{customer.getNumber(), customer.getSurname(), customer.getName(), (customer.getPatronymic()==null?"":customer.getPatronymic()), customer.getPhoneNumber(), customer.getPercent()});
+                }
                 // Repaint the frame
                 tempFrame.revalidate();
                 tempFrame.repaint();
-            }
+
         });
 
         table.getSelectionModel().addListSelectionListener(e -> {
@@ -274,6 +304,7 @@ public class CreateCheckForm{
         for (SoldProduct product: added.values()) {
             sum = sum.add(product.getPrice().multiply(BigDecimal.valueOf(product.getAmount())));
         }
+        if(card!=null) sum = sum.multiply(BigDecimal.valueOf(1-card.getPercent()/100));
         BigDecimal vat = sum.multiply(BigDecimal.valueOf(0.2));
         sum = sum.add(vat);
         ArrayList<SoldProduct> sold = new ArrayList<>();
@@ -287,11 +318,6 @@ public class CreateCheckForm{
         }
         Receipt receipt = new Receipt(generateNumber(), employee, card, Timestamp.valueOf(LocalDateTime.now()), sum, vat, sold);
         Check.AddNewReceipt(receipt);
-        for (SoldProduct product : added.values()) {
-            ProductInStore inStore = Store_Product.findProductInStoreById(product.getUPC());
-            Store_Product.updateProductInStoreById(new ProductInStore(inStore.getUPC(), inStore.getPromotionalUPC(), inStore.getProduct(),
-                    inStore.getPrice(), inStore.getAmount() - product.getAmount(), inStore.isPromotional()));
-        }
         return true;
     }
 
@@ -311,7 +337,7 @@ public class CreateCheckForm{
 
     private void chooseProduct() {
         JFrame tempFrame = new JFrame();
-        List<ProductInStore>  store_productListList = getAllProductsInStoreSorted(true);
+        store_productListList = getAllProductsInStoreSorted(true);
 
         JToolBar buttonPanel = new JToolBar();
 
@@ -321,12 +347,6 @@ public class CreateCheckForm{
         cancelButton.addActionListener(s -> {
             tempFrame.setVisible(false);
         });
-
-        JComboBox<String> sortComboBox = new JComboBox<>(new String[]{"Using name", "Using quantity num"});
-        buttonPanel.add(sortComboBox);
-
-        JButton sortButton = new JButton("Sort");
-        buttonPanel.add(sortButton);
 
         JPanel tablePanel = new JPanel(new BorderLayout());
 
@@ -349,86 +369,74 @@ public class CreateCheckForm{
         tablePanel.add(scrollPane, BorderLayout.CENTER);
 
 
-        JToolBar managerTools = new JToolBar();
-        JButton searchUPC = new JButton("Search");
-        managerTools.add(searchUPC);
+        String textForJText = "Enter product name (optional)";
+
+        JTextField nameField = new JTextField(textForJText);
+        nameField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (nameField.getText().equals(textForJText)) {
+                    nameField.setText("");
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (nameField.getText().isEmpty()) {
+                    nameField.setText(textForJText);
+                }
+            }
+        });
+
+        buttonPanel.add(nameField);
+
+        JButton searchName = new JButton("Search");
+        buttonPanel.add(searchName);
 
         tempFrame.add(buttonPanel, BorderLayout.PAGE_START);
 
         tempFrame.add(tablePanel, BorderLayout.CENTER);
 
-
-
         tempFrame.setSize(500, 500);
         tempFrame.setVisible(true);
         AtomicBoolean sortAlph = new AtomicBoolean(true);
 
-        sortButton.addActionListener(e -> {
-            if (sortComboBox.getSelectedItem().equals("Using name")) {
-                if (!sortAlph.get()) {
-                    Collections.sort(store_productListList, (c1, c2) -> c1.getProduct().getName().compareToIgnoreCase(c2.getProduct().getName()));
-                    sortButton.setText("Sort (Z-A)");
-                    // sortOrder.set(0);
-                    sortAlph.set(true);
-                } else {
-                    Collections.sort(store_productListList, (c1, c2) -> c2.getProduct().getName().compareToIgnoreCase(c1.getProduct().getName()));
-                    sortButton.setText("Sort (A-Z)");
-                    sortAlph.set(false);
-                }
+        searchName.addActionListener(e -> {
+
+            //no name
+            if(nameField.getText().equals(textForJText)){
+                store_productListList = getAllProductsInStoreSorted(sortAlph.get());
+            }
+            //with name
+            else{
+                store_productListList = getAllProductsInStoreByName(nameField.getText());
+            }
+
+            if(store_productListList==null) store_productListList=new ArrayList<>();
+            if (sortAlph.get()) {
+                Collections.sort(store_productListList, (c1, c2) -> (c1.getProduct().getName()+c1.getAmount()).compareToIgnoreCase(c2.getProduct().getName()+c2.getAmount()));
+
             } else {
-                if (!sortAlph.get() /*sortOrder.get() == 1*/) {
-                    Collections.sort(store_productListList, (c1, c2) -> Integer.compare(c1.getAmount(), c2.getAmount()));
-                    sortButton.setText("Sort (Z-A)");
-                    sortAlph.set(true);
-                } else {
-                    Collections.sort(store_productListList, (c1, c2) -> Integer.compare(c2.getAmount(), c1.getAmount()));
-                    sortButton.setText("Sort (A-Z)");
-                    sortAlph.set(false);
-                }
+                Collections.sort(store_productListList, (c1, c2) -> (c2.getProduct().getName()+c2.getAmount()).compareToIgnoreCase(c1.getProduct().getName()+c1.getAmount()));
             }
+
             model.setRowCount(0);
-            for (ProductInStore sp : store_productListList) {
-                model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional(), sp.getProduct().getProducer()});
+
+            for (ProductInStore product : store_productListList) {
+                model.addRow(new Object[]{product.getUPC(), product.getProduct().getName(), product.getProduct().getCategory().getName(), product.getPrice(), product.getAmount(), product.isPromotional(), product.getProduct().getProducer()});
             }
+            // Repaint the frame
+            tempFrame.revalidate();
+            tempFrame.repaint();
+
         });
 
-        sortComboBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        tempFrame.add(buttonPanel, BorderLayout.PAGE_START);
 
-                if (sortComboBox.getSelectedItem().equals("Using name")) {
-                    if (!sortAlph.get()) {
-                        Collections.sort(store_productListList, (c2, c1) -> c1.getProduct().getName().compareToIgnoreCase(c2.getProduct().getName()));
+        tempFrame.add(tablePanel, BorderLayout.CENTER);
 
-                    } else {
-                        Collections.sort(store_productListList, (c2, c1) -> c2.getProduct().getName().compareToIgnoreCase(c1.getProduct().getName()));
-
-                    }
-                } else {
-                    if (!sortAlph.get()) {
-                        Collections.sort(store_productListList, (c2, c1) -> Integer.compare(c1.getAmount(), c2.getAmount()));
-
-                    } else {
-                        Collections.sort(store_productListList, (c2, c1) -> Integer.compare(c2.getAmount(), c1.getAmount()));
-
-                    }
-                }
-                model.setRowCount(0);
-                for (ProductInStore sp : store_productListList) {
-                    model.addRow(new Object[]{sp.getUPC(), sp.getProduct().getName(), sp.getProduct().getCategory().getName(), sp.getPrice(), sp.getAmount(), sp.isPromotional(), sp.getProduct().getProducer()});
-                }
-            }
-        });
-
-        searchUPC.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                tempFrame.getContentPane().removeAll();
-                StoreProductCashier.display(tempFrame, employee);
-                // Repaint the frame
-                tempFrame.revalidate();
-                tempFrame.repaint();
-            }
-        });
+        tempFrame.setSize(500, 500);
+        tempFrame.setVisible(true);
 
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
@@ -443,6 +451,11 @@ public class CreateCheckForm{
                     }
                     int amount = askAmount(product.getAmount()-amountThere);
                     added.put(product.getUPC(),new SoldProduct(product.getUPC(),product.getProduct().getName(),amount+amountThere,product.getPrice()));
+
+                    ProductInStore inStore = Store_Product.findProductInStoreById(product.getUPC());
+                    Store_Product.updateProductInStoreById(new ProductInStore(inStore.getUPC(), inStore.getPromotionalUPC(), inStore.getProduct(),
+                            inStore.getPrice(), inStore.getAmount() - amount, inStore.isPromotional()));
+
                     tempFrame.setVisible(false);
                     frame.getContentPane().removeAll();
                     init();
@@ -473,8 +486,25 @@ public class CreateCheckForm{
     }
 
     public static void main(String[] args) throws IOException, UnsupportedAudioFileException {
+        Connection connection = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3308/zlagoda",
+                    "root",
+                    ""
+            );
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        Store_Product.setConnection(connection);
+        Check.setConnection(connection);
+        bd_connection.Category.setConnection(connection);
+        Customer_Card.setConnection(connection);
+        bd_connection.Product.setConnection(connection);
+        bd_connection.Sale.setConnection(connection);
         JFrame frame = new JFrame();
-        CreateCheckForm a = new CreateCheckForm(frame,new Employee("","","","","",CASHIER,BigDecimal.valueOf(0),
+        CreateCheckForm a = new CreateCheckForm(frame,new Employee("1","","","","",CASHIER,BigDecimal.valueOf(0),
                 null,null,"","","",""));
         frame.setVisible(true);
     }

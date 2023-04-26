@@ -85,8 +85,6 @@ public class CustomerTableManager {
         JButton sortButton = new JButton("Sort");
         buttonPanel.add(sortButton);
 
-
-
         JPanel tablePanel = new JPanel(new BorderLayout());
 
         JTable table = new JTable();
@@ -180,9 +178,11 @@ public class CustomerTableManager {
         JButton add = new JButton("Add");
         JButton print = new JButton("Print");
         JButton additionalSearch = new JButton("Additional search");
+        JButton paramSearch = new JButton("Parametric search");
 
         managerTools.add(add);
         managerTools.add(print);
+        managerTools.add(paramSearch);
         managerTools.add(Box.createGlue());
         managerTools.add(additionalSearch);
         if(role.getRole().toString().equals("MANAGER")){
@@ -224,6 +224,12 @@ public class CustomerTableManager {
             }
             }
         });
+
+        paramSearch.addActionListener( e ->{
+           //TODO add parametric search
+                }
+
+        );
     }
 
 
