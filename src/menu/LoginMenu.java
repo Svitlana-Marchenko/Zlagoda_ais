@@ -74,8 +74,9 @@ public class LoginMenu extends JFrame {
 
     private entity.Employee checkPassword(String phoneNumber, String password) {
         entity.Employee employee = Employee.findEmployeeByPhoneNumber(phoneNumber);
-        if(employee == null) return null;
-      if(BCrypt.checkpw(password,employee.getPassword())){
+        if(employee == null)
+            JOptionPane.showMessageDialog(null, "Wrong phone number", "Eror", JOptionPane.ERROR_MESSAGE);
+        else if(BCrypt.checkpw(password,employee.getPassword())){
             return employee;
         }else{
             JOptionPane.showMessageDialog(new JFrame(), "Wrong phone number or password", "Error",

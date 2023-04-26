@@ -48,7 +48,7 @@ public class ReceiptViewCashier {
         };
 
         JToolBar toolbar = new JToolBar();
-        toolbar.setFloatable(false);
+        toolbar.setFloatable(true);
 
         // Create a "Home" button and add it to the button panel
         JButton homeButton = new JButton("Home");
