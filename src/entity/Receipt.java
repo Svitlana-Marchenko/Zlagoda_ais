@@ -50,6 +50,7 @@ public class Receipt {
         return totalSum;
     }
 
+
     public BigDecimal getVAT() {
         return VAT;
     }
