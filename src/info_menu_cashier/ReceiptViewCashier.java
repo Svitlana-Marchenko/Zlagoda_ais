@@ -29,15 +29,10 @@ import static bd_connection.Store_Product.getAllAboutProductsOnUPC;
 public class ReceiptViewCashier {
 
     private static JTable table;
-    private DefaultTableModel model;
-    private JPanel panel;
     static List<Receipt> receipts;
 
 
     public static void display(JFrame frame, Employee CASHIER){
-
-       // Employee CASHIER = new Employee("1", null, null, null, null, null, null, null, null, null, null, null, null);
-
         AtomicBoolean sortAlph = new AtomicBoolean(true);
 
         DefaultTableModel model = new DefaultTableModel(new Object[]{"Receipt ID", "Customer", "Date", "Total", "VAT"}, 0) {
@@ -189,7 +184,7 @@ public class ReceiptViewCashier {
 
 if(receipts!=null) {
     for (Receipt receipt : receipts) {
-        model.addRow(new Object[]{receipt.getNumber(), receipt.getEmployee().getId() + " " + receipt.getEmployee().getSurname() + " " + receipt.getEmployee().getName(), receipt.getCard().getNumber() + " " + receipt.getCard().getSurname(), receipt.getPrintDate(), receipt.getTotalSum(), receipt.getVAT()});
+        model.addRow(new Object[] {receipt.getNumber(), (receipt.getCard()==null?"Non authorised":receipt.getCard().getNumber()+" "+receipt.getCard().getSurname()+" "+receipt.getCard().getName()), receipt.getPrintDate(),receipt.getTotalSum(),receipt.getVAT()});
     }
 }
     }
@@ -221,29 +216,6 @@ if(receipts!=null) {
 
     }
 
-    public static void main(String[] args) {
-       /*
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-        List<Receipt> testReceipts = new ArrayList<>();
-                testReceipts.add(new Receipt("1'", null, null, Timestamp.valueOf("2020-02-20 11:11:11"), BigDecimal.valueOf(100), BigDecimal.valueOf(20), null));
-                testReceipts.add(new Receipt("1'", null, null, Timestamp.valueOf("2020-02-20 11:11:11"), BigDecimal.valueOf(100), BigDecimal.valueOf(20), null));
-                testReceipts.add(new Receipt("1'", null, null, Timestamp.valueOf("2020-02-20 11:11:11"), BigDecimal.valueOf(100), BigDecimal.valueOf(20), null));
-                testReceipts.add(new Receipt("1'", null, null, Timestamp.valueOf("2020-02-20 11:11:11"), BigDecimal.valueOf(100), BigDecimal.valueOf(20), null));
-
-
-                receipts = testReceipts;
-                try {
-                    ReceiptViewer viewer = new ReceiptViewer();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        */
-    }
 
 }
 

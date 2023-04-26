@@ -24,6 +24,7 @@ public class Check {
         connection=con;
     }
 
+ 
 
     private static final String CHECK_NUMBER = "check_number";
     private static final String ID_EMPLOYEE = "id_employee";
@@ -72,13 +73,15 @@ public class Check {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String sql = "SELECT * " +
                 "FROM `Check` " +
-                "WHERE id_employee = " + cashier.getId() +
-               " AND DATE(print_date) >= '" + sdf.format(from) + "' AND DATE(print_date) <= '" + sdf.format(to) + "'"+
+                "WHERE id_employee = '" + cashier.getId()+"'" +
+                " AND DATE(print_date) >= '" + sdf.format(from) + "' AND DATE(print_date) <= '" + sdf.format(to) + "'"+
                 " ORDER BY print_date ";
         if (!acs)
             sql += " DESC";
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
+            if(resultSet==null)
+                return new ArrayList<>();
             while (resultSet.next()) {
                 String num = resultSet.getString("check_number");
                 String cardnum = resultSet.getString("card_number");
@@ -92,6 +95,7 @@ public class Check {
         }
         return receipts;
     }
+
 
 
     //18. Отримати інформацію про усі чеки, створені усіма касирами за певний період часу (з можливістю перегляду куплених товарів у цьому чеку, їх назва, к-сті та ціни);+
@@ -253,7 +257,7 @@ public class Check {
     //additional method for 7
     public static void AddSaleToReceipt(String check_number,SoldProduct product) throws SQLException{
         String sql = "INSERT INTO Sale (UPC, check_number, product_number, selling_price)" +
-                "VALUES ('"+product.getUPC()+"', '"+check_number+"', '"+product.getUPC()+"', '"+product.getPrice()+"');";
+                "VALUES ('"+product.getUPC()+"', '"+check_number+"', '"+product.getAmount()+"', '"+product.getPrice()+"');";
         Statement statement = connection.createStatement();
         statement.execute(sql);
     }
