@@ -11,6 +11,8 @@ import menu.Report;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.sql.SQLException;
@@ -82,6 +84,8 @@ public class CustomerTableManager {
 
         JButton sortButton = new JButton("Sort");
         buttonPanel.add(sortButton);
+
+
 
         JPanel tablePanel = new JPanel(new BorderLayout());
 
@@ -175,12 +179,26 @@ public class CustomerTableManager {
         JToolBar managerTools = new JToolBar();
         JButton add = new JButton("Add");
         JButton print = new JButton("Print");
+        JButton additionalSearch = new JButton("Additional search");
 
         managerTools.add(add);
         managerTools.add(print);
+        managerTools.add(Box.createGlue());
+        managerTools.add(additionalSearch);
         if(role.getRole().toString().equals("MANAGER")){
             frame.add(managerTools, BorderLayout.PAGE_END);
         }
+
+        additionalSearch.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.getContentPane().removeAll();
+                CustomerAdditionalSearch.display(frame, role);
+                // Repaint the frame
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
 
         add.addActionListener( e -> {
             frame.setEnabled(false);
