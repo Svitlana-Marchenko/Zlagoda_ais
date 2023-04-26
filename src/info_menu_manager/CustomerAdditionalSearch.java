@@ -6,6 +6,7 @@ import entity.CustomerCard;
 import entity.Employee;
 import entity.Receipt;
 import entity.SoldProduct;
+import helpers.CheckForErrors;
 import menu.MainMenuManager;
 import menu.Report;
 
@@ -168,18 +169,38 @@ public class CustomerAdditionalSearch {
         findQuery3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(sumField.getText().isEmpty()){
+                    return;
+                }
+                if(!CheckForErrors.checkDoubleNumber(sumField.getText())){
+                    showError("Sum must a number >0", new JTextField[]{sumField});
+                    return;
+                }
                 BigDecimal sum = new BigDecimal(sumField.getText());
                 if(sum.compareTo(new BigDecimal(0))<=0){
-                    sumField.setBackground(Color.red);
-                    JOptionPane.showMessageDialog(null, "Sum must be >0", "Error", JOptionPane.ERROR_MESSAGE);
-                    sumField.setBackground(Color.white);
-                    sumField.setText("");
+                    showError("Sum must >0", new JTextField[]{sumField});
                 }else{
                     rearrangeTable(sum);
                 }
             }
         });
 
+    }
+
+    /**
+     * Відображаєм помилку
+     * @param text текст помилки
+     * @param fields поля з помилкою
+     */
+    private static void showError(String text, JTextField[] fields){
+        for(int i=0;i<fields.length;i++){
+            fields[i].setBackground(Color.red);
+        }
+        JOptionPane.showMessageDialog(null,text,"Error",JOptionPane.ERROR_MESSAGE);
+        for(int i=0;i<fields.length;i++){
+            fields[i].setBackground(Color.white);
+            fields[i].setText("");
+        }
     }
 
     private static void rearrangeTable(BigDecimal sum) {
