@@ -46,7 +46,6 @@ public class CategoryTable {
         homeButton.addActionListener( s ->{
             frame.getContentPane().removeAll();
             MainMenuManager.display(frame, role);
-            // Repaint the frame
             frame.revalidate();
             frame.repaint();
         });
@@ -147,7 +146,11 @@ public class CategoryTable {
         });
 
         paramSearch.addActionListener( e ->{
-                    //TODO add parametric search
+            frame.getContentPane().removeAll();
+            SpecialSearchCategory.display(frame, role);
+
+            frame.revalidate();
+            frame.repaint();
                 }
 
         );
