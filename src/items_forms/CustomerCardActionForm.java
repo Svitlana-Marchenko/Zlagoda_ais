@@ -244,7 +244,24 @@ public class CustomerCardActionForm extends JFrame {
         JOptionPane.showMessageDialog(null,text,"Error",JOptionPane.ERROR_MESSAGE);
         for(int i=0;i<fields.length;i++){
             fields[i].setForeground(Color.black);
-            fields[i].setText("");
+        }
+        for(int i=0;i<fields.length;i++){
+            if(fields[i]==nameField)
+                nameField.setText(customerCard.getName());
+            else if(fields[i]==surnameField)
+                surnameField.setText(customerCard.getSurname());
+            else if(fields[i]==patronymicField)
+                patronymicField.setText(customerCard.getPatronymic());
+            else if(fields[i]==cityField)
+                cityField.setText(customerCard.getCity());
+            else if(fields[i]==phoneNumberField)
+                phoneNumberField.setText(customerCard.getPhoneNumber());
+            else if(fields[i]==streetField)
+                streetField.setText(customerCard.getStreet());
+            else if(fields[i]==zipCodeField)
+                zipCodeField.setText(customerCard.getZipCode());
+            else if(fields[i]==percentField)
+                percentField.setText(String.valueOf(customerCard.getPercent()));
         }
     }
     /**

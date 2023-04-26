@@ -155,7 +155,7 @@ public class CreateEmployeeForm extends JFrame {
         }
         CheckForErrors.tFields=new ArrayList<>();
         CheckForErrors.tFields.addAll(fields.subList(0,2));
-        CheckForErrors.tFields.addAll(fields.subList(5,fields.size()));
+        CheckForErrors.tFields.addAll(fields.subList(3,fields.size()));
 
         JButton createButton = new JButton("Create");
         createButton.setFont(new Font("TimesRoman", Font.PLAIN, 27));
@@ -180,6 +180,9 @@ public class CreateEmployeeForm extends JFrame {
                 }else if(dateOfBirth.getDate().after(new java.sql.Date(2005-1900,3,25))){
                     JOptionPane.showMessageDialog(null, "Employee must be >=18 years old", "Error", JOptionPane.ERROR_MESSAGE);
                     dateOfBirth.setDate(new Date());
+                }else if(dateOfBirth.getDate().before(new java.sql.Date(1923-1900,3,25))){
+                    JOptionPane.showMessageDialog(null, "Employee is too old.", "Error", JOptionPane.ERROR_MESSAGE);
+                    dateOfBirth.setDate(new Date());
                 }else if(dateOfStart.getDate().after(new Date())){
                     JOptionPane.showMessageDialog(null, "Employee can't start in the future", "Error", JOptionPane.ERROR_MESSAGE);
                     dateOfStart.setDate(new Date());
@@ -187,15 +190,9 @@ public class CreateEmployeeForm extends JFrame {
                     JOptionPane.showMessageDialog(null, "Date of Start error!\nEmployee must be >=18 y.o at the date of start", "Error", JOptionPane.ERROR_MESSAGE);
                     dateOfStart.setDate(new Date());
                 }else if(!CheckForErrors.checkPhoneNumber(phoneNumberField.getText())){
-                    phoneNumberField.setBackground(Color.red);
-                    JOptionPane.showMessageDialog(null, "Wrong phone number format. Must be +380xxxxxxxxx", "Error", JOptionPane.ERROR_MESSAGE);
-                    phoneNumberField.setText("");
-                    phoneNumberField.setBackground(Color.white);
+                    showError("Wrong phone number format. Must be +380xxxxxxxxx", new JTextField[]{phoneNumberField});
                 }else if(!CheckForErrors.checkForUniquePhoneNumber(phoneNumberField.getText(),null)){
-                    phoneNumberField.setBackground(Color.red);
-                    JOptionPane.showMessageDialog(null, "This phone number is already registered\nPhone number must be unique!", "Error", JOptionPane.ERROR_MESSAGE);
-                    phoneNumberField.setText("");
-                    phoneNumberField.setBackground(Color.white);
+                    showError("This phone number is already registered\nPhone number must be unique!", new JTextField[]{phoneNumberField});
                 }else if(passwordField.getText().length()<4){
                     showError("Password min length is 4 symbols!", new JTextField[]{passwordField});
                 }else{

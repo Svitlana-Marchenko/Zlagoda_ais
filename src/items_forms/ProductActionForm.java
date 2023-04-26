@@ -225,7 +225,14 @@ public class ProductActionForm extends JFrame {
         JOptionPane.showMessageDialog(null,text,"Error",JOptionPane.ERROR_MESSAGE);
         for(int i=0;i<fields.length;i++){
             fields[i].setForeground(Color.black);
-            fields[i].setText("");
+        }
+        for(int i=0;i<fields.length;i++){
+            if(fields[i]==captionField)
+                captionField.setText(product.getName());
+            else if(fields[i]==descriptionField)
+                descriptionField.setText(product.getCharacteristics());
+            else if(fields[i]==producerField)
+                producerField.setText(product.getProducer());
         }
     }
     /**

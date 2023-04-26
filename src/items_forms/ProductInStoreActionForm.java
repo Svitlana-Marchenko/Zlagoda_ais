@@ -259,7 +259,12 @@ public class ProductInStoreActionForm extends JFrame {
         JOptionPane.showMessageDialog(null,text,"Error",JOptionPane.ERROR_MESSAGE);
         for(int i=0;i<fields.length;i++){
             fields[i].setBackground(Color.white);
-            fields[i].setText("");
+        }
+        for(int i=0;i<fields.length;i++){
+            if(fields[i]==countField)
+                countField.setText(String.valueOf(productInStore.getAmount()));
+            else if(fields[i]==priceField)
+                priceField.setText(String.valueOf(productInStore.getPrice()));
         }
     }
     /**

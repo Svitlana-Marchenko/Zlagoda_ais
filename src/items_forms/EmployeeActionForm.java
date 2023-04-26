@@ -186,6 +186,31 @@ public class EmployeeActionForm extends JFrame {
         CheckForErrors.tFields=new ArrayList<>();
         CheckForErrors.tFields.addAll(fields.subList(0,2));
         CheckForErrors.tFields.addAll(fields.subList(3,fields.size()-1));
+        String textForPassword="Type new password to change";
+        passwordField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if(passwordField.isEditable()){
+                    if (String.valueOf(passwordField.getPassword()).equals(textForPassword)) {
+                        passwordField.setText("");
+                        passwordField.setForeground(Color.black);
+                        passwordField.setFont(new Font("TimesRoman",Font.PLAIN, 25));
+                    }
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if(passwordField.isEditable()){
+                    if (passwordField.getPassword().length==0) {
+                        passwordField.setText(textForPassword);
+                        passwordField.setForeground(Color.gray);
+                        passwordField.setFont(new Font("TimesRoman",Font.PLAIN, 15));
+                    }
+                }
+
+            }
+        });
 
         buttonPanel.getEditButton().addActionListener(new ActionListener() {
             @Override
@@ -194,7 +219,9 @@ public class EmployeeActionForm extends JFrame {
                 for(JTextField field: fields){
                     field.setEditable(true);
                 }
-                passwordField.setText("");
+                passwordField.setText(textForPassword);
+                passwordField.setForeground(Color.gray);
+                passwordField.setFont(new Font("TimesRoman",Font.PLAIN, 15));
                 passwordField.setEchoChar((char) 0);
                 dateOfStart.setEnabled(true);
                 dateOfBirth.setEnabled(true);
@@ -222,13 +249,16 @@ public class EmployeeActionForm extends JFrame {
                     showError(errors3.get(0), CheckForErrors.getErrorTextFields(errors3));
                 }else if(dateOfBirth.getDate().after(new java.sql.Date(2005-1900,3,25))){
                     JOptionPane.showMessageDialog(null, "Employee must be >=18 years old", "Error", JOptionPane.ERROR_MESSAGE);
-                    dateOfBirth.setDate(new Date());
+                    dateOfBirth.setDate(employee.getBirthdate());
+                }else if(dateOfBirth.getDate().before(new java.sql.Date(1923-1900,3,25))){
+                    JOptionPane.showMessageDialog(null, "Employee is too old.", "Error", JOptionPane.ERROR_MESSAGE);
+                    dateOfBirth.setDate(employee.getBirthdate());
                 }else if(dateOfStart.getDate().after(new Date())){
                     JOptionPane.showMessageDialog(null, "Employee can't start in the future", "Error", JOptionPane.ERROR_MESSAGE);
-                    dateOfStart.setDate(new Date());
+                    dateOfStart.setDate(employee.getStartDate());
                 }else if(dateOfStart.getDate().before(new java.sql.Date(dateOfBirth.getDate().getYear()+18,dateOfBirth.getDate().getMonth(),dateOfBirth.getDate().getDay()))){
                     JOptionPane.showMessageDialog(null, "Date of Start error!\nEmployee must be >=18 y.o at the date of start", "Error", JOptionPane.ERROR_MESSAGE);
-                    dateOfStart.setDate(new Date());
+                    dateOfStart.setDate(employee.getStartDate());
                 }else if(!CheckForErrors.checkPhoneNumber(phoneNumberField.getText())){
                     showError("Wrong phone number format. Must be +380xxxxxxxxx", new JTextField[]{phoneNumberField});
                 }else if(!CheckForErrors.checkForUniquePhoneNumber(phoneNumberField.getText(), employee.getPhoneNumber())){
@@ -241,7 +271,7 @@ public class EmployeeActionForm extends JFrame {
                     for(JTextField field: fields){
                         field.setEditable(false);
                     }
-                    if(passwordField.getPassword().length==0)
+                    if(String.valueOf(passwordField.getPassword()).equals(textForPassword))
                         passwordField.setText("111111");
                     passwordField.setEchoChar(defaultCh);
                     dateOfStart.setEnabled(false);
@@ -328,6 +358,26 @@ public class EmployeeActionForm extends JFrame {
         for(int i=0;i<fields.length;i++){
             fields[i].setForeground(Color.black);
             fields[i].setText("");
+        }
+        for(int i=0;i<fields.length;i++){
+            if(fields[i]==nameField)
+                nameField.setText(employee.getName());
+            else if(fields[i]==surnameField)
+                surnameField.setText(employee.getSurname());
+            else if(fields[i]==patronymicField)
+                patronymicField.setText(employee.getPatronymic());
+            else if(fields[i]==passwordField)
+                passwordField.setText(employee.getPassword());
+            else if(fields[i]==cityField)
+                cityField.setText(employee.getCity());
+            else if(fields[i]==phoneNumberField)
+                phoneNumberField.setText(employee.getPhoneNumber());
+            else if(fields[i]==streetField)
+                streetField.setText(employee.getStreet());
+            else if(fields[i]==zipCodeField)
+                zipCodeField.setText(employee.getZipCode());
+            else if(fields[i]==salaryField)
+                salaryField.setText(String.valueOf(employee.getSalary()));
         }
     }
     /**
