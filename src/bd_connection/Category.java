@@ -4,6 +4,7 @@ import entity.Employee;
 
 import java.awt.*;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class Category {
     public static void setConnection(Connection con){
         connection=con;
     }
-
+    
     private static final String CATEGORY_NUMBER = "category_number";
     private static final String CATEGORY_NAME = "category_name";
 
@@ -162,5 +163,65 @@ try{
         }
     }
 
+    //Підрахувати кількістьпроданих товарів для кожної категорії за заданий період часу
+    public static ArrayList <String[]> countSoldProductInGivenCategoryHavingDate(Date from, Date to){
+        ArrayList <String[]> answ = new ArrayList<>();
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Statement statement = connection.createStatement();
+            String request =
+                    "    SELECT cat.category_number, cat.category_name , IFNULL(s.total_sale, 0) AS total\n" +
+                            "FROM Category cat\n" +
+                            "LEFT JOIN (\n" +
+                            "    SELECT p.category_number, SUM(sa.product_number) AS total_sale\n" +
+                            "    FROM Product p\n" +
+                            "    LEFT JOIN Store_Product s ON p.id_product = s.id_product\n" +
+                            "    LEFT JOIN Sale sa ON s.UPC = sa.UPC\n" +
+                            "    LEFT JOIN `Check` ch ON sa.check_number = ch.check_number\n" +
+                            "    WHERE DATE( ch.print_date) >= '" + sdf.format(from) + "' AND DATE( ch.print_date) <= '" + sdf.format(to) + "'" +
+                            "    GROUP BY p.category_number\n" +
+                            ") s ON cat.category_number = s.category_number\n" +
+                            "ORDER BY cat.category_number";
+            ResultSet resultSet = statement.executeQuery(request);
+
+            while(resultSet.next()) {
+                answ.add(new String[]{Integer.valueOf(resultSet.getString(CATEGORY_NUMBER))+"",String.valueOf(resultSet.getString(CATEGORY_NAME)), ""+Integer.valueOf(resultSet.getString("total"))});
+              }
+        }catch (SQLException ex){
+            ex.printStackTrace();
+        }
+        return answ;
+    }
+
+
+    public static ArrayList <String[]> countNumOfProductsThatHasNotBeenSold(){
+        ArrayList <String[]> answ = new ArrayList<>();
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Statement statement = connection.createStatement();
+            String request =
+                    "Select C.category_number, C.category_name, IFNULL(J.number_of_products,0) AS number_of_products\n" +
+                            "from category C\n" +
+                            "LEFT JOIN (\n" +
+                            "Select category_number, COUNT(id_product) AS number_of_products\n" +
+                            "from product P\n" +
+                            "WHERE NOT exists (select *\n" +
+                            "                  from store_product S\n" +
+                            "                  where S.id_product=P.id_product \n" +
+                            "                  AND S.UPC in ( select UPC\n" +
+                            "                                 from sale)\n" +
+                            "         )\n" +
+                            "group by category_number\n" +
+                            ") J ON C.category_number = J.category_number;";
+            ResultSet resultSet = statement.executeQuery(request);
+
+            while(resultSet.next()) {
+                answ.add(new String[]{Integer.valueOf(resultSet.getString(CATEGORY_NUMBER))+"", ""+Integer.valueOf(resultSet.getString("number_of_products"))});
+            }
+        }catch (SQLException ex){
+            ex.printStackTrace();
+        }
+        return answ;
+    }
 
 }
