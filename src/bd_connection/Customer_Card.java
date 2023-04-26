@@ -260,7 +260,7 @@ public class Customer_Card {
     }
 
     //count number of checks that have sum above certain value for each customer
-    public static HashMap<CustomerCard,int> countReceiptsForCustomersAboveSum(BigDecimal sum){
+    public static HashMap<CustomerCard, Integer> countReceiptsForCustomersAboveSum(BigDecimal sum){
         try {
             Statement statement = connection.createStatement();
             String request = "SELECT card_number, cust_surname, cust_name, cust_patronymic, phone_number, city, street, zip_code, percent, COUNT(DISTINCT check_number) AS amount " +
@@ -269,14 +269,14 @@ public class Customer_Card {
                                     "WHERE sum_total >= '"+sum+"' " +
                                     "GROUP BY card_number;";
             ResultSet resultSet = statement.executeQuery(request);
-            HashMap<CustomerCard,int> customerCards = new HashMap<CustomerCard, int>();
+            HashMap<CustomerCard, Integer> customerCards = new HashMap<CustomerCard, Integer>();
             while(resultSet.next()) {
                 customerCards.put(new CustomerCard(resultSet.getString(CARD_NUMBER),resultSet.getString(CUSTOMER_SURNAME),resultSet.getString(CUSTOMER_NAME),resultSet.getString(CUSTOMER_PATRONYMIC),resultSet.getString(PHONE_NUMBER),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE),Integer.valueOf(resultSet.getString(PERCENT))),Integer.valueOf(resultSet.getString("amount")));
             }
             return customerCards;
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
-            return new HashMap<CustomerCard, int>();
+            return new HashMap<>();
         }
     }
 
