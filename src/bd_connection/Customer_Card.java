@@ -6,6 +6,7 @@ import entity.ProductInStore;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Customer_Card {
@@ -246,6 +247,53 @@ public class Customer_Card {
         try {
             Statement statement = connection.createStatement();
             String request = "SELECT * FROM Customer_card WHERE (`"+PERCENT+"` = "+percent+") ORDER BY "+CUSTOMER_SURNAME+";";
+            ResultSet resultSet = statement.executeQuery(request);
+            ArrayList<CustomerCard> customerCards = new ArrayList<>();
+            while(resultSet.next()) {
+                customerCards.add(new CustomerCard(resultSet.getString(CARD_NUMBER),resultSet.getString(CUSTOMER_SURNAME),resultSet.getString(CUSTOMER_NAME),resultSet.getString(CUSTOMER_PATRONYMIC),resultSet.getString(PHONE_NUMBER),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE),Integer.valueOf(resultSet.getString(PERCENT))));
+            }
+            return customerCards;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    //count number of checks that have sum above certain value for each customer
+    public static HashMap<CustomerCard,int> countReceiptsForCustomersAboveSum(BigDecimal sum){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "SELECT card_number, cust_surname, cust_name, cust_patronymic, phone_number, city, street, zip_code, percent, COUNT(DISTINCT check_number) AS amount " +
+                                    "FROM `Check ch`" +
+                                    "RIGHT JOIN Customer_Card cc ON cc.card_number = ch.card_number " +
+                                    "WHERE sum_total >= '"+sum+"' " +
+                                    "GROUP BY card_number;";
+            ResultSet resultSet = statement.executeQuery(request);
+            HashMap<CustomerCard,int> customerCards = new HashMap<CustomerCard, int>();
+            while(resultSet.next()) {
+                customerCards.put(new CustomerCard(resultSet.getString(CARD_NUMBER),resultSet.getString(CUSTOMER_SURNAME),resultSet.getString(CUSTOMER_NAME),resultSet.getString(CUSTOMER_PATRONYMIC),resultSet.getString(PHONE_NUMBER),resultSet.getString(CITY),resultSet.getString(STREET),resultSet.getString(ZIP_CODE),Integer.valueOf(resultSet.getString(PERCENT))),Integer.valueOf(resultSet.getString("amount")));
+            }
+            return customerCards;
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            return new HashMap<CustomerCard, int>();
+        }
+    }
+
+    //find customers who worked with all cashiers
+    public static ArrayList<CustomerCard> findCustomersWhoWorkedWithAllCashiers(){
+        try {
+            Statement statement = connection.createStatement();
+            String request = "SELECT * " +
+                    "FROM Customer_Card cc " +
+                    "WHERE NOT EXISTS " +
+                                            "(SELECT id_employee " +
+                                            "FROM Employee e " +
+                                            "WHERE e.role=CASHIER " +
+                                            "AND e.id_employee NOT IN " +
+                                                        "(SELECT id_employee " +
+                                                        "FROM `Check` ch " +
+                                                        "WHERE ch.card_number=cc.card_number));";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<CustomerCard> customerCards = new ArrayList<>();
             while(resultSet.next()) {
