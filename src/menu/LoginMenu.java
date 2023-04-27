@@ -61,7 +61,6 @@ public class LoginMenu extends JFrame {
     }
 
     private void logIn(String phoneNumber, String password) {
-        //TODO create connection
         Connection connection = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
