@@ -5,6 +5,7 @@ import bd_connection.Customer_Card;
 import bd_connection.Sale;
 import bd_connection.Store_Product;
 import entity.*;
+import helpers.SwitchFrames;
 import info_menu_cashier.CustomerTableCashier;
 import info_menu_cashier.ReceiptViewCashier;
 import info_menu_cashier.StoreProductCashier;
@@ -186,6 +187,20 @@ public class CreateCheckForm{
         c.gridx = 3;
         c.gridy = 3;
         checkPanel.add(createButton,c);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if(added!=null){
+                    for (String productId: added.keySet()) {
+                        ProductInStore inStore = Store_Product.findProductInStoreById(added.get(productId).getUPC());
+                        Store_Product.updateProductInStoreById(new ProductInStore(inStore.getUPC(), inStore.getPromotionalUPC(), inStore.getProduct(),
+                                inStore.getPrice(), inStore.getAmount() + added.get(productId).getAmount(), inStore.isPromotional()));
+                    }
+                }
+                added=null;
+                frame.dispose();
+            }
+        });
     }
 
     private void chooseCustomer() throws SQLException {
@@ -468,10 +483,9 @@ public class CreateCheckForm{
                     if(added.containsKey(product.getUPC())) {
                         amountThere = added.get(product.getUPC()).getAmount();
                     }
-                    int amount = askAmount(tempFrame, product.getAmount()-amountThere);
+                    int amount = askAmount(tempFrame, product.getAmount());
                     if(amount!=0) {
                         added.put(product.getUPC(), new SoldProduct(product.getUPC(), product.getProduct().getName(), amount + amountThere, product.getPrice()));
-
                         ProductInStore inStore = Store_Product.findProductInStoreById(product.getUPC());
                         Store_Product.updateProductInStoreById(new ProductInStore(inStore.getUPC(), inStore.getPromotionalUPC(), inStore.getProduct(),
                                 inStore.getPrice(), inStore.getAmount() - amount, inStore.isPromotional()));
