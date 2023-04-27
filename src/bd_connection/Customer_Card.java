@@ -170,7 +170,7 @@ public class Customer_Card {
     static CustomerCard getCustomerCard(String cardnum) throws SQLException {
         CustomerCard card = null;
 
-        String sql = "SELECT * FROM Customer_Card WHERE card_number = "+cardnum;
+        String sql = "SELECT * FROM Customer_Card WHERE card_number = '"+cardnum+"';";
         try (Statement statement = connection.createStatement();
              ResultSet resultCast = statement.executeQuery(sql)) {
             if (resultCast.next()) {
