@@ -38,7 +38,7 @@ public class ReceiptViewCashier {
         DefaultTableModel model = new DefaultTableModel(new Object[]{"Receipt ID", "Customer", "Date", "Total", "VAT"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // make the cells non-editable
+                return false;
             }
         };
 
@@ -182,11 +182,6 @@ public class ReceiptViewCashier {
         frame.pack();
         frame.setVisible(true);
 
-if(receipts!=null) {
-    for (Receipt receipt : receipts) {
-        model.addRow(new Object[] {receipt.getNumber(), (receipt.getCard()==null?"Non authorised":receipt.getCard().getNumber()+" "+receipt.getCard().getSurname()+" "+receipt.getCard().getName()), receipt.getPrintDate(),receipt.getTotalSum(),receipt.getVAT()});
-    }
-}
     }
 
 
