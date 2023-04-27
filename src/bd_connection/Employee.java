@@ -15,7 +15,7 @@ public class Employee {
         connection=con;
     }
 
-    
+ 
     private static final String ID_EMPLOYEE = "id_employee";
     private static final String SURNAME = "empl_surname";
     private static final String NAME = "empl_name";
@@ -172,7 +172,7 @@ public class Employee {
 
     //15. Можливість отримати усю інформацію про себе.
    public static entity.Employee getEmployee(String num) throws SQLException {
-        String sqlCast = "SELECT * FROM Employee WHERE id_employee = " + num;
+        String sqlCast = "SELECT * FROM Employee WHERE id_employee = '" + num+"'";
         try (Statement statement = connection.createStatement();
              ResultSet resultEmp = statement.executeQuery(sqlCast)
         ) {
@@ -265,21 +265,23 @@ List<entity.Employee> answ = new ArrayList<>();
     public static ArrayList<entity.Employee> findAllCashierWhoSellProductFromAllCategories(){
         try {
             Statement statement = connection.createStatement();
-            String request = "SELECT *\n" +
-                    "FROM employee c\n" +
+            String request = "SELECT e.*\n" +
+                    "FROM employee e \n" +
                     "WHERE NOT EXISTS (\n" +
-                    "  SELECT *\n" +
-                    "  FROM category c1\n" +
-                    "  WHERE NOT EXISTS (\n" +
-                    "    SELECT *\n" +
-                    "    FROM sale s\n" +
-                    "    JOIN store_product sp ON sp.UPC = s.UPC\n" +
-                    "    JOIN product p ON sp.id_product = p.id_product\n" +
-                    "    JOIN category c2 ON p.category_number = c2.category_number\n" +
-                    "    JOIN `check` ch ON s.check_number = ch.check_number\n" +
-                    "    WHERE ch.id_employee = c.id_employee AND c2.category_number = c1.category_number\n" +
+                    "   SELECT c.category_number\n" +
+                    "   FROM category c\n" +
+                    "   WHERE NOT EXISTS (\n" +
+                    "       SELECT p.category_number\n" +
+                    "       FROM product p\n" +
+                    "       WHERE p.category_number = c.category_number AND p.id_product IN (\n" +
+                    "           SELECT sp.id_product\n" +
+                    "           FROM store_product sp\n" +
+                    "           JOIN sale s ON sp.UPC = s.UPC\n" +
+                    "           JOIN `check` ch ON s.check_number = ch.check_number\n" +
+                    "           WHERE ch.id_employee = e.id_employee\n" +
+                    "    )\n" +
                     "  )\n" +
-                    ");\n";
+                    ");";
             ResultSet resultSet = statement.executeQuery(request);
             ArrayList<entity.Employee> employees = new ArrayList<>();
             while(resultSet.next()) {

@@ -209,7 +209,12 @@ public class EmployeeTableManager {
             );
 
         paramSearch.addActionListener( e ->{
-                    //TODO add parametric search
+            frame.getContentPane().removeAll();
+            frame.dispose();
+            SpecialSearchEmployee.display(frame, role);
+            // Repaint the frame
+            frame.revalidate();
+            frame.repaint();
                 }
 
         );
