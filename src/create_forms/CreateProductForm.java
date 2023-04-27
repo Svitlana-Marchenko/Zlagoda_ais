@@ -37,6 +37,7 @@ public class CreateProductForm extends JFrame {
     public CreateProductForm(DefaultTableModel model, JFrame frame){
         super("Add new product");
         this.setSize(600,500);
+        this.setLocation(600,100);
         start(model,frame);
     }
 

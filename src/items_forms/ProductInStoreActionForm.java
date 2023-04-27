@@ -40,6 +40,7 @@ public class ProductInStoreActionForm extends JFrame {
         super("Edit product in store");
         this.productInStore = productInStore;
         this.setSize(600,500);
+        this.setLocation(600,100);
         start(model,frame);
     }
 

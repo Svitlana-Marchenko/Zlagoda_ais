@@ -19,6 +19,7 @@ public class LoginMenu extends JFrame {
     public LoginMenu(){
         super("Zlagoda");
         loginFrame=this;
+
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         init(this);
     }
@@ -65,9 +66,9 @@ public class LoginMenu extends JFrame {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3308/zlagoda",
-                    "root",
-                    ""
+                    "jdbc:mysql://localhost:3306/zlagoda",
+                    "zhenia",
+                    "happydog"
             );
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();

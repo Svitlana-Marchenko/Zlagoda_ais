@@ -42,6 +42,7 @@ public class CreateProductInStoreForm extends JFrame {
     public CreateProductInStoreForm(DefaultTableModel model,JFrame frame){
         super("Add product in store");
         this.setSize(600,500);
+        this.setLocation(600,100);
         start(model,frame);
     }
 

@@ -55,6 +55,7 @@ public class CreateCheckForm{
         this.employee = employee;
         added = new HashMap<>();
         frame.setBounds(800,400,500,350);
+        frame.setLocation(600,100);
         init();
     }
 

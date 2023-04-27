@@ -42,6 +42,7 @@ public class CustomerCardActionForm extends JFrame {
         super("Edit customer");
         this.setSize(600,500);
         this.customerCard = customerCard;
+        this.setLocation(600,100);
         start(model,frame, shouldIncludeDelete);
     }
 

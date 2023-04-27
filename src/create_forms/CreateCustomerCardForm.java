@@ -39,6 +39,7 @@ public class CreateCustomerCardForm extends JFrame {
     public CreateCustomerCardForm(DefaultTableModel model,JFrame frame){
         super("Add new customer");
         this.setSize(600,500);
+        this.setLocation(600,100);
         start(frame,model);
     }
 

@@ -44,6 +44,7 @@ public class CreateEmployeeForm extends JFrame {
     public CreateEmployeeForm(DefaultTableModel model, JFrame frame){
         super("Create new employee");
         this.setSize(600,500);
+        this.setLocation(600,100);
         start(model,frame);
     }
 

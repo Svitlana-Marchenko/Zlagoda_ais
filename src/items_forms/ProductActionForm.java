@@ -40,6 +40,7 @@ public class ProductActionForm extends JFrame {
         super("Edit product");
         this.product=product;
         this.setSize(600,500);
+        this.setLocation(600,100);
         start(model,frame);
     }
 

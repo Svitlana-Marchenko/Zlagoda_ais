@@ -48,6 +48,7 @@ public class EmployeeActionForm extends JFrame {
         super("Edit employee");
         this.setSize(600,500);
         this.employee = employee;
+        this.setLocation(600,100);
         start(model,frame);
     }
 

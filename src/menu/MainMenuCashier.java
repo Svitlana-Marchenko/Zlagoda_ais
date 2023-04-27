@@ -24,6 +24,7 @@ public class MainMenuCashier {
 
    public static void display(JFrame frame, Employee empl){
 
+       frame.setLocation(600,100);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel logoPanel = new JPanel();

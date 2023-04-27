@@ -33,6 +33,7 @@ public class CategoryActionForm extends JFrame {
     public CategoryActionForm(Category category, DefaultTableModel model, JFrame frame){
         this.setSize(600,500);
         this.category=category;
+        this.setLocation(600,100);
         start(model,frame);
     }
 

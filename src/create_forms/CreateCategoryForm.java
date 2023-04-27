@@ -25,6 +25,7 @@ public class CreateCategoryForm extends JFrame {
 
     public CreateCategoryForm(DefaultTableModel model, JFrame frame){
         this.setSize(600,500);
+        this.setLocation(600,100);
         start(model,frame);
     }
 
