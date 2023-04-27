@@ -15,7 +15,7 @@ public class Category {
     public static void setConnection(Connection con){
         connection=con;
     }
-    
+
     private static final String CATEGORY_NUMBER = "category_number";
     private static final String CATEGORY_NAME = "category_name";
 
@@ -180,8 +180,7 @@ try{
                             "    LEFT JOIN `Check` ch ON sa.check_number = ch.check_number\n" +
                             "    WHERE DATE( ch.print_date) >= '" + sdf.format(from) + "' AND DATE( ch.print_date) <= '" + sdf.format(to) + "'" +
                             "    GROUP BY p.category_number\n" +
-                            ") s ON cat.category_number = s.category_number\n" +
-                            "ORDER BY cat.category_number";
+                            ") s ON cat.category_number = s.category_number;";
             ResultSet resultSet = statement.executeQuery(request);
 
             while(resultSet.next()) {
