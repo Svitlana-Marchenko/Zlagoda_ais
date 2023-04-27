@@ -504,9 +504,11 @@ public class CreateCheckForm{
             try {
                 int amount = Integer.parseInt(result);
                 if (amount < 1) throw new NumberFormatException();
-                if (amount > inStore) {
+                while (amount > inStore) {
                     JOptionPane.showMessageDialog(new JFrame(), "Amount can not be bigger than amount in the store", "Error",
                             JOptionPane.ERROR_MESSAGE);
+                    result = JOptionPane.showInputDialog(tempFrame2, "Enter amount:");
+                    amount = Integer.parseInt(result);
                 }
                 return amount;
             } catch (NumberFormatException e) {

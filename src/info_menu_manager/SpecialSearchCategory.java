@@ -104,33 +104,22 @@ public class SpecialSearchCategory {
         search.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 if (dateFrom.getDate().getTime() > dateTo.getDate().getTime()) {
                     JOptionPane.showMessageDialog(null, "Please chose the correct date", "Eror", JOptionPane.ERROR_MESSAGE);
                 } else {
                     categoryList = createCommonList(dateFrom.getDate(), dateTo.getDate());
                 }
-
                 if (sortOrder.get()) {
                     Collections.sort(categoryList, (c1, c2) -> c1.name.compareToIgnoreCase(c2.name));
-                    sortButton.setText("Sort (Z-A)");
-
                 } else {
                     Collections.sort(categoryList, (c1, c2) -> c2.name.compareToIgnoreCase(c1.name));
-                    sortButton.setText("Sort (A-Z)");
-
                 }
-
                 model.setRowCount(0);
                 for (CategorySpecSearch category : categoryList) {
                     model.addRow(new Object[]{category.id, category.name, category.numSP, category.numNotSP});
                 }
-
-
             }
         });
-
-
     }
 
     private static class CategorySpecSearch {
