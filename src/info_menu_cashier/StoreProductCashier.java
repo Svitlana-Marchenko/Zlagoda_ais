@@ -58,6 +58,7 @@ public class StoreProductCashier {
         JPanel contentPanel = new JPanel(new BorderLayout());
 
         JPanel infoPanel = new JPanel(new GridLayout(5, 2));
+        infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         JLabel upcLabel = new JLabel("UPC:");
         JLabel nameLabel = new JLabel("Name:");
         JLabel priceLabel = new JLabel("Price:");
@@ -115,7 +116,6 @@ public class StoreProductCashier {
                     JOptionPane.showMessageDialog(null, "Please enter correct upc", "Eror", JOptionPane.ERROR_MESSAGE);
                     productPanel.setVisible(false);
                 }
-
 
             } else {
                 productPanel.setVisible(false);
