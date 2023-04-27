@@ -24,8 +24,7 @@ public class Check {
         connection=con;
     }
 
- 
-
+   
     private static final String CHECK_NUMBER = "check_number";
     private static final String ID_EMPLOYEE = "id_employee";
     private static final String CARD_NUMBER = "card_number";
@@ -140,7 +139,7 @@ public class Check {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String sql = "SELECT SUM(sum_total) AS sumT\n" +
                 "FROM `Check` " +
-                "WHERE id_employee = " + cashier.getId() +
+                "WHERE id_employee = '" + cashier.getId()+"'" +
                 " AND DATE(print_date) >= '" + sdf.format(from) + "' AND DATE(print_date) <= '" + sdf.format(to) + "'";
         BigDecimal answ = BigDecimal.valueOf(0);
         ;

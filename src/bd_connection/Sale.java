@@ -17,6 +17,7 @@ public class Sale {
     public static void setConnection(Connection con){
         connection=con;
     }
+
     //21  Визначити загальну кількість одиниць певного товару, проданого за певний період часу.+
     public static int getNumSold(Date from, Date to, SoldProduct saleP) throws SQLException {
 
@@ -69,9 +70,9 @@ public class Sale {
         String sql = "SELECT SUM(s.product_number) AS sumT\n" +
                 "FROM Sale s\n" +
                 "JOIN `Check` c ON s.check_number = c.check_number\n" +
-                "WHERE s.upc = "+saleP.getUPC()+"\n" +
-                "AND c.print_date BETWEEN '"+sdf.format(from) +"' AND '"+sdf.format(to)+"'";
-
+                "WHERE s.upc = '"+saleP.getUPC()+"'\n" +
+                //"AND c.print_date BETWEEN '"+sdf.format(from) +"' AND '"+sdf.format(to)+"'";
+                "AND DATE( print_date) >= '" + sdf.format(from) + "' AND DATE(print_date) <= '" + sdf.format(to) + "';";
         int answ = 0;
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
